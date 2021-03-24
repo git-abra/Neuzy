@@ -1,0 +1,41 @@
+
+
+// ***** Insert mechanisms *****
+forsec cellList.o(0).allreg {
+insert pas
+g_pas = 0.0003
+Ra = 100
+e_pas = -80
+cm = 1
+insert k_ion
+ek = -90
+insert na_ion
+ena = 50
+}
+
+forsec cellList.o(0).regsoma {
+insert pas
+g_pas = 0.0004
+Ra = 100
+e_pas = -80
+cm = 1
+insert hh
+gnabar_hh = 0.25
+gkbar_hh = 0.036
+gl_hh = 0
+}
+
+
+
+// ***** Define nseg for all cells *****
+proc make_nseg() {
+for CELLINDEX = 0, cellList.count -1 {
+if (cellList.o(CELLINDEX).is_artificial == 0) {
+geom_nseg(0.1,300)
+}
+}
+
+}
+
+// ***** Now adjust number of segments *****
+make_nseg()

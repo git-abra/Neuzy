@@ -63,10 +63,11 @@ for t = 1                                                                   % pr
 end
 %% Tutorial B - loading a morphology
 % First we need a morphology (tree), on which we can add the channels etc. We 
-% are using here a sample_tree from the TREES toolbox which loads a small tree. 
+% are using here a sample_tree from the ))TREES toolbox which loads a small tree. 
 % You can also load a different tree by using "tree = load_tree;", or load another 
 % example, e.g. "tree = {hsn_tree};"
 %
+
 tree = {sample_tree};   % load sample tree
 % this tree has no soma region yet, so it is perfectly suitable to show you
 % how new regions can be defined in TREES toolbox. 
@@ -78,7 +79,7 @@ tree{1}.D(1:2) = 10;        % increase diameter of the somatic nodes
 figure;plot_tree(tree{1},tree{1}.R);colorbar   % plot tree with region code
 axis off
 
-tree = tree(1);                                                              % for simplicity, only one tree is looked at (if several exist at all)
+tree = tree(1);                                                          % for simplicity, only one tree is looked at (if several exist at all)
 tree = t2n_writeTrees(tree,[],fullfile(pwd,'test.mtr'));                 % transform tree to NEURON morphology (.hoc file). This only has to be done once for each morphology
 %% Tutorial C - simulation protocol: somatic current injection
 % Now we want to do a simple somatic current injection, execute neuron and plot 
@@ -92,7 +93,7 @@ nneuron = neuron;                                                           % co
 nneuron.pp{1}.IClamp = struct('node',1,'times',[50 150],'amp',[0.6 0]);     % add a current clamp electrode to the first node and define stimulation times [ms] and amplitudes [nA]
 nneuron.record{1}.IClamp = struct('node',1,'record','i');                   % record the current of the IClamp just for visualization
 
-out = t2n(nneuron,tree,'-w-q');                                      % execute t2n and receive output
+out = t2n(nneuron,tree,'-w-q');                                             % execute t2n and receive output
 %% 
 % After execution of t2n we can plot the results. T2N returns all recordings 
 % that had previously been defined. We can access them in out.record{1} where 
@@ -411,7 +412,7 @@ plot(out.t,out.record{1}.cell.v{1})                 % plot time vs voltage at so
 plot(out.t,out.record{1}.cell.v{synIDs})            % plot time vs voltage at dendrite end
 legend('Soma','Synapse')
 ylabel('Membrane potential [mV]')
-ylim([-85,-60])
+ylim([-85,-40])
 xlim([0,50])
 subplot(2,1,2)
 plot(out.t,out.record{1}.AlphaSynapse.i{synIDs})    % plot time vs synaptic current
@@ -438,7 +439,8 @@ plen = Pvec_tree(trees{1});                                                % get
 nneuron.pp{1}.Exp2Syn = struct('node',synIDs,'tau1',0.2,'tau2',2.5,'e',0);% add an Exp2Syn at this location with 0.2 ms rise and 2.5 ms decay time
 nneuron.record{1}.cell.node = cat(1,1,synIDs);                            % record somatic voltage and voltage at synapse
 nneuron.record{1}.Exp2Syn = struct('node',synIDs,'record','i');           % record synaptic current
-nneuron.con(1) = struct('source',struct('cell',2),'target',struct('cell',1,'pp','Exp2Syn','node',synIDs),'delay',0,'threshold',0.5,'weight',0.1);  % connect the NetStim (cell 2) with the target (point process Exp2Syn of cell 1 at node specified in synIDs), and add threshold/weight and delay of the connection (NetStim parameters)
+nneuron.con(1) = struct('source',struct('cell',2),'target',struct('cell',1,'pp','Exp2Syn','node',synIDs),'delay',0,'threshold',0.5,'weight',0.1);  
+% connect the NetStim (cell 2) with the target (point process Exp2Syn of cell 1 at node specified in synIDs), and add threshold/weight and delay of the connection (NetStim parameters)
 
 out = t2n(nneuron,trees,'-w-q');                                    % execute t2n
 

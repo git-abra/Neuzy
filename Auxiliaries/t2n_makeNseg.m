@@ -44,7 +44,7 @@ if ~isfield(par,'dlambda')
 end
 minterf(:,4) = 0;
 
-for sec = 0:max(minterf(:,2))  %go through all sections
+for sec = 0:max(minterf(:,2))  % go through all sections
     secstart = find(minterf(:,2) == sec & minterf(:,3) == 0,1,'first');
     secend = find(minterf(:,2) == sec & minterf(:,3) == 1,1,'last');
     if dodlambda || doeach
@@ -59,7 +59,7 @@ for sec = 0:max(minterf(:,2))  %go through all sections
         secnodeend = minterf(secend,1);
         
         if dodlambda
-            if isfield(tree,'rnames') && isfield(mech,tree.rnames{tree.R(secnodestart2)}) && isfield(mech.(tree.rnames{tree.R(secnodestart2)}),'pas') && all(isfield(mech.(tree.rnames{tree.R(secnodestart2)}).pas,{'Ra','cm'}))
+            if isfield(tree,'rnames') && isfield(mech,tree.rnames{tree.R(secnodestart2)}) && isfield(mech.(tree.rnames{tree.R(secnodestart2)}),'pas') && all(isfield(mech.(tree.rnames{tree.R(secnodestart2)}).pas,{'Ra','cm'}))           
                 Ra = mech.(tree.rnames{tree.R(secnodestart2)}).pas.Ra;
                 cm = mech.(tree.rnames{tree.R(secnodestart2)}).pas.cm;
             elseif isfield(mech,'all') && isfield(mech.all,'pas') && all(isfield(mech.all.pas,{'Ra','cm'}))

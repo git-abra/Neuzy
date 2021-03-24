@@ -1,0 +1,5 @@
+// * Write Recordings to Files *
+save_rec("cell0_sec51_loc0.5000_v.dat",0,0,0)
+save_rec("SEClamp_cell0_tag_1_SEClamp_1_1_1_i.dat",1,0,0)
+
+// * Write APCounts to Files *

@@ -2020,7 +2020,7 @@ for n = 1:numel(neuron)
     
     
     if ~isempty(regexp(options,'-cl','ONCE')) %transfer files to server
-        filenames = {interf_file,'init_cells.hoc','init_mech.hoc','init_pp.hoc','init_con.hoc','init_rec.hoc','save_rec.hoc','init_play.hoc'}; %'init_pas.hoc','init_stim.hoc'
+        filenames = {,'init_cells.hoc','init_mech.hoc','init_pp.hoc','init_con.hoc','init_rec.hoc','save_rec.hoc','init_play.hoc'}; %'init_pas.hoc','init_stim.hoc'
         m = 1;
         localfilename{m} = fullfile(modelFolder,exchfolder,thisfolder,filenames{1});
         remotefilename{m} = sprintf('%s/%s/%s',nrn_exchfolder,thisfolder,filenames{1});

@@ -1,0 +1,5 @@
+	1 
+	v at location 0.5000 of section 51 of cell 0 
+	Vector[6] 
+	i of SEClamp Point Process with tag tag_1_SEClamp_1_1_1 (cell 0) 
+	Vector[7] 

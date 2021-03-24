@@ -13,12 +13,12 @@ function [neuron,tree,usestreesof,nocell,exchfolder, tag2Node, legacyOutput] = t
 %                   definitions are taken from
 % nocell            Boolean if neuron input was a structure or cell array
 % exchfolder        name for exchfolder that was possibly found in the
-%                   neuron structure
+%                   neuron structure			
 %
 %
 % *****************************************************************************************************
-% * This function is part of the T2N software package.                                                *
-% * Copyright 2016-2019 Marcel Beining <marcel.beining@gmail.com>                                    *
+% * This function is part of the T2N software package.                                                *			
+% * Copyright 2016-2019 Marcel Beining <marcel.beining@gmail.com>			                                   *
 % *****************************************************************************************************
 
 if ~exist(fullfile(pwd,'morphos','hocs'),'dir')
