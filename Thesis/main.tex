@@ -1,0 +1,266 @@
+\documentclass[12pt,oneside]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Zusaetzliche Pakete  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{setspace}
+\usepackage{enumerate}  
+\usepackage{fancyhdr}
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{palatino}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
+
+%folgende Zeile auskommentieren für englische Arbeiten
+\usepackage[ngerman]{babel}
+%folgende Zeile auskommentieren für deutsche Arbeiten
+%\usepackage[ngerman, english]{babel}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks]{hyperref}
+\usepackage[justification=centering]{caption}
+\usepackage[style=authoryear,natbib=true,backend=biber,maxbibnames=20]{biblatex}
+\usepackage{csquotes}
+\bibliography{literatur}
+
+\setlength{\parindent}{0em} 
+\setlist[itemize]{noitemsep, topsep=0pt}
+\setlist[enumerate]{noitemsep, topsep=0pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Definition der Kopfzeile %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+\fancyhf{}
+\cfoot{\thepage}
+\setlength{\headheight}{16pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Definition des Deckblattes und der Titelseite  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\JLUTitle}[9]{
+
+  \thispagestyle{empty}
+  \vspace*{\stretch{1}}
+  {\parindent0cm
+  \rule{\linewidth}{.7ex}}
+  \begin{flushright}
+    \vspace*{\stretch{1}}
+    \sffamily\bfseries\Huge
+    #1\\
+    \vspace*{\stretch{1}}
+    \sffamily\bfseries\large
+    #2\\
+    \vspace*{\stretch{1}}
+    \sffamily\bfseries\small
+    #3
+  \end{flushright}
+  \rule{\linewidth}{.7ex}
+
+  \vspace*{\stretch{1}}
+  \begin{center}
+    \includegraphics[width=2in]{JLU_Logo} \\
+    \vspace*{\stretch{1}}
+    \Large Masterarbeit  \\
+
+    \vspace*{\stretch{2}}
+   \large Bioinformatik \& Systembiologie\\
+    \large Justus-Liebig-Universität Gießen\\
+    \vspace*{\stretch{1}}
+    \large Betreuer:  #8 \\[1mm]
+    
+    \vspace*{\stretch{1}}
+    \large Gießen, den #7
+  \end{center}
+}
+
+\titlespacing*{\section}
+{0pt}{3.5ex plus 1ex minus .2ex}{.2ex plus .2ex}
+\titlespacing*{\subsection}
+{0pt}{1.5ex plus 1ex minus .2ex}{.2ex plus .2ex}
+\titlespacing*{\subsubsection}
+{0pt}{1.5ex plus 1ex minus .2ex}{.2ex plus .2ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Beginn des Dokuments  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\onehalfspacing
+
+  \JLUTitle
+      {Validierung hippocampaler CA1 Pyramidenzellen mit HippoUnit }        % Titel der Arbeit
+      {Adrian R}                        % Vor- und Nachname des Autors
+      {MATRIKELNUMMER}
+      
+      {Fachbereich 08 - Biologie und Chemie}    % Name der Fakultaet
+      {Gießen 2021}                             % Ort und Jahr der Erstellung
+      {31.09.2021}                              % Tag der Abgabe
+      {Prof. Dr. }                              % Name des Erstgutachters
+      {Prof. Dr. }                              % Name des Zweitgutachters
+      
+  \clearpage
+
+\lhead{}
+\pagenumbering{Roman} 
+    \setcounter{page}{1}
+
+\tableofcontents
+\clearpage
+
+\addcontentsline{toc}{section}{\listfigurename}
+\listoffigures
+
+\addcontentsline{toc}{section}{\listtablename}
+\listoftables
+\clearpage
+
+\setlength{\parskip}{0.5em} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Kurzzusammenfassung   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{Abstract}
+\section*{Abstract}
+
+Eine Kurzzusammenfassung der Vorgehensweise und der wesentlichen Ergebnisse.
+
+Allgemeine Merkmale
+\begin{itemize}
+    \item Objektivität: Es soll sich jeder persönlichen Wertung enthalten.
+    \item Kürze: Es soll so kurz wie möglich sein.
+    \item Verständlichkeit: Es weist eine klare, nachvollziehbare Sprache und Struktur auf.
+    \item Vollständigkeit: Alle wesentlichen Sachverhalte sollen enthalten sein.
+    \item Genauigkeit: Es soll genau die Inhalte und die Meinung der Originalarbeit wiedergeben.
+\end{itemize}{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Einstellungen  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\pagenumbering{arabic}  
+    \setcounter{page}{1}
+\lhead{\nouppercase{\leftmark}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Hauptteil  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Abschnitt} \label{einleitung}
+Ein Hauptabschnitt - idealerweise sollten keine Abschnitte leer sein.
+
+\subsection{Unterabschnitt}
+Ein Unterabschnitt - idealerweise sollten keine Abschnitte leer sein.
+
+\subsubsection{Unterunterabschnitt}
+Ein Unterunterabschnitt - idealerweise sollten keine Abschnitte leer sein.
+
+\section{Einfache Formatvorlagen}
+
+\textbf{Das ist fett gedruckter Text}.
+
+\textit{Das ist kursiver Text}.
+
+
+Auflistungen sind oft hilfreich für die Strukturierung:
+\begin{itemize}
+    \item Erster Eintrag
+    \item Zweiter Eintrag
+\end{itemize}
+
+Nummerierte Aufzählungen sind oft hilfreich für Reihenfolgen:
+\begin{enumerate}
+    \item Erster Eintrag
+    \item Zweiter Eintrag
+\end{enumerate}
+
+
+\section{Zitieren und Referenzieren}
+
+Beiträge in Fachzeitschriften wie \citet{clemen1989combining} oder Konferenzartikel wie \citet{he2017mask} werden auf diese Weise im Text zitiert. In anderen Fällen möchte man aber in Klammern zitieren \citep{clemen1989combining}, auch mit mehreren Autoren \citep{clemen1989combining,baumol1958warehouse,he2017mask}.
+
+Bei Monographien muss eine Seitenzahl mit angegeben werden \citep[S. 28]{chollet2018deep}.
+
+So wird eine Webquelle zitiert: \citet{shiny1}. Es kann bei kurzen Informationen im Internet aber auch reichen die Adresse\footnote{\url{https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/}} als Fußnote einzubetten.
+
+So werden andere Teile der Arbeit referenziert: Kapitel \ref{einleitung}, Gleichung \ref{eq:1} zeigt...
+
+So verweisen wir auf eine Fußnote \footnote{dies ist eine Fußnote}.
+
+\section{Abbildungen}
+
+Abbildungen erfordern das package \textit{graphicx}. 
+Idealerweise verwendet man Vektorgrafiken oder hochaufgelöste Bitmaps. 
+Eine gute Variante ist das Verwenden von PDFs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\textwidth]{JLU_Logo.png}
+    \caption{Siegel der Universität}
+    \label{fig:my_label}
+\end{figure}
+
+
+\section{Tabellen}
+
+Die Tabular-Umgebung gibt die Anzahl Spalten an, deren Orientierung, Breite und evtl. Zwischenlinien. 
+
+
+\begin{table}[ht]
+    \centering
+    \caption{Meine Tabelle}
+        \begin{tabular}{ cccc } 
+        \toprule
+        col1 & col2 & col3 \\
+        \midrule
+        \multirow{3}{4em}{Multiple row} & cell2 & cell3 \\ 
+        & cell5 & cell6 \\ 
+        & cell8 & cell9 \\ 
+        \bottomrule
+    \end{tabular}
+    \label{tab:countries}
+\end{table}
+
+\section{Formeln}
+
+\begin{equation}
+    \sum_{i=1}^N x_i
+    \label{eq:1}
+\end{equation}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Literaturverzeichnis wird 
+%% automatisch eingefügt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\lhead{}
+\printbibliography
+\addcontentsline{toc}{section}{\bibname}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Anhang (optional) 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\appendix
+\section{Anhang A}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Eidesstattliche Erklärung
+%% muss angepasst werden 
+%% in Erklaerung.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{Erklaerung.tex}
+
+\end{document}
