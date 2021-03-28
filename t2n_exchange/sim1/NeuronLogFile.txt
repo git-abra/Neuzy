@@ -1,5 +1,0 @@
-	1 
-	v at location 0.5000 of section 0 of cell 0 
-	Vector[6] 
-	i of IClamp Point Process with tag tag_1_IClamp_1_1_1 (cell 0) 
-	Vector[7] 
