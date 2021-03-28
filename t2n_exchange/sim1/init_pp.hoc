@@ -1,0 +1,18 @@
+
+
+// ***** Place synapses, electrodes or other point processes *****
+cellList.o(0).allregobj.o(0).sec{pp = new IClamp(1.000000)
+playt = new Vector()
+playt = playt.append(200.000000,1800.000000)
+play = new Vector()
+play = play.append(0.200000,0.000000)
+play.play(&pp.amp,playt)
+pp.dur = 1e15
+pp.del = -1e4
+io = playtList.append(playt)
+io = playList.append(play)
+objref play
+objref playt
+}
+io = ppList.append(pp)
+objref pp

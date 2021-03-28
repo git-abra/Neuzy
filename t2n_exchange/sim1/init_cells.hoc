@@ -1,0 +1,9 @@
+
+
+// ***** Load cell morphology templates and create artificial cells *****
+io = xopen("../../morphos/hocs/cell_tree1_1.hoc")
+cell = new cell_tree1_1()
+io = cellList.append(cell)
+objref cell
+
+

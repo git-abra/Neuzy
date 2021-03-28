@@ -20,11 +20,9 @@ classdef T2N_sim_out
 %             neuroncell{4} = nneuronstruct;
 %             neuroncell{5} = nneuronstruct;
 
-            out = t2n(nneuronParamCell,tree,'-w-d'); 
+            out = t2n(nneuronParamCell, tree, '-w-d'); 
 %             self.plotSim(nneuronstruct, out);
-            self.simulation  = out;   
+            self.simulation = out;   
         end   
-       
     end
-    
 end
