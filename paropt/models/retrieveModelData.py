@@ -1,0 +1,1 @@
+## File to manage the functions to retrieve data from model file (hoc)
