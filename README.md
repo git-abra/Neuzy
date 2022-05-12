@@ -9,6 +9,7 @@ It offers the extension to evaluate the output for hippocampal CA1 cells with Hi
 
 Original model, which was used is from Tomko et al. 2021 https://senselab.med.yale.edu/ModelDB/showmodel.cshtml?model=266901&file=/TomkoEtAl2021/#tabs-2
 
+----------------------------------
 TODO's are partly the following:
 
 - Licensing
