@@ -27,7 +27,7 @@ TODO's are partly the following:
     - region is limited by experimental data, not by the software
   - Network modelling
     - various cell numbers in conjunction
-    - machine learning techniques
+    - machine learning for neural networks
   - Glia influence
     - simulate neurotransmitter density in extracellular space
   - ...
