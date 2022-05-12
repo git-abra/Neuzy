@@ -1,7 +1,6 @@
 # Neuzy
 
 Neuzy is a neuroscientific software framework to create a population of optimized single cell models.
-
 Optimization options are currently against somatic and backpropagating action potential features.
 
 Under the hood it is using the NEURON simulator: https://github.com/neuronsimulator/nrn
@@ -12,6 +11,8 @@ Original model, which was used is from Tomko et al. 2021 https://senselab.med.ya
 
 TODO's are partly the following:
 
+- Licensing
+- Documentation
 - Improve code style
 - Accessibility for the general neuroscientist
 - Offer the option to test for multiple kinds of cell optimization, i.e. more features
