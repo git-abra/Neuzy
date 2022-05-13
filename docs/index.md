@@ -1,8 +1,4 @@
-layout: page
-title: "NEUZY"
-permalink: /repo/neuzy/
-
-Neuzy
+#Neuzy
 
 Neuzy is a neuroscientific software framework to create a population of optimized single cell models. Optimization options are currently against somatic and backpropagating action potential features.
 
