@@ -1,1 +1,22 @@
 theme: jekyll-theme-hacker
+
+docs_list_title: ACME Documentation
+docs:
+
+- title: Home
+  url: index.md
+
+- title: Structure
+  url: structure.md
+
+- title: Classes
+  url: classes.md
+
+- title: Methods
+  url: methods.md
+
+- title: Auxiliaries
+  url: functions.md
+
+- title: Examples
+  url: examples.md
