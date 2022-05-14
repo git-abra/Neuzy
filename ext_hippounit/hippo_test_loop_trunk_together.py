@@ -13,29 +13,15 @@ def main():
     pass
 
 if __name__ == "__main__":
-    # path to mod files
-    mod_files_path = "./x86_64"
-    #all the outputs will be saved here. It will be an argument to the test.
-    base_directory = '../../../../validation_results_updatedplotFontsize/'
-    #Load cell model        # atm parameter_path is necessary
-    model = ModelLoader_parameters(mod_files_path = mod_files_path)
+    mod_files_path = "./mods/x86_64"  # path to mod files
+    base_directory = '../../../../validation_results_updatedplotFontsize/'  #all the outputs will be saved here. It will be an argument to the test.
+    model = ModelLoader_parameters(mod_files_path = mod_files_path) #Load cell model        # atm parameter_path is necessary
     # list of sectionlists which get updated parameter combinations set. trunk and oblique sec list have derived sections from them.
-    # model.sectionlist_list = ['somatic', 'axonal', 'apical', 'basal', 'trunk']    # To21
-    # model.sectionlist_list = ['somatic', 'axonal', 'apical', 'basal']        # To21_onlyapic_strong.hoc         
-    # model.sectionlist_list = ['somatic', 'axonal', 'apical', 'basal', "trunk_prox", "trunk_med", "trunk_dist"] # To21_nap_strong
     model.sectionlist_list = ['somatic', 'axonal', 'apical', 'basal', "trunk_prox", "trunk_med"]     # To21_nap_strong_trunk_together.hoc
-    # model.sectionlist_list = ['somatic', 'axonal', 'trunk_prox', 'trunk_med', 'trunk_dist', "oblique_prox", "oblique_med", "oblique_dist", 'tuft', 'basal']     # To21_strong
-    
-    # if parameter_path is given, read the data in with method readJSON, could also give it here to # readJSON as argument
-    # path to hoc file
-    # the model must not display any GUI!!
-    # model.hocpath = "./To21_nap_trunk.hoc"
-    # model.hocpath = "./To21_nap_strong.hoc"
-    model.hocpath = "./To21_nap_strong_trunk_together.hoc"
 
-    # If the hoc file doesn't contain a template, this must be None (the default value is None)
-    # model.template_name = 'CA1_PC_Tomko("./ext_hippounit/mods/To21_strong.hoc")'
-    model.template_name = 'CA1_PC_Tomko("./ext_hippounit/mods/To21_nap_strong_trunk_together.hoc")'
+    model.hocpath = "pathtohocfile" # enter hoc path
+
+    model.template_name = 'CA1_PC_Tomko("./ext_hippounit/mods/To21_nap_strong_trunk_together.hoc")' # If the hoc file doesn't contain a template, this must be None (the default value is None)
 
     # model.SomaSecList_name should be None, if there is no Section List in the model for the soma, or if the name of the soma section is given by setting model.soma (the default value is None)
     model.SomaSecList_name = 'somatic'
@@ -57,16 +43,14 @@ if __name__ == "__main__":
     # It is possible to run the simulations using variable time step (default for this is False)
     model.cvode_active = False
 
-    # x = model.readJSON(parameter_path = "./parameters/sim_nap_rel_data_trunk_10.json")
-    # x = model.readJSON(parameter_path = "./parameters/final_par_data.json")
-    x = model.readJSON(parameter_path = "./parameters/best10_par.json")
+    x = model.readJSON(parameter_path = "./datapath")    # data
     for i in range(len(x)):
-        model.parameters = x[i]
-        # outputs will be saved in subfolders named like this:
-        #model.name= "To21_loop_rel_data_trunk_outputs_" + str(i + 1)
-        model.name= "To21_best10_par_" + str(i + 1)
+        model.parameters = x[i]    
+        model.name= "./subfoldername" + str(i + 1) # outputs will be saved in subfolders named like this:
         
-        """
+        
+## Somatic Features Test Patch Clamp Dataset
+
         with open('../target_features/feat_CA1_pyr_cACpyr_more_features.json') as f:
             observation = json.load(f, object_pairs_hook=collections.OrderedDict)
 
@@ -81,9 +65,8 @@ if __name__ == "__main__":
 
         # test.specify_data_set is added to the name of the subdirectory (somaticfeat), so test runs using different data sets can be saved into different directories
         test.specify_data_set = 'UCL_data'
-
-        # Number of parallel processes
-        test.npool = 10
+  
+        test.npool = 10 # Number of parallel processes
             
         try:
             score = test.judge(model)
@@ -99,6 +82,8 @@ if __name__ == "__main__":
             print(e)
             pass
 
+
+## Somatic Features Test Sharp Electrode Test
             
         with open('../target_features/feat_rat_CA1_JMakara_more_features.json') as f:
             observation = json.load(f, object_pairs_hook=collections.OrderedDict)
@@ -114,8 +99,8 @@ if __name__ == "__main__":
         # test.specify_data_set is added to the name of the subdirectory (somaticfeat), so test runs using different data sets can be saved into different directories
         test.specify_data_set = 'JMakara_data'
 
-        # Number of parallel processes
-        test.npool = 10
+     
+        test.npool = 10 # Number of parallel processes
 
         try:
             score = test.judge(model)
@@ -125,7 +110,8 @@ if __name__ == "__main__":
             print(e)
             pass
         
-        """
+## PSP Attenuation Test
+        
         with open("../target_features/feat_PSP_attenuation_target_data.json", 'r') as f:
             observation = json.load(f, object_pairs_hook=collections.OrderedDict)
 
@@ -139,9 +125,8 @@ if __name__ == "__main__":
 
         # Instantiate test class 
         test = tests.PSPAttenuationTest(config=config, observation=observation, num_of_dend_locations = 15, force_run=False, show_plot=True, save_all = True, base_directory=base_directory)
-                    
-        # Number of parallel processes
-        test.npool = 10
+                      
+        test.npool = 10 # Number of parallel processes
 
         try: 
             # Run the test 
@@ -153,8 +138,8 @@ if __name__ == "__main__":
             print(e)
             pass
         
+## Backpropagating AP Test     
         
-        """
         with open('../target_features/feat_backpropagating_AP_target_data.json') as f:
             observation = json.load(f, object_pairs_hook=collections.OrderedDict)
         
@@ -167,8 +152,7 @@ if __name__ == "__main__":
         # Instantiate the test class
         test = tests.BackpropagatingAPTest(config=config, observation=observation, force_run=False, force_run_FindCurrentStim=False, show_plot=True, save_all=True, base_directory=base_directory)
 
-        # Number of parallel processes
-        test.npool = 10
+        test.npool = 10 # Number of parallel processes
 
         try: 
             # Run the test
@@ -180,6 +164,8 @@ if __name__ == "__main__":
             print(e)
             pass 
            
+
+## Depolarization Block Test
         
         with open('../target_features/depol_block_target_data.json') as f:
             observation = json.load(f, object_pairs_hook=collections.OrderedDict)
@@ -189,8 +175,7 @@ if __name__ == "__main__":
 
         test = tests.DepolarizationBlockTest(observation=observation, force_run=False, show_plot=True, save_all=True, base_directory=base_directory)
 
-        # Number of parallel processes
-        test.npool = 10
+        test.npool = 10 # Number of parallel processes
 
         try: 
             # Run the test
@@ -216,15 +201,14 @@ if __name__ == "__main__":
 
         test = tests.ObliqueIntegrationTest(observation = observation, save_all = True, force_run_synapse=False, force_run_bin_search=False, show_plot = True, base_directory = base_directory)
 
-        # Number of parallel processes
-        test.npool = 10
+        test.npool = 10 # Number of parallel processes
 
-        #try: 
-        score = test.judge(model)
-        score.summarize()
-        #except Exception as e:
-        #   print('Model: ' + model.name + ' could not be run')
-        #    print(e)
-        #    pass
+        try: 
+            score = test.judge(model)
+            score.summarize()
+        except Exception as e:
+            print('Model: ' + model.name + ' could not be run')
+            print(e)
+            pass
         
-        """
+        

@@ -1,6 +1,4 @@
-######
-# Population-Based-Modelling Parameter Optimization Framework
-## originally a Master Thesis
+#### Neuzy ####
 
 #################################################################
 # "UserInteraction.py"

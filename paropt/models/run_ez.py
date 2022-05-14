@@ -1,6 +1,4 @@
-######
-# Population-Based-Modelling Parameter Optimization Framework
-## originally a Master Thesis
+#### Neuzy ####
 
 #################################################################
 # "python3_this_file.py"
