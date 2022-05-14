@@ -1,12 +1,11 @@
 theme: jekyll-theme-hacker
-
 layout: page
 title: "Neuzy"
 permalink: /repo/neuzy/
 
 header_pages:
   - index.md
-  - /structure.md
+  - structure.md
 
 docs_list_title: Navigation
 docs:
