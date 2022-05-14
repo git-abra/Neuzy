@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Dimension by HTML5 UP</title>
+		<title>Neuzy</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -31,8 +31,8 @@
 						</div>
 						<nav>
 							<ul>
-								<li><a href="#intro">Intro</a></li>
-								<li><a href="#work">Work</a></li>
+								<li><a href="#doc">Documentation</a></li>
+								<li><a href="#structure">Structure</a></li>
 								<li><a href="#about">About</a></li>
 								<li><a href="#contact">Contact</a></li>
 								<!--<li><a href="#elements">Elements</a></li>-->
@@ -45,19 +45,180 @@
 
 						<!-- Intro -->
 							<article id="intro">
-								<h2 class="major">Intro</h2>
-								<span class="image main"><img src="images/pic01.jpg" alt="" /></span>
-								<p>Aenean ornare velit lacus, ac varius enim ullamcorper eu. Proin aliquam facilisis ante interdum congue. Integer mollis, nisl amet convallis, porttitor magna ullamcorper, amet egestas mauris. Ut magna finibus nisi nec lacinia. Nam maximus erat id euismod egestas. By the way, check out my <a href="#work">awesome work</a>.</p>
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula.</p>
+								<h2 class="major">Docs</h2>
+								<!-- <span class="image main"><img src="images/pic01.jpg" alt="" /></span> -->
+									<p>
+									Neuzy is a neuroscientific software framework to create a population of optimized single cell models.
+									Optimization options are currently against somatic and backpropagating action potential features.
+									
+									Under the hood it is using the NEURON simulator: https://github.com/neuronsimulator/nrn
+									
+									It offers the extension to evaluate the output for hippocampal CA1 cells with HippoUnit framework: https://github.com/KaliLab/hippounit
+									
+									Original model, which was used is from Tomko et al. 2021 https://senselab.med.yale.edu/ModelDB/showmodel.cshtml?model=266901&file=/TomkoEtAl2021/#tabs-2
+									</p>
+									---
+									
+									<h5>Prerequisites:</h5>
+									<p>
+									HOC file for the morphology and biophysics.
+									NMODL files for the ion channel expressions.
+									Target Features, currently only in JSON - see target_features folder.
+									
+									Python3 with following packages installed (recommended via pip):
+									  - Neuron
+									  - Efel
+									  - Numpy
+									  - Scipy
+									  - Pandas
+									  - Mpi4py
+									
+									To also evaluate the population:
+									  - Hippounit
+									
+									Edit the constants in /neuzy/paropt/auxiliaries/constants.py.
+									Further configuration (hyperparameters) needs to change the CompleteOptModel class in CompleteOptModel.py.
+									Accessibility is on the TODO.
+									</p>
+									---
+									
+									<h5>Quickstart:</h5>
+									<p>
+									Start from the relative path in the downloaded ./neuzy repository (Root of the repository).
+									
+									Call any start file.
+									```bash
+									python3 start.py
+									```
+									otherwise via bash
+									```bash
+									bash start.sh  
+									```
+									or shell
+									```
+									sh start.sh
+									```
+									
+									After calling, select how many CPU cores should be used in the command line.
+									</p>
+									---
+									<h5>Output</h5>
+									
+									Two folders will be created in /neuzy/paropt/datadump.
+									<ol>
+									<li>log_files - Lists some logging information for the models created while optimizing</li>
+									<li>parameter_values - The optimized output parameters for your run. They have to be matched onto the pandas dataframe for regions and their respective ion channel.</li>
+									</ol>
+									---
+									<h5>TODO's are partly the following:</h5>
+									<ul>
+										<li>- Licensing</li>
+											<li>- Documentation</li>
+											<li>- Improve code style</li>
+											<li>- Accessibility for the general neuroscientist</li>
+											<li>- Offer the option to test for multiple kinds of cell optimization, i.e. more features</li>
+											<li>- Extend for:</li>
+												<ul>
+													<li>- Efficiency</li>
+													<ul>
+														<li><- e.g. dynamic programming</li>
+														<li>- improvements to mpi usage</li>
+														<li>- techniques</li>
+													</ul>
+												<li>- Synaptic features and testing</li>
+												<ul>
+													<li>- dendritic integration</li>
+												</ul>
+												<li>- More than CA1</li>
+												<ul>
+													<li>- region is limited by experimental data, not by the software</li>
+												</ul>
+												<li>- Network modelling</li>
+												<ul>
+													<li>- various cell numbers in conjunction</li>
+													<li>- machine learning for neural networks</li>
+												</ul>
+												<li>- Glia influence</li>
+													<ul>
+													<li>- simulate neurotransmitter density in extracellular space</li>
+													</ul>
+											<li>- ...</li>
+											</ul>
+									<li>- ...</li>
+									</ul>
+								</p>
 							</article>
 
-						<!-- Work -->
+						<!-- Structure -->
 							<article id="work">
-								<h2 class="major">Work</h2>
+								<h2 class="major">Structure</h2>
 								<span class="image main"><img src="images/pic02.jpg" alt="" /></span>
-								<p>Adipiscing magna sed dolor elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem luctus ultrices.</p>
-								<p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus pharetra. Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus amet feugiat tempus.</p>
+
+								<h5>Pipeline</h5>
+								<img src="./figures/Pipeline.pdf" alt="Pipeline">
+
+								<h5>Implementation</h5>
+								<img src="./figures/Implementation.pdf" alt="Implementation">
+								
+								<h5>Sequence 1</h5>
+								<img src="./figures/S-C1.pdf" alt="Sequence 1">
+
+								<h5>Sequence 2</h5>
+								<img src="./figures/S-C2.pdf" alt="Sequence 2">
+
+								<h5>Sequence 3</h5>
+								<img src="./figures/S-C3.pdf" alt="Sequence 3">
 							</article>
+
+						<!-- Examples -->
+						<article id="about">
+							<h2 class="major">Examples</h2>
+							<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+							<p>Lorem ipsum dolor sit amet, consectetur et adipiscing elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem luctus ultrices. Aliquam libero et malesuada fames ac ante ipsum primis in faucibus. Cras viverra ligula sit amet ex mollis mattis lorem ipsum dolor sit amet.</p>
+						</article>
+
+						<!-- Wishlist-->
+						<article id="about">
+							<h2 class="major">Wishlist</h2>
+							<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+							<h5>Extensible list for upcoming features.</h5>
+									<ul>
+										<li>- Licensing</li>
+											<li>- Documentation</li>
+											<li>- Improve code style</li>
+											<li>- Accessibility for the general neuroscientist</li>
+											<li>- Offer the option to test for multiple kinds of cell optimization, i.e. more features</li>
+											<li>- Extend for:</li>
+												<ul>
+													<li>- Efficiency</li>
+													<ul>
+														<li><- e.g. dynamic programming</li>
+														<li>- improvements to mpi usage</li>
+														<li>- techniques</li>
+													</ul>
+												<li>- Synaptic features and testing</li>
+												<ul>
+													<li>- dendritic integration</li>
+												</ul>
+												<li>- More than CA1</li>
+												<ul>
+													<li>- region is limited by experimental data, not by the software</li>
+												</ul>
+												<li>- Network modelling</li>
+												<ul>
+													<li>- various cell numbers in conjunction</li>
+													<li>- machine learning for neural networks</li>
+												</ul>
+												<li>- Glia influence</li>
+													<ul>
+													<li>- simulate neurotransmitter density in extracellular space</li>
+													</ul>
+											<li>- ...</li>
+											</ul>
+									<li>- ...</li>
+									</ul>
+								</p>
+						</article>
 
 						<!-- About -->
 							<article id="about">
