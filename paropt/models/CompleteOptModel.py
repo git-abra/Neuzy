@@ -1,6 +1,4 @@
-######
-# Population-Based-Modelling Parameter Optimization Framework
-## originally a Master Thesis
+#### Neuzy ####
 
 #################################################################
 # "CompleteOptModel.py"
@@ -14,9 +12,16 @@
 ## Packages
 import time
 import warnings
-import sys
+import os, sys
+import subprocess
 
 # TODO find better pathing options
+cwd = os.getcwd()       # get call cwd
+if cwd.split("/")[-1] != "neuzy":
+    print("Error: A wild path error occurred. Path error uses 'wrong pathing' with path: " + cwd + ".") 
+    print("It is very effective.")
+    print("To counter, call Neuzy from the root of the package (e.g. 'home/user/downloads/Neuzy') and restart.")
+
 sys.path.insert(0, './paropt/figures/')
 sys.path.insert(0, './paropt/auxiliaries/')
 
@@ -46,7 +51,8 @@ class CompleteOptModel():
     Full-fledged optimization and data creation class
     """
     def __init__(self, 
-                model_name, 
+                model_name,
+                rank, 
                 modpath = None,                 # in constants.py if not given
                 hocpath = None,                 # in constants.py if not given
                 sectionlist_list = None, 
@@ -67,6 +73,10 @@ class CompleteOptModel():
         target_feature_file -> json : Name of target feature file in target feature path.
         """
         ## Model Properties and init
+
+        self.model_name = model_name        # Standard Hoc model with morphology
+        self.rank = rank
+
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
@@ -81,8 +91,7 @@ class CompleteOptModel():
             self.hocpath = hocpath
         else:
             self.hocpath = HOCPATH          # use constant
-
-        self.model_name = model_name        # Standard Hoc model with morphology
+        
 
         if template_name:
             self.template_name = template_name
@@ -820,8 +829,8 @@ class CompleteOptModel():
                 and soma_model_feature_spike[i]['AP2_peak'] > 0 \
                 and soma_model_feature_spike[i]['AP2_amp'] > 0:
 
-                print("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(rank))
-                lg.info("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(rank))
+                print("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(self.rank))
+                lg.info("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(self.rank))
                 soma_success = soma_success + 1  
                 # average for step 08 is 9, step10 is 11 , so mid is 10 and 7 is handmade hyperparameter; 16 is there, so it isn't too excitable and spikes spontaneously
             else:
@@ -844,8 +853,8 @@ class CompleteOptModel():
                             bAP_success = bAP_success + 1"""
                     bAP_success = bAP_success + 1
                     """else:
-                        print("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(rank))
-                        lg.info("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(rank))
+                        print("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(self.rank))
+                        lg.info("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(self.rank))
                         bAP_success = bAP_success + 1"""
                     #bAP_success = bAP_success + 1    
                     #and bAP_model_feature_spike[i]['time_to_first_spike'] > 0:
@@ -854,14 +863,14 @@ class CompleteOptModel():
                     #and bAP_model_feature_spike[i]['AP2_amp'] > 0:
 
                 else:
-                    print("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(rank))
-                    lg.info("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(rank))
+                    print("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(self.rank))
+                    lg.info("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(self.rank))
                     
                     # bAP tests and experimental data was for 1000ms stimuli; target feature for 400ms is 4 ; so setting it to 2 handmade hyperparameter, for 11 see upper explanation
                 
         else:
-            print("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(rank))
-            lg.info("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(rank))
+            print("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(self.rank))
+            lg.info("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(self.rank))
 
 
         if bAP_success == len(bAP_model_feature_spike):
@@ -1238,8 +1247,8 @@ class CompleteOptModel():
     def calculateFitness(self, parameter_data, indices):  
         # print("test: ", parameter_data)
         if self.updateParAndModel(parameter_data, indices) is None:
-            print("No spiking, aborting on rank, " + str(rank))  
-            lg.info("No spiking, aborting on rank, " + str(rank))
+            print("No spiking, aborting on rank, " + str(self.rank))  
+            lg.info("No spiking, aborting on rank, " + str(self.rank))
             return 10000
         else:
             pass
@@ -1316,9 +1325,9 @@ class CompleteOptModel():
         # csv
         # df.to_csv("./paropt/datadump/parameter_values//dataframe_costs/dataframe_output_model_" + str(self.line) + ".csv")
 
-        # print("Fitness values are: ", fitness_values_dict, "on rank " + str(rank))
-        print("Cost is: ", max(fitness_values), " on rank " + str(rank))
-        lg.info("Cost is " + str(max(fitness_values)) + "on rank " + str(rank))
+        # print("Fitness values are: ", fitness_values_dict, "on rank " + str(self.rank))
+        print("Cost is: ", max(fitness_values), " on rank " + str(self.rank))
+        lg.info("Cost is " + str(max(fitness_values)) + "on rank " + str(self.rank))
 
         # maximum fitness value
         print(df.idxmax())      # max(fitness_values) feature_name
@@ -1475,10 +1484,10 @@ class CompleteOptModel():
             self.AP_firstspike = False
             self.bAP_firstspike = False  
 
-            print("Cell number " + str(counter) + " on rank number " + str(rank))
+            print("Cell number " + str(counter) + " on rank number " + str(self.rank))
 
             lg.info("\n")
-            lg.info("Cell number " + str(counter) + " on rank number " + str(rank) + " is starting.")
+            lg.info("Cell number " + str(counter) + " on rank number " + str(self.rank) + " is starting.")
 
             if counter == 1:           
                 print("First created Cell is used.")
@@ -1689,40 +1698,7 @@ def main():
 ## TODO which feature_name causes which models maximum cost? In output - needed or just tedious? Integrated in runtime - done.
 
 if __name__ == '__main__':
-    ## Basic Setup
-    cell_destination_size = 100      # I want to receive in total 10 optimized cells as output
-
-    ## MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()          # current used core/process
-    cpucount = comm.Get_size()      # number of cores/processes
-    last_process = cpucount - 1
-
-    ## create Log files
-    for i in range(9999):
-        if os.path.exists(SAVEPATH_LOG + "/rank_" + str(rank) + "_consolelog_sim_" + str(i)+ ".log"):
-            continue
-        else:
-            output_log_data = ((SAVEPATH_LOG + "/rank_" + str(rank) + "_consolelog_sim_" + str(i)+ ".log"))
-            break
-
-    lg.basicConfig(filename = output_log_data, level = lg.INFO) 
-
-
-    # INIT
-    paroptmodel = CompleteOptModel (  model_name = "Roe22.hoc",                                          #"To21_nap_strong_trunk_together.hoc", 
-                                    target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
-                                    template_name = None, 
-                                    hippo_bAP = True)                                   #TODO Look Up
-    
-    paroptmodel.line = 1
-    # testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
-
-    paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization-
-
-
-
-
+    subprocess.call(['sh', './start.sh'])       ## make sure to call it in bash from neuzy folder
 
 
 

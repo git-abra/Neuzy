@@ -13,23 +13,18 @@ def main():
     pass
 
 if __name__ == "__main__":
-    # path to mod files
-    mod_files_path = "./x86_64"
+    
+    mod_files_path = "./x86_64" # path to mod files
+    base_directory = '../validation_results/' # all the outputs will be saved here. It will be an argument to the test.
 
-    #all the outputs will be saved here. It will be an argument to the test.
-    base_directory = '../validation_results/'
-
-    #Load cell model        # atm parameter_path is necessary
-    model = ModelLoader_parameters(mod_files_path = mod_files_path)
+    model = ModelLoader_parameters(mod_files_path = mod_files_path) # Load cell model    # atm parameter_path is necessary
     # list of sectionlists which get updated parameter combinations set. trunk and oblique sec list have derived sections from them.
     model.sectionlist_list = ['somatic', 'axonal', 'apical', 'basal']   
     # if parameter_path is given, read the data in with method readJSON, could also give it here to # readJSON as argument
-    # path to hoc file
-    # the model must not display any GUI!!
-    model.hocpath = "./To21_nap.hoc"
+    
+    model.hocpath = "hocpath"  # path to hoc file
 
-    # If the hoc file doesn't contain a template, this must be None (the default value is None)
-    model.template_name = 'CA1_PC_Tomko("./ext_hippounit/mods/To21_nap.hoc")'
+    model.template_name = 'CA1_PC_Tomko("./ext_hippounit/mods/To21_nap.hoc")' # If the hoc file doesn't contain a template, this must be None (the default value is None)
 
     # model.SomaSecList_name should be None, if there is no Section List in the model for the soma, or if the name of the soma section is given by setting model.soma (the default value is None)
     model.SomaSecList_name = 'somatic'
@@ -54,8 +49,10 @@ if __name__ == "__main__":
     
     model.parameters = x[3]
     # outputs will be saved in subfolders named like this:
-    model.name= "To21_loop_best_outputs_" + str(3)
+    model.name= "subfoldername_" + str(3)
 
+
+## Oblique Integration Test
 
     with open('../target_features/oblique_target_data.json') as f:
         observation = json.load(f, object_pairs_hook=collections.OrderedDict)
