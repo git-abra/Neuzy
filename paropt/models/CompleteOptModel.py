@@ -15,6 +15,8 @@ import warnings
 import os, sys
 import subprocess
 
+
+
 # TODO find better pathing options
 cwd = os.getcwd()       # get call cwd
 if cwd.split("/")[-1] != "neuzy":

@@ -11,29 +11,32 @@ import os
 import sys
 import pathlib as pl
 
-## Paths
-CURRENT_DIR = pl.Path.cwd()
+## Pathlib Paths
 
-MODPATH = str(CURRENT_DIR / 'paropt' / 'data' / 'mods' / 'x86_64' / '.libs' / 'libnrnmech.so')         
-HOCPATH = str(CURRENT_DIR / 'paropt' / 'data' / 'morphos')   # TODO Morpho name has to be variable in next version inside a class
+ROOTPATH = pl.Path(__file__).parent / '..' / '..'
+FILEPATH = pl.Path(__file__).parent / 'my_file'
+
+CWDPATH = pl.Path.cwd()
+
+MODPATH = str(ROOTPATH / 'paropt' / 'data' / 'mods' / 'x86_64' / '.libs' / 'libnrnmech.so')         
+HOCPATH = str(ROOTPATH / 'paropt' / 'data' / 'morphos')   # TODO Morpho name has to be variable in next version inside a class
 
 ## Features
-SAVEPATH_FEATURE = str(CURRENT_DIR / 'paropt' / 'data' / 'features') 
-SAVEPATH_FEATURE_TARGET = str(CURRENT_DIR / 'paropt' / 'data' / 'features'/ 'target_features') 
-SAVEPATH_FEATURE_MODEL = str(CURRENT_DIR / 'paropt' / 'data' / 'features' / 'model_features') 
+SAVEPATH_FEATURE = str(ROOTPATH / 'paropt' / 'data' / 'features') 
+SAVEPATH_FEATURE_TARGET = str(ROOTPATH / 'paropt' / 'data' / 'features'/ 'target_features') 
+SAVEPATH_FEATURE_MODEL = str(ROOTPATH / 'paropt' / 'data' / 'features' / 'model_features') 
 
 ## Parameters
-SAVEPATH_PAR = str(CURRENT_DIR / 'paropt' / 'data' / 'parameter_values')     
+SAVEPATH_PAR = str(ROOTPATH / 'paropt' / 'data' / 'parameter_values')     
+SAVEPATH_LOG = str(ROOTPATH / 'paropt' / 'data' / 'log_files')
 
-#SAVEPATH_RND_PAR = str(CURRENT_DIR / 'paropt' / 'data' / 'parameter_values' / 'initRandomData')
-#SAVEPATH_OUT_PAR = str(CURRENT_DIR / 'paropt' / 'data' / 'parameter_values' / 'OutputData')
-SAVEPATH_LOG = str(CURRENT_DIR / 'paropt' / 'data' / 'log_files')
-
-#SAVEPATH_LOG_OPT = str(CURRENT_DIR / 'paropt' / 'data' / 'log_files' / 'optimization')
-#SAVEPATH_LOG_SIM = str(CURRENT_DIR / 'paropt' / 'data' / 'log_files' / 'simulation')
+#SAVEPATH_RND_PAR = str(ROOTPATH / 'paropt' / 'data' / 'parameter_values' / 'initRandomData')
+#SAVEPATH_OUT_PAR = str(ROOTPATH / 'paropt' / 'data' / 'parameter_values' / 'OutputData')
+#SAVEPATH_LOG_OPT = str(ROOTPATH / 'paropt' / 'data' / 'log_files' / 'optimization')
+#SAVEPATH_LOG_SIM = str(ROOTPATH / 'paropt' / 'data' / 'log_files' / 'simulation')
 
 ## Plots
-SAVEPATH_PLOTS = str(CURRENT_DIR / 'paropt' / 'figures' / 'outputs')
+SAVEPATH_PLOTS = str(ROOTPATH / 'paropt' / 'figures' / 'outputs')
 
 # Sectionlists! NECESSARY.
 
