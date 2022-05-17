@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, './paropt/figures/')
-sys.path.insert(0, './paropt/auxiliaries/')
+sys.path.insert(1, './paropt/figures/')
+sys.path.insert(1, './paropt/auxiliaries/')
 
 from create_data import *
 import numpy as np
