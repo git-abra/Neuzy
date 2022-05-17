@@ -1,8 +1,11 @@
 #### Neuzy ####
 
 ## start/run
-import os, sys
-sys.path.insert(1, os.getcwd() + "/paropt/auxiliaries/")
+import os, sys, pathlib
+
+PP = pathlib.Path(__file__).parent  # parent path on directory
+
+sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
 
 import logging as lg
 from constants import *
