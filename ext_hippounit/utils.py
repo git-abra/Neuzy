@@ -1,3 +1,11 @@
+#### Neuzy
+
+## Updated utils.py to iterate over ion channel parameters in the child class from ModelLoader: ModelLoader_parameters.
+
+# TODO separate ModelLoader_parameters into a separate file, 
+# so that people don't have to replace the HippoUnit site-package utils.py file with this one
+# import redundant functions from Neuzy
+
 from __future__ import print_function
 from __future__ import division
 # from builtins import str

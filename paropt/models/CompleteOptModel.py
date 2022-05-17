@@ -490,7 +490,7 @@ class CompleteOptModel():
                                     #print("GHDBAR ", sec, sec.ghdbar_hd)
                                     for seg in sec:
                                         dist = h.distance(seg.x, sec=sec)      
-                                        if dist == 0:
+                                        if dist == 0:               ## TODO Unittest and maybe remove 
                                             continue
                                         else:                            
                                             seg.hd.ghdbar = (1 + 3/100 * dist) * value #sec.ghdbar_hd  # 1.9042409723832741e-05 #sec.ghdbar_hd 
