@@ -7,8 +7,6 @@
 
 ## File with model generation, optimization and output
 
-## TODO structure from functional relationships to object oriented and divide more functions, 
-
 ## Packages
 import sys, pathlib
 
