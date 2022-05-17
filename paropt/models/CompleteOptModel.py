@@ -22,7 +22,6 @@ import os, time, warnings, subprocess, csv, json
 
 from copy import *
 import logging as lg
-import pathlib as pl
 import multiprocessing as mp
 import numpy as np                  # Random Generator & Array
 import scipy.optimize as scp
@@ -326,7 +325,7 @@ class CompleteOptModel():
         """
         ## HOC Files
         try:
-            HOCPATH_temp = pl.Path(self.hocpath)            # Pathlib object
+            HOCPATH_temp = pathlib.Path(self.hocpath)            # Pathlib object
             h.xopen(str(HOCPATH_temp / self.model_name))    # stringify pl object for concatenation with '/'
             print("Hoc Morphology is loaded in!")
         except Exception as e:
@@ -352,7 +351,7 @@ class CompleteOptModel():
         """
         print("Template name: " + str(self.template_name) + " found. Creating cell from Hoc..")
         lg.info("Template name: " + str(self.template_name) + " found. Creating cell from Hoc..")
-        HOCPATH_temp = pl.Path(self.hocpath)
+        HOCPATH_temp = pathlib.Path(self.hocpath)
         cell = getattr(h, self.template_name)(HOCPATH_temp / self.model_name)
 
         return cell
@@ -1491,7 +1490,7 @@ class CompleteOptModel():
                 init_data, indices = self.getMechanismItems()  # Initial Conductances # tested
                 init_output_data = insertNans(init_data, indices).tolist()
 
-                outfile = pl.Path(SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
+                outfile = pathlib.Path(SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
                 if outfile.is_file():
                     print("Initial Conductances already in a JSON file.")        
                     pass
