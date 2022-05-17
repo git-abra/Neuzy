@@ -5,7 +5,7 @@ Neuzy (https://neuzy.de) is a neuroscientific software framework to create a pop
 It uses HOC and NMODL files as input for the model and extracts automatically their respective ion channel parameters, which are to be updated.
 Optimization options are currently Nelder-Mead, L-BFGS-B or Conjugate Gradient. 
 
-Features to optimize are against somatic and backpropagating action potential features in depolarizing or hyperpolarizing potentials and depend on the given experimental data or baseline model.
+Features to optimize are against somatic and backpropagating action potential features in depolarizing or hyperpolarizing currents and depend on the given experimental data or baseline model.
 
 Features are extracted via eFEL: https://github.com/BlueBrain/eFEL
 
@@ -67,9 +67,10 @@ Two folders will be created in /neuzy/paropt/datadump.
 
 ---
 ## Pipe
-![Pipe](./docs/figures/Pipeline.pdf)
+![Pipeline](./docs/figures/Pipeline.pdf)
 
 --verbose
+
 ![Implementation](./docs/figures/Implementation.pdf)
 
 ---
