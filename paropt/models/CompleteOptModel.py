@@ -8,7 +8,7 @@
 ## File with model generation, optimization and output
 
 ## Packages
-import sys, pathlib
+import sys, pathlib, os, time, warnings, subprocess, csv, json
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
@@ -16,7 +16,9 @@ PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
 sys.path.insert(1, str(PP / '..' / 'figures'))
 sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call; sys.path[path/auxiliaries] needed for constants.py -> get pathnames like ROOTPATH
 
-import os, time, warnings, subprocess, csv, json
+import myplots
+from create_data import *
+from constants import *
 
 from copy import *
 import logging as lg
@@ -28,10 +30,6 @@ from neuron import h                # NEURON
 from neuron.units import ms, mV
 import efel                         # Extract Spike Features
 from mpi4py import MPI              # MPI support
-
-import myplots
-from create_data import *
-from constants import *
 from matplotlib import pyplot
 
 
