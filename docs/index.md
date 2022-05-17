@@ -66,13 +66,6 @@ Two folders will be created in /neuzy/paropt/datadump.
 2. parameter_values - The optimized output parameters for your run. They have to be matched onto the pandas dataframe for regions and their respective ion channel.
 
 ---
-## Pipe
-![Pipe](./docs/figures/Pipeline.pdf)
-
---verbose
-![Implementation](./docs/figures/Implementation.pdf)
-
----
 ## TODO's are partly the following:
 
 - Licensing
@@ -97,3 +90,15 @@ Two folders will be created in /neuzy/paropt/datadump.
   - ...
 - ...
 
+---
+## Donate
+
+Feel free to donate if you want to support me :)
+
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="5Q5JDX5GB2UD4" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
+---
