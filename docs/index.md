@@ -1,7 +1,13 @@
 # Neuzy
 
-Neuzy is a neuroscientific software framework to create a population of optimized single cell models.
-Optimization options are currently against somatic and backpropagating action potential features.
+Neuzy is a neuroscientific software framework to create a population of optimized single cell, multi compartment models.
+
+It uses HOC and NMODL files as input for the model and extracts automatically their respective ion channel parameters, which are to be updated.
+Optimization options are currently Nelder-Mead, L-BFGS-B or Conjugate Gradient. 
+
+Features to optimize are against somatic and backpropagating action potential features in depolarizing or hyperpolarizing potentials and depend on the given experimental data or baseline model.
+
+Features are extracted via eFEL: https://github.com/BlueBrain/eFEL
 
 Under the hood it is using the NEURON simulator: https://github.com/neuronsimulator/nrn
 
@@ -36,9 +42,8 @@ Accessibility is on the TODO.
 
 ## Quickstart:
 
-Start from the relative path in the downloaded ./neuzy repository (Root of the repository).
+Call any start file in the root of the repository.
 
-Call any start file.
 ```bash
 python3 start.py
 ```
@@ -61,13 +66,20 @@ Two folders will be created in /neuzy/paropt/datadump.
 2. parameter_values - The optimized output parameters for your run. They have to be matched onto the pandas dataframe for regions and their respective ion channel.
 
 ---
+## Pipe
+![Implementation](./docs/figures/Pipeline.pdf)
 
-### TODO's are partly the following:
+---
+## Pipe verbose
+![Implementation](./docs/figures/Implementation.pdf)
+
+---
+## TODO's are partly the following:
 
 - Licensing
 - Documentation
-- Improve code style
-- Accessibility for the general neuroscientist
+- Improve code style and OO
+- Accessibility for the general neuroscientist, i.e. less explicit source code configuration input for hyperparameters
 - Offer the option to test for multiple kinds of cell optimization, i.e. more features
 - Extend for:
   - Efficiency
@@ -85,3 +97,4 @@ Two folders will be created in /neuzy/paropt/datadump.
     - simulate neurotransmitter density in extracellular space
   - ...
 - ...
+
