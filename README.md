@@ -67,10 +67,9 @@ Two folders will be created in /neuzy/paropt/datadump.
 
 ---
 ## Pipe
-![Implementation](./docs/figures/Pipeline.pdf)
+![Pipe](./docs/figures/Pipeline.pdf)
 
----
-## Pipe verbose
+--verbose
 ![Implementation](./docs/figures/Implementation.pdf)
 
 ---
