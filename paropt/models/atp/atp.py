@@ -1,19 +1,22 @@
-import sys
+#### Neuzy
 
-sys.path.insert(1, './paropt/auxiliaries/')
-sys.path.insert(1, './paropt/models/')
+import sys, pathlib, csv, json
+
+PP = pathlib.Path(__file__).parent
+
+sys.path.insert(1, str(PP / '..' / '..' / 'auxiliaries/'))
+sys.path.insert(1, str(PP / '..'))     
+
+from constants import *
+import create_data
+import CompleteOptModel
+from Testingfinaldata import *
 
 from neuron import h
 from neuron.units import ms, mV
-from constants import *
-import create_data
-import autoclass
 from scipy.integrate import quad
 import numpy as np
-from testingfinaldata import *
-import json
 import pandas as pd
-import csv
 
 ## Initializing HocObject, 
 # can just take my autoclass, even though it does more than just initialization by initializing target data etc.
