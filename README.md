@@ -100,13 +100,9 @@ Two folders will be created in /neuzy/paropt/datadump.
 ---
 ## Donate
 
-Feel free to donate if you want to support me :)
+Feel free to [donate](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4) if you want to support me :)
 
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="5Q5JDX5GB2UD4" />
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
-</form>
+[Donation Link](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4)
 
 ---
 ## Documentation soon on https://neuzy.de
