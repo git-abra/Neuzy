@@ -22,7 +22,8 @@ if cwd.split("/")[-1] != "neuzy":
     print("It is very effective.")
     print("To counter, call Neuzy from the root of the package (e.g. 'home/user/downloads/Neuzy') and restart.")
 
-sys.path.insert(1, './paropt/figures/')
+
+sys.path.insert(1, './paropt/figures')
 sys.path.insert(1, './paropt/auxiliaries/')
 
 from copy import *
