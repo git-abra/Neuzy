@@ -2,11 +2,12 @@
 
 ## start/run
 import os, sys
-sys.path.insert(0, os.getcwd() + "/paropt/auxiliaries/")
+sys.path.insert(1, os.getcwd() + "/paropt/auxiliaries/")
 
 import logging as lg
 from constants import *
 from CompleteOptModel import CompleteOptModel
+from Testingfinaldata import *
 from mpi4py import MPI
 
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
                                     hippo_bAP = True,
                                     rank = rank)                                   #TODO Look Up
     
-    paroptmodel.line = 1
+    # paroptmodel.line = 1
     # testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
 
     paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization

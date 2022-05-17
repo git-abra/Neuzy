@@ -1,7 +1,7 @@
 import sys
 
-sys.path.insert(0, './paropt/auxiliaries/')
-sys.path.insert(0, './paropt/models/')
+sys.path.insert(1, './paropt/auxiliaries/')
+sys.path.insert(1, './paropt/models/')
 
 from neuron import h
 from neuron.units import ms, mV
@@ -17,7 +17,7 @@ import csv
 
 ## Initializing HocObject, 
 # can just take my autoclass, even though it does more than just initialization by initializing target data etc.
-atpmodel = autoclass.myAutoModel("To21_nap_strong_trunk_together.hoc",
+atpmodel = CompleteOptModel.CompleteOptModel("To21_nap_strong_trunk_together.hoc",
                                 target_feature_file = "somatic_target_features.json",
                                 template_name = None)
 
@@ -28,8 +28,8 @@ atp_list = []
 labels = [] 
 for i in range(1,214,1):   # range 1,11,1
     # object to hold the parameter vector of testdata
-    # testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = i)
-    testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/final_par.csv", line = i)
+    # testingfinaldata = TestingFinalData("./paropt/data/parameter_values/best10_par.csv", line = i)
+    testingfinaldata = TestingFinalData("./paropt/data/parameter_values/final_par.csv", line = i)
     testdata = testingfinaldata.testdata
 
     output_dict.update({"Model_" + str(i): {}})

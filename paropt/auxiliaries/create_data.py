@@ -167,7 +167,7 @@ def readTargetFeaturesJSON(file_name, file_path):
     return tf"""
 
 #print(efel.api.getFeatureNames())
-#somatic_features = readJSON(file_name = 'somatic_target_features.json', file_path = './paropt/datadump/features/target_features')
+#somatic_features = readJSON(file_name = 'somatic_target_features.json', file_path = './paropt/data/features/target_features')
 #print(somatic_features)
 
 def experimentalDataToDict(file_name = None, file_path = None):
