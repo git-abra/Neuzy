@@ -10,27 +10,17 @@
 ## TODO structure from functional relationships to object oriented and divide more functions, 
 
 ## Packages
-import time
-import warnings
-import os, sys
-import subprocess
+import sys, pathlib
 
+PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
+PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
 
+sys.path.insert(1, str(PP / '..' / 'figures'))
+sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call; sys.path[path/auxiliaries] needed for constants.py -> get pathnames like ROOTPATH
 
-# TODO find better pathing options
-cwd = os.getcwd()       # get call cwd
-if cwd.split("/")[-1] != "neuzy":
-    print("Error: A wild path error occurred. Path error uses 'wrong pathing' with path: " + cwd + ".") 
-    print("It is very effective.")
-    print("To counter, call Neuzy from the root of the package (e.g. 'home/user/downloads/Neuzy') and restart.")
-
-
-sys.path.insert(1, './paropt/figures')
-sys.path.insert(1, './paropt/auxiliaries/')
+import os, time, warnings, subprocess, csv, json
 
 from copy import *
-import csv
-import json
 import logging as lg
 import pathlib as pl
 import multiprocessing as mp
@@ -134,7 +124,7 @@ class CompleteOptModel():
         self.cvode_active = False           # Doesn't work because of EFEL X and Y axes "Assertion fired(efel/cppcore/Utils.cpp:33): X & Y have to have the same point count"
 
         ## Target Features from experimental data file
-        self.somatic_features_dict = experimentalDataToDict(file_name = target_feature_file, file_path = './paropt/data/features/target_features')         
+        self.somatic_features_dict = experimentalDataToDict(file_name = target_feature_file, file_path = str(PP / '..' / 'data' / 'features' / 'target_features'))         
         temp_list = []
         temp_hpol_list = []
         temp_dpol_list = []
@@ -169,7 +159,7 @@ class CompleteOptModel():
             
             if bap_target_file:         # If True, check if bAP Target Features are given with a file           # TODO
                 # TODO add ez json load
-                self.bAP_features_dict = experimentalDataToDict(file_name = bap_target_file, file_path = './paropt/data/features/target_features')
+                self.bAP_features_dict = experimentalDataToDict(file_name = bap_target_file, file_path = str(PP / '..' / 'data' / 'features' /' target_features'))
                 # TODO
             else:  # hardcoded crap
                 self.target_features['bAP_50um'] = {    'Step08' : { 'AP1_amp': {'Std': 3.84, 'Mean': 66.6474010216}, \
@@ -396,7 +386,7 @@ class CompleteOptModel():
                     print("E.g. all = new SectionList(); sectionname all.append()")
         except Exception as e:
             print("Couldn't read in sectionlists")
-            print("Please give your sectionlists as list or set the constant for self.sectionlist_list in ../Auxiliaries/constants.py")
+            print("Please give your sectionlists as list or set the constant for self.sectionlist_list in ../auxiliaries/constants.py")
             print("The template_name for a cell shall not contain a '.' .")
             print(e)
 
@@ -1389,7 +1379,7 @@ class CompleteOptModel():
         ## test single outputs
         if self.testing is True:
             testdata = testingfinaldata.testdata
-            #testdata = testSingleOutputs("./paropt/data/parameter_values/best10_par.csv")
+            #testdata = testSingleOutputs(PP_str + "../data/parameter_values/best10_par.csv")
             init_cost = self.calculateFitness(testdata, indices)    # indices stay the same for one model and could be an object property but not now xD
             print("\n")
             print("INITIAL COST FOR TESTING DATA DUE TO TESTING FLAG == TRUE:")
@@ -1401,7 +1391,7 @@ class CompleteOptModel():
 
     
         ## extract some initial values with parameter combination
-        """par_comb_df = pd.read_csv("./paropt/models/data.csv", dtype=np.float64)
+        """par_comb_df = pd.read_csv(PP_str + "/data.csv", dtype=np.float64)
         print(par_comb_df)
         par_comb = par_comb_df.to_numpy()
         par_comb = removeNans(par_comb[10])  
@@ -1703,7 +1693,7 @@ def main():
 ## TODO which feature_name causes which models maximum cost? In output - needed or just tedious? Integrated in runtime - done.
 
 if __name__ == '__main__':
-    subprocess.call(['sh', './start.sh'])       ## make sure to call it in bash from neuzy folder
+    subprocess.call(['sh', str(PP / '..' / '..' / 'start.sh')])       ## make sure to call it in bash from neuzy folder
 
 
 

@@ -13,8 +13,8 @@ import pathlib as pl
 
 ## Pathlib Paths
 
-ROOTPATH = pl.Path(__file__).parent / '..' / '..'
-FILEPATH = pl.Path(__file__).parent / 'my_file'
+ROOTPATH = pl.Path(__file__).parent / '..' / '..'  ## .. auxiliaries .. paropt .. /neuzy
+# FILEPATH = pl.Path(__file__).parent / ''
 
 CWDPATH = pl.Path.cwd()
 
