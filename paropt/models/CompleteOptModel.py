@@ -16,6 +16,7 @@ PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
 sys.path.insert(1, str(PP / '..' / 'figures'))
 sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call; sys.path[path/auxiliaries] needed for constants.py -> get pathnames like ROOTPATH
 
+from run_mpi import MPIrun
 import myplots
 from create_data import *
 from constants import *
@@ -39,7 +40,6 @@ class CompleteOptModel():
     """
     def __init__(self, 
                 model_name,
-                rank, 
                 modpath = None,                 # in constants.py if not given
                 hocpath = None,                 # in constants.py if not given
                 sectionlist_list = None, 
@@ -47,7 +47,7 @@ class CompleteOptModel():
                 target_feature_file = None,
                 bap_target_file = None,     
                 hippo_bAP = None,               # stricter on bAP optimization for hippounit
-                channelblocknames = None):       # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
+                channelblocknames = None):      # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
         """ 
         Constructor
         Parameters
@@ -61,8 +61,9 @@ class CompleteOptModel():
         """
         ## Model Properties and init
 
+
         self.model_name = model_name        # Standard Hoc model with morphology
-        self.rank = rank
+        self.rank = MPIrun.rank
 
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
