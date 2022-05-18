@@ -428,7 +428,8 @@ class PyModel(GenModel):
 
 
 class HippoModel():
-    """ Additional class to run HippoUnit tests """
+    """ 
+    Additional class to run HippoUnit tests
+    """
     def __init__():
-
         pass

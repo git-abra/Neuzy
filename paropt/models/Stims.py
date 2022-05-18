@@ -25,8 +25,7 @@ class SortOutStim(GenStim):      # Stim with function to sort out early - i.e. M
     docs for arguments tbc
     """
     def __init__(   self, delay:int, duration:int, tstop:int, cvode_active:bool,     # as input arguments for super() to genmodel parent
-                    delay_firstspike:int, duration_firstspike:int, tstop_firstspike:int,
-                    AP_firstspike:bool, bAP_firstspike:bool
+                    delay_firstspike:int = 50, duration_firstspike:int = 65, tstop_firstspike:int = 150,
                     ):
         super().__init__(delay, duration, tstop, cvode_active)
 
@@ -34,5 +33,6 @@ class SortOutStim(GenStim):      # Stim with function to sort out early - i.e. M
         self.delay_firstspike = delay_firstspike
         self.duration_firstspike = duration_firstspike
         self.tstop_firstspike = tstop_firstspike
+        
         self.AP_firstspike = False
         self.bAP_firstspike = False

@@ -5,11 +5,11 @@ import sys, pathlib, csv, json
 PP = pathlib.Path(__file__).parent
 
 sys.path.insert(1, str(PP / '..' / '..' / 'auxiliaries/'))
-sys.path.insert(1, str(PP / '..'))     
+sys.path.insert(1, str(PP / '..'))
 
 from constants import *
 import create_data
-import CompleteOptModel
+from CompleteOptModel import CompleteOptModel
 from Testingfinaldata import *
 
 from neuron import h
@@ -18,9 +18,13 @@ from scipy.integrate import quad
 import numpy as np
 import pandas as pd
 
+class ATPCalc():
+    def __init__(self):
+        pass
+    
 ## Initializing HocObject, 
 # can just take my autoclass, even though it does more than just initialization by initializing target data etc.
-atpmodel = CompleteOptModel.CompleteOptModel("To21_nap_strong_trunk_together.hoc",
+atpmodel = CompleteOptModel(   "To21_nap_strong_trunk_together.hoc",
                                 target_feature_file = "somatic_target_features.json",
                                 template_name = None)
 

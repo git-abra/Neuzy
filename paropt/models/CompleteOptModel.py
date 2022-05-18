@@ -37,16 +37,16 @@ class CompleteOptModel():
     """ 
     Full-fledged optimization and data creation class
     """
-    def __init__(self, 
-                model_name,
-                modpath = None,                 # in constants.py if not given
-                hocpath = None,                 # in constants.py if not given
-                sectionlist_list = None, 
-                template_name = None,           # from hoc begintemplate "template_name"
-                target_feature_file = None,
-                bap_target_file = None,     
-                hippo_bAP = None,               # stricter on bAP optimization for hippounit
-                channelblocknames = None):      # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
+    def __init__(   self, 
+                    model_name,
+                    modpath = None,                 # in constants.py if not given
+                    hocpath = None,                 # in constants.py if not given
+                    sectionlist_list = None, 
+                    template_name = None,           # from hoc begintemplate "template_name"
+                    target_feature_file = None,
+                    bap_target_file = None,     
+                    hippo_bAP = None,               # stricter on bAP optimization for hippounit
+                    channelblocknames = None):      # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
         """ 
         Constructor
         Parameters
@@ -1688,10 +1688,34 @@ def main():
 ## TODO which feature_name causes which models maximum cost? In output - needed or just tedious? Integrated in runtime - done.
 
 if __name__ == '__main__':
-    subprocess.call(['sh', str(PP / '..' / '..' / 'start.sh')])       ## make sure to call it in bash from neuzy folder
+    subprocess.call(['sh', str(PP / '..' / '..' / 'quickstart.sh')])       ## make sure to call it in bash from neuzy folder
 
+## Comment code for a rollback of this file. If output doesn't work, then uncomment.
+    """
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()          # current used core/process
+    cpucount = comm.Get_size()      # number of cores/processes
+    last_process = cpucount - 1
 
+    # Create Log files for up to 9999 different ones
+    for i in range(9999):
+        if os.path.exists(SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i)+ ".log"):
+            continue
+        else:
+            output_log_data = ((SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i) + ".log"))
+            break
 
+    lg.basicConfig(filename = output_log_data, level = lg.INFO) 
+
+    paroptmodel = CompleteOptModel (    model_name = "Roe22.hoc",                                #"To21_nap_strong_trunk_together.hoc", 
+                                        target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
+                                        template_name = None, 
+                                        hippo_bAP = True    )
+    paroptmodel.line = 1
+    testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
+
+    paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
+    """
 ###### Trivia #######
 
     ## Tested with completely different model, auto generated from cellbuilder in T2N. Worked. (before bAP adaptions and specifications on To21_M)

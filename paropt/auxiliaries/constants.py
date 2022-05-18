@@ -43,13 +43,11 @@ SAVEPATH_PLOTS = str(ROOTPATH / 'paropt' / 'figures' / 'outputs')
 ## Roe22
 SL_NAMES = ['somatic', 'axonal', 'apical', 'basal', "oblique_prox", "oblique_med", "oblique_dist", "trunk_prox", "trunk_med", "trunk_dist"]  
 
-
 ## To21 stuff
 #SL_NAMES = ['somatic', 'axonal', 'trunk_prox', 'trunk_med', 'trunk_dist', "oblique_prox", "oblique_med", "oblique_dist", 'tuft', 'basal']          ## To21_adapted  # 'trunk'
 #SL_NAMES = ['somatic', 'axonal', 'apical', 'basal']  # To21_onlyapic_strong.hoc
 #SL_NAMES = ['somatic', 'axonal', 'apical', 'basal', "trunk_prox", "trunk_med"]  # To21_nap_strong_trunk_together.hoc
 #SL_NAMES = ['regsoma', 'regbasal', 'regtrunk', 'regperitrunk', 'regapical']  ## HUARTIF Model - Different morphology to test if my program with automatic extractions runs for everything, Success! 
-
 
 # Depcrecated extracting automatically
 """INITIAL_VALUES = [  0.0075, 0.001, 0.0015, 0.035, 0.0005, 2.2618914062501833e-06, 5e-05, 0.0015, 4.482009710899852e-05, 115.3957607556371, 

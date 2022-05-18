@@ -14,9 +14,11 @@ class Parallizer():
     def __init__(self):
         pass
 
+
 class PlaceholderCls(Parallizer):
     def __init__(self):
         pass
+
 
 class MPIpar(Parallizer):
     def __init__(self, populationsize:int = 100):
@@ -34,7 +36,7 @@ class MPIpar(Parallizer):
                 self.output_log_data = ((SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i) + ".log"))
                 break
 
-        lg.basicConfig(filename = output_log_data, level = lg.INFO) 
+        lg.basicConfig(filename = self.output_log_data, level = lg.INFO) 
     
     def run(self, model_name, target_feature_file, template_name, hippo_bAP):
         """ Missing Doc """

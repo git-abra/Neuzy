@@ -9,6 +9,10 @@ PP = pathlib.Path(__file__).parent # parent path on directory
 sys.path.insert(1, str(PP / '..' / 'paropt' / 'auxiliaries'))
 sys.path.insert(1, str(PP / '..' / 'paropt' / 'models'))
 
+from constants import *
+from create_data import *
+from CompleteOptModel import CompleteOptModel
+
 import pandas as pd
 from quantities import ms,mV,Hz
 from neuron import h
@@ -19,8 +23,6 @@ from hippounit.utils import ModelLoader
 class ModelLoader_parameters(ModelLoader):
     # TODO import functions from paropt/models classes
     def __init__(self, name = "model", mod_files_path = None):
-        """ Constructor. """
-        """ This class should be used with Jupyter notebooks"""
         super(ModelLoader_parameters, self).__init__(name=name, mod_files_path=mod_files_path)
 
         # self.parameters = self.readJSON(parameter_path)    # give Input from file
@@ -157,10 +159,7 @@ class ModelLoader_parameters(ModelLoader):
 
 
 
-
-
-
-        ## Manual way, if iterating won't work, just set them per index on setParameters():
+        ## Manual way, if iterating won't work, just set them per index in setParameters():
 
         """x = [float(i) for i in self.parameters]
         print(x)
