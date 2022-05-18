@@ -1,5 +1,5 @@
 from hippounit.utils import ModelLoader
-from hippounit.utils import ModelLoader_parameters
+from ModelLoader_parameters import ModelLoader_parameters
 from hippounit import tests
 
 from json2html import *
