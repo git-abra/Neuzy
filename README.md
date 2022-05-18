@@ -105,6 +105,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ---
+## Help
+The fastest way to receive support in case of problems is to open an issue on GitHub.
+
+---
 ## Donate
 
 Feel free to [donate](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4) if you want to support me :)
