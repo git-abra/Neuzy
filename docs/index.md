@@ -87,6 +87,22 @@ Two folders will be created in /neuzy/paropt/data
 - ...
 
 ---
+## License
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty ofn MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+---
+## Help
+The fastest way to receive support in case of problems is to open an issue on GitHub.
+
+---
 ## Donate
 
 Feel free to donate if you want to support me :)
