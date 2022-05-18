@@ -9,7 +9,7 @@ sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
 
 import logging as lg
 from constants import *
-from MPIrun import MPIrun
+from Parallizers import MPIpar
 from CompleteOptModel import CompleteOptModel
 
 

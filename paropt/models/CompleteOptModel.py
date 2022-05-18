@@ -16,7 +16,6 @@ PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
 sys.path.insert(1, str(PP / '..' / 'figures'))
 sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call; sys.path[path/auxiliaries] needed for constants.py -> get pathnames like ROOTPATH
 
-from run_mpi import MPIrun
 import myplots
 from create_data import *
 from constants import *
