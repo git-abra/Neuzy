@@ -30,7 +30,6 @@ class GenModel():           # General Model
         else:
             self.modpath = MODPATH          # use constant
 
-
         if channelblocknames:    # TODO print detected ionchnames in terminal, select which one by readline of the index by the user, then send the string to blockIonChannel()
             self.channelblocknames = channelblocknames
         else:
@@ -39,10 +38,9 @@ class GenModel():           # General Model
         self.target_feature_file = target_feature_file
         self.bap_target_file = bap_target_file
 
-
         self.hippo_bAP = hippo_bAP
         if self.hippo_bAP == True:   # Check for hippo_bAP Flag. If True then only a few bAP Features are used, analogue to HippoUnits extraction. This is due to a shortage in experimental data till today.
-            self.testHippoBAP()
+            self.createBAPTargets()
         else:
             self.hippo_bAP = False
             self.bAP_features_dict = None  
@@ -54,18 +52,17 @@ class GenModel():           # General Model
 
             self.target_features['bAP'] = self.bAP_features_dict
             self.bAP_features = self.bAP_dpol_features + self.bAP_hpol_features
-    
-        if verbose:
-            printVerbose()
-
-        self.loadNeuronScope()
-        self.readHocModel()
-        self.initializeCell()
 
         self.baselinemodel = None   # Able to set baseline model if wanted/necessary - lacks implementation yet
         self.ionchnames = None
 
         self.model_features = None # Placeholder for extended functions
+
+        self.loadNeuronScope()
+        self.createFeatureDict()
+
+        if verbose:
+            self.printVerbose()
 
     def createFeatureDict(self, ):
         ## Target Features from experimental data file
@@ -81,7 +78,6 @@ class GenModel():           # General Model
                 else:
                     temp_dpol_list.append(feature_name)
 
-
         self.somatic_hpol_features = list(dict.fromkeys(temp_hpol_list))                    # hyperpolarizing features
         self.somatic_dpol_features = list(dict.fromkeys(temp_dpol_list))                    # depolarizing features
         self.somatic_features = self.somatic_hpol_features + self.somatic_dpol_features
@@ -95,7 +91,8 @@ class GenModel():           # General Model
         self.target_features = {}
         self.target_features['Soma'] = self.somatic_features_dict 
 
-    def printVerbose(self):
+
+    def printVerbose(self):     # TODO find more natural way to call verbose with flag -v or --verbose
         ## Check Target Features
         print("\n")
         print("TARGET FEATURES:")
@@ -108,7 +105,8 @@ class GenModel():           # General Model
         print("bAP Features: ", self.bAP_features)
         print("\n")
 
-    def testHippoBAP(self):
+
+    def createBAPTargets(self):
         self.bAP_dpol_features  = ['AP1_amp', 'APlast_amp', 'Spikecount']
         self.bAP_hpol_features = []
         self.bAP_features = self.bAP_dpol_features + self.bAP_hpol_features   
@@ -174,17 +172,6 @@ class GenModel():           # General Model
             print("Mod files weren't able to load, check your pwd and if they are in your \
             'mods' folder and compiled.", e)
     
-    # Create cell
-    def initializeCell(self):
-        """ 
-        Create a Hoc Cell from template
-        """
-
-        self.mycell = self.createHocModel()      # Create cell "mycell" from template.
-
-        if self.channelblocknames:               # Block ion channels, if set.
-            self.blockIonChannel()
-
     def deleteCell(self):
         # Not sure if needed, I think I rather have to delete the cells in the neuron scope
         # But works to garbage collect old cells in RAM, as tested experimentally on total RAM usage.
@@ -201,8 +188,8 @@ class GenModel():           # General Model
         # short version
         if isinstance(self.channelblocknames, list):            # if multiple are given
             for element in self.channelblocknames: 
-                for sl in self.sectionlist_list:            
-                    inputsl = getattr(self.mycell, sl)           
+                for sl in self.sectionlist_list: 
+                    inputsl = getattr(self.mycell, sl) 
                     for sec in inputsl:
                         setattr(sec, element, 0)                # set to 0
         else:
@@ -233,6 +220,8 @@ class GenModel():           # General Model
                                 continue"""
 
 
+## Model with HOC as input
+
 class HocModel(GenModel):
     """
     Inherits from GenModel.
@@ -244,12 +233,12 @@ class HocModel(GenModel):
                     modpath = None,             # in constants.py if not given
                     target_feature_file = None, # in constants.py if not given
                     bap_target_file = None, 
-                    hippo_bAP = None,  
+                    hippo_bAP:bool = None,  
                     channelblocknames = None,   # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  
                     hocpath = None,             # in constants.py if not given
-                    sectionlist_list = None, 
+                    sectionlist_list:list = None, 
                     template_name = None,       # from hoc begintemplate "template_name") 
-                    parameterkeywords = None
+                    parameterkeywords:list = None
                     ):
         super().__init__(   model_name, 
                             modpath = None,             # in constants.py if not given
@@ -281,14 +270,14 @@ class HocModel(GenModel):
             self.parameterkeywords = ["bar"]    # List of parameter key words like "bar" for gbar active ion channels. You can basically choose anything from neuron's psection() density_mech dict.
                                                 # check for "bar", "tau", "pas" or whatever you want
 
+        self.readHocModel()
+        self.createHocModel()
+        self.initializeCell()
+
     def readHocModel(self):
         """
         Read in Hoc Model with h.xopen()
-        Parameters
-        ----------
-        self.model_name
         """
-        ## HOC Files
         try:
             HOCPATH_temp = pathlib.Path(self.hocpath)            # Pathlib object
             h.xopen(str(HOCPATH_temp / self.model_name))    # stringify pl object for concatenation with '/'
@@ -296,24 +285,9 @@ class HocModel(GenModel):
         except Exception as e:
             print("Hoc Morphology file wasn't able to load, check your pwd and if the morphology is in your 'morphos' folder.", e)
 
-
     def createHocModel(self):   # TODO automatically load READ-IN template in
         """
         Creates a cell from a template. Prerequisite is a read in Hoc Model
-    
-        Parameters
-        ----------
-        self.template_name
-
-        Returns
-        -------
-        cell : HocObject
-        """
-        """
-        if self.template_name == None: ## UNUSED, overwritten by class property -> template_name = None calls get_template_name()   
-            lg.info("No Template name was given. CA1_PC_Tomko will be initialized as the baseline of this project.")
-            cell = h.CA1_PC_Tomko()
-        else: # USED
         """
         print("Template name: " + str(self.template_name) + " found. Creating cell from Hoc..")
         lg.info("Template name: " + str(self.template_name) + " found. Creating cell from Hoc..")
@@ -321,6 +295,16 @@ class HocModel(GenModel):
         cell = getattr(h, self.template_name)(HOCPATH_temp / self.model_name)
 
         return cell
+
+    def initializeCell(self):
+        """ 
+        Create a Hoc Cell from template
+        """
+
+        self.mycell = self.createHocModel()      # Create cell "mycell" from template.
+
+        if self.channelblocknames:               # Block ion channels, if set.
+            self.blockIonChannel()
 
     def getSectionNames(self):
         """
@@ -356,7 +340,6 @@ class HocModel(GenModel):
             print(e)
 
         return df, mysecnamelist
-
 
     def getMechanismItems(self):
         """ Prerequisites: Read-in HocObject / HocObject in Scope 
@@ -419,7 +402,8 @@ class HocModel(GenModel):
         return x_nonan, indices
 
 
-
+## Model created in Python, without HOC as input.
+# Basically needs a lot of input or preformatted data to read-in, will see
 class PyModel(GenModel):
     """ 
     Inherits from GenModel.
@@ -441,8 +425,6 @@ class PyModel(GenModel):
                             channelblocknames = None # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back))
                             )
         pass
-
-
 
 
 class HippoModel():

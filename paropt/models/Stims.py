@@ -20,7 +20,7 @@ class GenStim():    # General Stim
         else:
             self.cvode_active = False  # Doesn't work because of EFEL X and Y axes "Assertion fired(efel/cppcore/Utils.cpp:33): X & Y have to have the same point count"
 
-class SortOutStim():      # Stim with function to sort out early - i.e. Models which are not throwing APs
+class SortOutStim(GenStim):      # Stim with function to sort out early - i.e. Models which are not throwing APs
     """
     docs for arguments tbc
     """
@@ -36,7 +36,3 @@ class SortOutStim():      # Stim with function to sort out early - i.e. Models w
         self.tstop_firstspike = tstop_firstspike
         self.AP_firstspike = False
         self.bAP_firstspike = False
-
-    
-
-    
