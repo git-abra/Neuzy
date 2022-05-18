@@ -5,10 +5,10 @@ class OptimizerC():
     Class, which consists of all optimization techniques and instantiation leads to 
     the selection of the optimization technique used.
     """
-    def __init__(self, x0, indices, method = "Nelder-Mead", bounds = False):
+    def __init__(self, x0, indices, method:str = "Nelder-Mead", bounds = False):
         """ constructor consisting of input vector x0 with the parameters to be optimized,
         indices to match them to their morphology and regions, bounds to """
-        self.method = method
+        self.method = method    # Choose from: "L-BFGS-B", "Nelder-Mead" or "CG"
         self.x0 = x0
         self.indices = indices
         self.bounds = bounds

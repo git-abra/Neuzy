@@ -222,7 +222,7 @@ class CompleteOptModel():
         # TODO create this one at start of runtime here by calling the initial methods for init data and features of target          
         
         # Specify Method
-        self.method = "Nelder-Mead" # Choose from: "L-BFGS-B", "Nelder-Mead" or "CG"
+        self.method = "Nelder-Mead" 
 
         self.init_cost_threshold = 2
         self.init_cost_optimizer_threshold = 5

@@ -51,17 +51,13 @@ otherwise via bash
 ```bash
 bash start.sh  
 ```
-or shell
-```
-sh start.sh
-```
 
 After calling, select how many CPU cores should be used in the command line.
 
 ---
 ## Output
 
-Two folders will be created in /neuzy/paropt/datadump.
+Two folders will be created in /neuzy/paropt/data
 1. log_files - Lists some logging information for the models created while optimizing
 2. parameter_values - The optimized output parameters for your run. They have to be matched onto the pandas dataframe for regions and their respective ion channel.
 
