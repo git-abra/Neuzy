@@ -40,6 +40,8 @@ class CompleteOptModel():
     def __init__(self, 
                 model_name,
                 rank, 
+                comm,
+                cpucount,
                 modpath = None,                 # in constants.py if not given
                 hocpath = None,                 # in constants.py if not given
                 sectionlist_list = None, 
@@ -63,6 +65,8 @@ class CompleteOptModel():
 
         self.model_name = model_name        # Standard Hoc model with morphology
         self.rank = rank
+        self.comm = comm
+        self.cpucount = cpucount
 
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
@@ -1646,17 +1650,17 @@ class CompleteOptModel():
                 print(str(i) + " results read in output file.")
                 lg.info(str(i) + " results read in output file.")
   
-        final_funcost_list = comm.gather(out_fun_list, root = 0)
-        final_output_list = comm.gather(out_par_list, root = 0)
-        final_rnd_out_list = comm.gather(init_rnd_par_list, root = 0)
-        counters = comm.gather(counter, root = 0)
+        final_funcost_list = self.comm.gather(out_fun_list, root = 0)
+        final_output_list = self.comm.gather(out_par_list, root = 0)
+        final_rnd_out_list = self.comm.gather(init_rnd_par_list, root = 0)
+        counters = self.comm.gather(counter, root = 0)
         end = time.time()
 
         if rank == 0:
             final_fun_list = []
             final_out_list = []
             final_rnd_list = []
-            for i in range(cpucount):
+            for i in range(self.cpucount):
                 final_fun_list = final_out_list + final_funcost_list[i]
                 final_out_list = final_out_list + final_output_list[i]
                 final_rnd_list = final_rnd_list + final_rnd_out_list[i]

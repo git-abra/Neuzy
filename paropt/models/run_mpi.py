@@ -43,7 +43,9 @@ if __name__ == '__main__':
                                     target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
                                     template_name = None, 
                                     hippo_bAP = True,
-                                    rank = rank)                                   #TODO Look Up
+                                    rank = rank,
+                                    comm = comm,
+                                    cpucount = cpucount )                                   #TODO Look Up
     
     # paroptmodel.line = 1
     # testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
