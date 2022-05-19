@@ -1,6 +1,6 @@
 #### Neuzy
 
-class OptimizerC():     ## TODO inheritance
+class OptimizerC():     ## TODO inheritance # TODO need for inheritance, how?
     """
     Class, which consists of all optimization techniques and instantiation leads to 
     the selection of the optimization technique used.

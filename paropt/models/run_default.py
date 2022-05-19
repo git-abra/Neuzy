@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     fcalc1 = FitnessCalcSD()
 
-    opt1 = OptimizerC()
+    opt1 = OptimizerC("Nelder-Mead")         # TODO need for inheritance, how?
 
     ## Running default config
     run_instance1 = Runner()    # TODO check if classmethods are better
