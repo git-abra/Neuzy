@@ -45,8 +45,11 @@ if __name__ == '__main__':
 
 
     ## Running default config
-    run_instance1 = Runner()
+    run_instance1 = Runner()       # TODO check if classmethods are better
+
     run_instance1.run(par = mpi1, model = hoc1, stim = stim1, opt = opti1, calc = calc1)
+    ## call the functions
+    hoc1
 
     """
     mpi1.run(    model_name = "Roe22.hoc",                               #"To21_nap_strong_trunk_together.hoc", 

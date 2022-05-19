@@ -538,15 +538,15 @@ class CompleteOptModel():
             """
         print(df)
 
-    def sampleRecAround(self, 
-                        output_array, 
-                        out_fun, 
-                        indices, 
-                        multiplier = 1.05, 
-                        counter = 0,
-                        maxcounter = 0, 
-                        maxresults = 50,
-                        maxiter = 5000):
+    def sampleRecAround(    self, 
+                            output_array, 
+                            out_fun, 
+                            indices, 
+                            multiplier = 1.05, 
+                            counter = 0,
+                            maxcounter = 0, 
+                            maxresults = 50,
+                            maxiter = 5000):
 
         """ Function to sample recursively around till there is no more better result than the last best result
         Parameters
