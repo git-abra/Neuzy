@@ -17,7 +17,7 @@ from Parallizers import MPIpar          # Parallelization Class
 from HocModels import HocModel          # Model Class to read in HOC and have methods on the model
 from Stims import SortOutStim           # Stim protocol class
 from Calculations import FitnessCalcSD  # Calculations for Fitness
-from Optimizers import OptimizerC       # Optimizer
+from Optimizers import ScipyOpt         # Optimizer
 from Runners import Runner              # Run all objects in concatenation
 
 from CompleteOptModel import CompleteOptModel
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     fcalc1 = FitnessCalcSD()
 
-    opt1 = OptimizerC("Nelder-Mead")         # TODO need for inheritance, how?
+    opt1 = ScipyOpt("Nelder-Mead")         # TODO need for inheritance, how?
 
     ## Running default config
     run_instance1 = Runner()    # TODO check if classmethods are better

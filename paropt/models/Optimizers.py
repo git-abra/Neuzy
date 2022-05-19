@@ -1,13 +1,24 @@
 #### Neuzy
 
-class OptimizerC():     ## TODO inheritance # TODO need for inheritance, how?
+class GenOpt():     ## TODO inheritance # TODO need for inheritance, how?
     """
-    Class, which consists of all optimization techniques and instantiation leads to 
-    the selection of the optimization technique used.
+    Takes Model inputs. Instantiation leads to 
+    the selection of the optimization algorithm
+    """
+    def __init__(self):
+        pass
+
+class ScipyOpt(GenOpt):
+    """
+    Class for Scipy optimizer algorithm usage
     """
     def __init__(self, x0, indices, method:str = "Nelder-Mead", bounds = False):
-        """ constructor consisting of input vector x0 with the parameters to be optimized,
-        indices to match them to their morphology and regions, bounds to """
+        """ 
+        constructor consisting of input vector x0 with the parameters to be optimized,
+        indices to match them to their morphology and regions, bounds to 
+        """
+        super().__init__()
+        
         self.method = method    # Choose from: "L-BFGS-B", "Nelder-Mead" or "CG"
         self.x0 = x0
         self.indices = indices
@@ -130,4 +141,13 @@ class OptimizerC():     ## TODO inheritance # TODO need for inheritance, how?
                     return 2                                # int
 
         elif init_cost > self.init_cost_optimizer_threshold and init_cost != 10000:
-            return 3                         
+            return 3
+
+
+class DEAPOpt(GenOpt):
+    """
+    Choice for Evolutionary Algorithms, tbc
+    """
+    def __init__(self):
+        super().__init__()
+        pass
