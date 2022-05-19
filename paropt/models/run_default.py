@@ -11,10 +11,14 @@ sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
 
 import logging as lg
 from constants import *
-from Parallizers import MPIpar
-from Models import HocModel
-from Stims import SortOutStim
-from Runners import Runner
+
+## Classes
+from Parallizers import MPIpar          # Parallelization Class
+from HocModels import HocModel          # Model Class to read in HOC and have methods on the model
+from Stims import SortOutStim           # Stim protocol class
+from Calculations import FitnessCalcSD  # Calculations for Fitness
+from Optimizers import OptimizerC       # Optimizer
+from Runners import Runner              # Run all objects in concatenation
 
 from CompleteOptModel import CompleteOptModel
 
@@ -38,18 +42,17 @@ if __name__ == '__main__':
 
     stim1 = SortOutStim()
 
+    fcalc1 = FitnessCalcSD()
 
-    # TODO
-    # TODO
-    # TODO
-
+    opt1 = OptimizerC()
 
     ## Running default config
-    run_instance1 = Runner()       # TODO check if classmethods are better
+    run_instance1 = Runner()    # TODO check if classmethods are better
 
+    ## call the objects together in Runner.run() and print output files in it
     run_instance1.run(par = mpi1, model = hoc1, stim = stim1, opt = opti1, calc = calc1)
-    ## call the functions
-    hoc1
+
+    finalpar = run_instance1.finalParameters()
 
     """
     mpi1.run(    model_name = "Roe22.hoc",                               #"To21_nap_strong_trunk_together.hoc", 
@@ -59,6 +62,7 @@ if __name__ == '__main__':
     """
 
     # git test comment test only
+
 
     ## Extra - HippoUnit
 

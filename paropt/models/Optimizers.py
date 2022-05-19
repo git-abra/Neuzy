@@ -86,7 +86,6 @@ class OptimizerC():     ## TODO inheritance
             init_cost = self.calculateFitness(init_rnd_data, indices)     # 100 is target feature atm
 
 
-    
         ## extract some initial values with parameter combination
         """par_comb_df = pd.read_csv(PP_str + "/data.csv", dtype=np.float64)
         print(par_comb_df)
