@@ -19,6 +19,7 @@ sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call
 import myplots
 from create_data import *
 from constants import *
+from Testingfinaldata import TestingFinalData
 
 from copy import *
 import logging as lg
@@ -1377,8 +1378,9 @@ class CompleteOptModel():
 
         ## test single outputs
         if self.testing is True:
+            testingfinaldata = TestingFinalData("./paropt/data/parameter_values/data.csv", line = 1)
             testdata = testingfinaldata.testdata
-            #testdata = testSingleOutputs(PP_str + "../data/parameter_values/best10_par.csv")
+            # testdata = testSingleOutputs(PP_str + "../data/parameter_values/data.csv")
             init_cost = self.calculateFitness(testdata, indices)    # indices stay the same for one model and could be an object property but not now xD
             print("\n")
             print("INITIAL COST FOR TESTING DATA DUE TO TESTING FLAG == TRUE:")
@@ -1656,7 +1658,7 @@ class CompleteOptModel():
         counters = self.comm.gather(counter, root = 0)
         end = time.time()
 
-        if rank == 0:
+        if self.rank == 0:
             final_fun_list = []
             final_out_list = []
             final_rnd_list = []

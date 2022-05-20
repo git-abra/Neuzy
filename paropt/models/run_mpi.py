@@ -39,15 +39,15 @@ if __name__ == '__main__':
 
 
     # INIT
-    paroptmodel = CompleteOptModel (  model_name = "Roe22.hoc",                                          #"To21_nap_strong_trunk_together.hoc", 
-                                    target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
-                                    template_name = None, 
-                                    hippo_bAP = True,
-                                    rank = rank,
-                                    comm = comm,
-                                    cpucount = cpucount )                                   #TODO Look Up
+    paroptmodel = CompleteOptModel (    model_name = "Roe22.hoc",                                #"To21_nap_strong_trunk_together.hoc", 
+                                        target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
+                                        template_name = None, 
+                                        hippo_bAP = True,
+                                        rank = rank,
+                                        comm = comm,
+                                        cpucount = cpucount )                                   #TODO Look Up
     
     # paroptmodel.line = 1
-    # testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
+    # testingfinaldata = TestingFinalData("./paropt/data/parameter_values/best10_par.csv", line = paroptmodel.line)
 
     paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
