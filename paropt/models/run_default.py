@@ -18,7 +18,8 @@ from HocModels import HocModel          # Model Class to read in HOC and have me
 from Stims import SortOutStim           # Stim protocol class
 from Calculations import FitnessCalcSD  # Calculations for Fitness
 from Optimizers import ScipyOpt         # Optimizer
-from Runners import Runner              # Run all objects in concatenation
+
+from Simulations import GenSim          # Run all objects in concatenation
 
 from CompleteOptModel import CompleteOptModel
 
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     opt1 = ScipyOpt("Nelder-Mead")         # TODO need for inheritance, how?
 
     ## Running default config
-    run_instance1 = Runner()    # TODO check if classmethods are better
+    run_instance1 = GenSim()    # TODO check if classmethods are better
 
     ## call the objects together in Runner.run() and print output files in it
     run_instance1.run(par = mpi1, model = hoc1, stim = stim1, opt = opti1, calc = calc1)
