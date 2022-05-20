@@ -1506,7 +1506,6 @@ class CompleteOptModel():
                 init_data, indices = self.getMechanismItems()  # Initial Conductances for new cell
                 # print(init_data)
 
-                        
             ############Run#################################
             output = self.runOptimizer(init_data, indices) #
             ############Run#################################

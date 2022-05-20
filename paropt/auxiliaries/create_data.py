@@ -17,26 +17,6 @@ import numpy as np
 from constants import *
 import efel
 
-
-def get_template_name(model_name):
-    """Find the template name from hoc_string
-
-    Note: this will fail if there is a begintemplate in a `/* */` style
-    comment before the real begintemplate
-    """
-    with open(HOCPATH + '/' + model_name) as hoc_file:
-        hoc_string = hoc_file.read()
-    for i, line in enumerate(hoc_string.split('\n')):
-        if 'begintemplate' in line:
-            line = line.strip().split()
-            assert line[0] == 'begintemplate', \
-                'begintemplate must come first, line %d' % i
-            template_name = line[1]
-            return template_name
-    else:
-        raise Exception('Could not find begintemplate and therefore template_name in hoc file')
-    return template_name
-
 def getNans(x):
     indices = np.argwhere(np.isnan(x)).flatten()
     return indices

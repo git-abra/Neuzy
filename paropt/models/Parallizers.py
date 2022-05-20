@@ -37,53 +37,13 @@ class MPIpar(Parallizer):
                 break
 
         lg.basicConfig(filename = self.output_log_data, level = lg.INFO) 
-    
+
+    def concat(self):
 
 
-    def run(self, model_name, target_feature_file, template_name, hippo_bAP):
-        """ Missing Doc """
-        newmodel = HocModel(model_name)
-        runmodel = HOC
-        paroptmodel = CompleteOptModel (    model_name = "Roe22.hoc",                                #"To21_nap_strong_trunk_together.hoc", 
-                                            target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
-                                            template_name = None, 
-                                            hippo_bAP = True    )
-    
-    def testData(self):
-        # TODO
-        paroptmodel.line = 1
-        testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
-
-        paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
-
-    def run(self, cell_destination_size, testing = None):
-        if testing:
-            self.testing = True
-        else:
-            self.testing = False
-
-        ## Creating output files as variables to append outputs/results
-        # Standard output of regular optimized results
-        for i in range(9999):
-            if os.path.exists(SAVEPATH_PAR + "/output_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/output_fun_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_output_par_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_fun_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_best_output_par_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_best_fun_data_sim_" + str(i) + ".csv"):
-                continue
-            else:
-                self.output_csv_data = (SAVEPATH_PAR + "/output_data_sim_" + str(i) + ".csv")
-                self.output_csv_fun_data = (SAVEPATH_PAR + "/output_fun_data_sim_" + str(i) + ".csv")
-                 # Results after sampling
-                self.sample_output_csv_par_data = (SAVEPATH_PAR + "/sample_output_par_data_sim_" + str(i) + ".csv")
-                self.sample_output_csv_fun_data = (SAVEPATH_PAR + "/sample_fun_data_sim_" + str(i) + ".csv")
-                # Best sampling results
-                self.sample_best_output_csv_par_data = (SAVEPATH_PAR + "/sample_best_output_par_data_sim_" + str(i) + ".csv")
-                self.sample_best_output_csv_fun_data = (SAVEPATH_PAR + "/sample_best_fun_data_sim_" + str(i) + ".csv")
-                break
-            
-        start = time.time()   
+    def (self, cell_destination_size, testing = None):
+        
+           
         counter = 0
         successcounter = 0 
         out_fun_list = []  
@@ -91,11 +51,11 @@ class MPIpar(Parallizer):
         out_par_list = []    
         i = 0
 
-        while i <= cell_destination_size:
+        while i <= self.cell_destination_size:
             counter = counter + 1
 
-            self.AP_firstspike = False
-            self.bAP_firstspike = False  
+            self.AP_firstspike = False      # reset AP_firstspike
+            self.bAP_firstspike = False     # reset bAP_firstspike
 
             print("Cell number " + str(counter) + " on rank number " + str(self.rank))
 
@@ -131,7 +91,7 @@ class MPIpar(Parallizer):
 
                         
             ############Run#################################
-            output = self.runOptimizer(init_data, indices) #
+            output = self.runOptimizer(init_data, indices) #   # output of optimizers
             ############Run#################################
 
             if isinstance(output, int) and output == 1:
@@ -228,3 +188,13 @@ class MPIpar(Parallizer):
             writeJSON(SAVEPATH_PAR, 'OUTPUT_OUT_PAR_LIST.json', final_out_list)
             writeJSON(SAVEPATH_PAR, 'OUTPUT_RND_PAR_LIST.json', final_rnd_list)
             writeJSON(SAVEPATH_PAR, 'OUTPUT_COSTS_LIST.json', final_fun_list)
+
+
+
+
+    def testData(self):
+        # TODO
+        paroptmodel.line = 1
+        testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
+
+        paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization

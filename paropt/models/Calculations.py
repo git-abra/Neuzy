@@ -4,8 +4,13 @@
 class GenCalc():
     """
     Class for Fitness Calculations
+
+    Parameters
+    ----------
+    hocmodel: Object of HOCModel
+    pymodel: object of PyModel
     """
-    def __init__(self):
+    def __init__(self, hocmodel, pymodel):
         #
         # placeholder for calculation variables if needed in extension
         #
@@ -122,8 +127,8 @@ class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominat
     calculating fitness with averaging feature values 
     in terms of standard deviation.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, hocmodel, pymodel):
+        super().__init__(hocmodel, pymodel)
 
         ## TODO
         """

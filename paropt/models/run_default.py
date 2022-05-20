@@ -31,6 +31,7 @@ if __name__ == '__main__':
 
     mpi1 = MPIpar(populationsize = 100)      # MPIrun object, 100 cells to generate
 
+
     hoc1 = HocModel(
                         model_name = "Roe22.hoc", 
                         modpath = None,
@@ -40,10 +41,15 @@ if __name__ == '__main__':
                         channelblocknames = False,               # Run it with CompleteOptModel
                         verbose = True
                         )
+    # hoc1.mycell is now the hocobject property of hoc1 object.
+    # hoc1 describes the object of the instantiated meta files and properties.
+    # hoc1.mycell describes the instantiated hocobject with its extracted properties from hoc file
+
+    hoc1.getSectionNames
 
     stim1 = SortOutStim()
 
-    fcalc1 = FitnessCalcSD()
+    fcalc1 = FitnessCalcSD(hoc1)
 
     opt1 = ScipyOpt("Nelder-Mead")         # TODO need for inheritance, how?
 

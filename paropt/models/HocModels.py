@@ -41,7 +41,7 @@ class HocModel(GenModel):
         if template_name:
             self.template_name = template_name
         else:
-            self.template_name = get_template_name(model_name)
+            self.getTemplateName()
             print("Extracted template_name: " + str(self.template_name) + ", because no template_name was given.")
             lg.info("Extracted template_name: " + str(self.template_name) + ", because no template_name was given.")
 
@@ -52,8 +52,25 @@ class HocModel(GenModel):
                                                 # check for "bar", "tau", "pas" or whatever you want
 
         self.readHocModel()
-        self.createHocModel()
-        self.initializeCell()
+        self.initializeCell()     # calls createHocModel for cell
+
+    def getTemplateName(self):
+        """
+        Find the template name from hoc_string
+        Note: this will fail if there is a begintemplate in a `/* */` style
+        comment before the real begintemplate
+        # Source: BluePyOpt
+        """
+        with open(HOCPATH + '/' + self.model_name) as hoc_file:
+            hoc_string = hoc_file.read()
+        for i, line in enumerate(hoc_string.split('\n')):
+            if 'begintemplate' in line:
+                line = line.strip().split()
+                assert line[0] == 'begintemplate', \
+                    'begintemplate must come first, line %d' % i
+                self.template_name = line[1]
+            else:
+                raise Exception('Could not find begintemplate and therefore template_name in hoc file')
 
     def readHocModel(self):
         """
@@ -114,6 +131,7 @@ class HocModel(GenModel):
                     print("Seems like there is no best practice Sectionlist called: 'all', specified in your model.")
                     print("If you want to fix this problem, provide a SectionList for the program or add your sections to 'all' in your Hoc.")
                     print("E.g. all = new SectionList(); sectionname all.append()")
+                    print(e)
         except Exception as e:
             print("Couldn't read in sectionlists")
             print("Please give your sectionlists as list or set the constant for self.sectionlist_list in ../auxiliaries/constants.py")
@@ -142,6 +160,7 @@ class HocModel(GenModel):
             mechname_list.append(mname[0])
             #print(mechname_list)
        
+       # TODO code style
         if self.sectionlist_list:
             for sl in self.sectionlist_list:        
                 inputsl = getattr(self.mycell, sl)
@@ -172,9 +191,11 @@ class HocModel(GenModel):
             pass  
         
         df = pd.DataFrame(myionsdict)     # 2D of Ionchannel Values per SectionList  # Not used, but better keep it
+
         #print("INITIAL DATA: ")
         #print("\n")
         #print(df)
+        
         self.ionchnames = list(df.index)
         x = convertDfTo1D(df)             # 1D array of Df , with Nans
         indices = getNans(x)
