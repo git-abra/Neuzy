@@ -70,9 +70,8 @@ Two folders will be created in /neuzy/paropt/data
 ---
 ## TODO's are partly the following:
 
-- Licensing
 - Documentation
-- Improve code style and OO
+- General improvements
 - Accessibility for the general neuroscientist, i.e. less explicit source code configuration input for hyperparameters
 - Offer the option to test for multiple kinds of cell optimization, i.e. more features
 - Extend for:
@@ -108,12 +107,3 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Help
 The fastest way to receive support in case of problems is to open an issue on GitHub.
 
----
-## Donate
-
-Feel free to [donate](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4) if you want to support me :)
-
-[Donation Link](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4)
-
----
-## Documentation soon on https://neuzy.de

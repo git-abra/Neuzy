@@ -5,7 +5,7 @@ Neuzy is a neuroscientific software framework to create a population of optimize
 It uses HOC and NMODL files as input for the model and extracts automatically their respective ion channel parameters, which are to be updated.
 Optimization options are currently Nelder-Mead, L-BFGS-B or Conjugate Gradient. 
 
-Features to optimize are against somatic and backpropagating action potential features in depolarizing or hyperpolarizing potentials and depend on the given experimental data or baseline model.
+Features to optimize are against somatic and backpropagating action potential features in depolarizing or hyperpolarizing currents and depend on the given experimental data or baseline model.
 
 Features are extracted via eFEL: https://github.com/BlueBrain/eFEL
 
@@ -64,9 +64,8 @@ Two folders will be created in /neuzy/paropt/data
 ---
 ## TODO's are partly the following:
 
-- Licensing
 - Documentation
-- Improve code style and OO
+- General improvements
 - Accessibility for the general neuroscientist, i.e. less explicit source code configuration input for hyperparameters
 - Offer the option to test for multiple kinds of cell optimization, i.e. more features
 - Extend for:
@@ -101,16 +100,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ---
 ## Help
 The fastest way to receive support in case of problems is to open an issue on GitHub.
-
----
-## Donate
-
-Feel free to donate if you want to support me :)
-
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="5Q5JDX5GB2UD4" />
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
-</form>
 
 ---
