@@ -19,6 +19,7 @@ sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call
 import myplots
 from create_data import *
 from constants import *
+from Testingfinaldata import TestingFinalData
 
 from copy import *
 import logging as lg
@@ -37,6 +38,7 @@ class CompleteOptModel():
     """ 
     Full-fledged optimization and data creation class
     """
+<<<<<<< HEAD
     def __init__(   self, 
                     model_name,
                     modpath = None,                 # in constants.py if not given
@@ -47,6 +49,21 @@ class CompleteOptModel():
                     bap_target_file = None,     
                     hippo_bAP = None,               # stricter on bAP optimization for hippounit
                     channelblocknames = None):      # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
+=======
+    def __init__(self, 
+                model_name,
+                rank, 
+                comm,
+                cpucount,
+                modpath = None,                 # in constants.py if not given
+                hocpath = None,                 # in constants.py if not given
+                sectionlist_list = None, 
+                template_name = None,           # from hoc begintemplate "template_name"
+                target_feature_file = None,
+                bap_target_file = None,     
+                hippo_bAP = None,               # stricter on bAP optimization for hippounit
+                channelblocknames = None):       # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
+>>>>>>> main
         """ 
         Constructor
         Parameters
@@ -62,7 +79,13 @@ class CompleteOptModel():
 
 
         self.model_name = model_name        # Standard Hoc model with morphology
+<<<<<<< HEAD
         self.rank = MPIrun.rank
+=======
+        self.rank = rank
+        self.comm = comm
+        self.cpucount = cpucount
+>>>>>>> main
 
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
@@ -1373,8 +1396,9 @@ class CompleteOptModel():
 
         ## test single outputs
         if self.testing is True:
+            testingfinaldata = TestingFinalData("./paropt/data/parameter_values/data.csv", line = 1)
             testdata = testingfinaldata.testdata
-            #testdata = testSingleOutputs(PP_str + "../data/parameter_values/best10_par.csv")
+            # testdata = testSingleOutputs(PP_str + "../data/parameter_values/data.csv")
             init_cost = self.calculateFitness(testdata, indices)    # indices stay the same for one model and could be an object property but not now xD
             print("\n")
             print("INITIAL COST FOR TESTING DATA DUE TO TESTING FLAG == TRUE:")
@@ -1645,17 +1669,17 @@ class CompleteOptModel():
                 print(str(i) + " results read in output file.")
                 lg.info(str(i) + " results read in output file.")
   
-        final_funcost_list = comm.gather(out_fun_list, root = 0)
-        final_output_list = comm.gather(out_par_list, root = 0)
-        final_rnd_out_list = comm.gather(init_rnd_par_list, root = 0)
-        counters = comm.gather(counter, root = 0)
+        final_funcost_list = self.comm.gather(out_fun_list, root = 0)
+        final_output_list = self.comm.gather(out_par_list, root = 0)
+        final_rnd_out_list = self.comm.gather(init_rnd_par_list, root = 0)
+        counters = self.comm.gather(counter, root = 0)
         end = time.time()
 
-        if rank == 0:
+        if self.rank == 0:
             final_fun_list = []
             final_out_list = []
             final_rnd_list = []
-            for i in range(cpucount):
+            for i in range(self.cpucount):
                 final_fun_list = final_out_list + final_funcost_list[i]
                 final_out_list = final_out_list + final_output_list[i]
                 final_rnd_list = final_rnd_list + final_rnd_out_list[i]

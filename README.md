@@ -70,9 +70,8 @@ Two folders will be created in /neuzy/paropt/data
 ---
 ## TODO's are partly the following:
 
-- Licensing
 - Documentation
-- Improve code style and OO
+- General improvements
 - Accessibility for the general neuroscientist, i.e. less explicit source code configuration input for hyperparameters
 - Offer the option to test for multiple kinds of cell optimization, i.e. more features
 - Extend for:
@@ -95,6 +94,7 @@ Two folders will be created in /neuzy/paropt/data
 ---
 ## License
 Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
+<<<<<<< HEAD
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -110,10 +110,18 @@ The fastest way to receive support in case of problems is to open an issue on Gi
 
 ---
 ## Donate
+=======
+>>>>>>> main
 
-Feel free to [donate](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4) if you want to support me :)
-
-[Donation Link](https://www.paypal.com/donate/?hosted_button_id=5Q5JDX5GB2UD4)
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ---
-## Documentation soon on https://neuzy.de
+## Help
+The fastest way to receive support in case of problems is to open an issue on GitHub.
+
