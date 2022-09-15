@@ -1,3 +1,5 @@
+![GitHub repo size in bytes](https://img.shields.io/github/repo-size/fanantenana-dev/neuzy.svg?style=for-the-badge)
+
 # Neuzy
 
 Neuzy (https://neuzy.de) is a neuroscientific software framework to create a population of optimized single cell, multi compartment models.
