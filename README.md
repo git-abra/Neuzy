@@ -1,4 +1,6 @@
-![GitHub repo size in bytes](https://img.shields.io/github/repo-size/fanantenana-dev/neuzy.svg?style=for-the-badge)
+![GitHub top language](https://img.shields.io/github/languages/top/fanantenana-dev/neuzy.svg?style=for-the-badge)
+![GitHub license](https://img.shields.io/github/license/fanantenana-dev/neuzy.svg?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/fanantenana-dev/neuzy.svg?style=for-the-badge)
 
 # Neuzy
 
