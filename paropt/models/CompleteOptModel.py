@@ -38,18 +38,6 @@ class CompleteOptModel():
     """ 
     Full-fledged optimization and data creation class
     """
-<<<<<<< HEAD
-    def __init__(   self, 
-                    model_name,
-                    modpath = None,                 # in constants.py if not given
-                    hocpath = None,                 # in constants.py if not given
-                    sectionlist_list = None, 
-                    template_name = None,           # from hoc begintemplate "template_name"
-                    target_feature_file = None,
-                    bap_target_file = None,     
-                    hippo_bAP = None,               # stricter on bAP optimization for hippounit
-                    channelblocknames = None):      # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
-=======
     def __init__(self, 
                 model_name,
                 rank, 
@@ -63,7 +51,6 @@ class CompleteOptModel():
                 bap_target_file = None,     
                 hippo_bAP = None,               # stricter on bAP optimization for hippounit
                 channelblocknames = None):       # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
->>>>>>> main
         """ 
         Constructor
         Parameters
@@ -79,13 +66,9 @@ class CompleteOptModel():
 
 
         self.model_name = model_name        # Standard Hoc model with morphology
-<<<<<<< HEAD
-        self.rank = MPIrun.rank
-=======
         self.rank = rank
         self.comm = comm
         self.cpucount = cpucount
->>>>>>> main
 
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
