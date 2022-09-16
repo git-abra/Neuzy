@@ -1,3 +1,7 @@
+![GitHub top language](https://img.shields.io/github/languages/top/fanantenana-dev/neuzy.svg?style=for-the-badge)
+![GitHub license](https://img.shields.io/github/license/fanantenana-dev/neuzy.svg?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/fanantenana-dev/neuzy.svg?style=for-the-badge)
+
 # Neuzy
 
 Neuzy (https://neuzy.de) is a neuroscientific software framework to create a population of optimized single cell, multi compartment models.
@@ -106,3 +110,4 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ---
 ## Help
 The fastest way to receive support in case of problems is to open an issue on GitHub.
+
