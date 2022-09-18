@@ -1,14 +1,21 @@
 #### Neuzy
 
+from neuron import h
+import sys, os, pathlib
+import pandas as pd
+import numpy as np
+
 from Models import GenModel
+
+PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
+PP_str = str(PP)    
+
+sys.path.insert(1, str(PP/'..'))
+
+import auxiliaries.constants as constants
 
 ## Model with HOC as input
 class HocModel(GenModel):
-    """
-    Inherits from GenModel.
-    HocModel to create a Model automatically from 
-    extracting information out of an existing HOC model 
-    """
     def __init__(   self,
                     model_name, 
                     modpath = None,             # in constants.py if not given
@@ -21,6 +28,11 @@ class HocModel(GenModel):
                     template_name = None,       # from hoc begintemplate "template_name") 
                     parameterkeywords:list = None
                     ):
+        """
+        Inherits from GenModel.
+        HocModel to create a Model automatically from 
+        extracting information out of an existing HOC model 
+        """
         super().__init__(   modpath = None,             # in constants.py if not given
                             target_feature_file = None, # in constants.py if not given
                             bap_target_file = None, 
@@ -31,12 +43,12 @@ class HocModel(GenModel):
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
-            self.sectionlist_list = SL_NAMES       # use constant
+            self.sectionlist_list = constants.SL_NAMES       # use constant
 
         if hocpath:
             self.hocpath = hocpath
         else:
-            self.hocpath = HOCPATH          # use constant
+            self.hocpath = constants.HOCPATH          # use constant
 
         if template_name:
             self.template_name = template_name
@@ -61,7 +73,7 @@ class HocModel(GenModel):
         comment before the real begintemplate
         # Source: BluePyOpt
         """
-        with open(HOCPATH + '/' + self.model_name) as hoc_file:
+        with open(constants.HOCPATH + '/' + self.model_name) as hoc_file:
             hoc_string = hoc_file.read()
         for i, line in enumerate(hoc_string.split('\n')):
             if 'begintemplate' in line:
@@ -317,3 +329,6 @@ class HocModel(GenModel):
                     return True
                 else:
                     return
+
+if __name__ == "__main__":
+    print(constants.HOCPATH)

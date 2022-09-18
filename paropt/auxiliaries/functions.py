@@ -7,15 +7,11 @@
 
 ## File to create Lists or Dictionaries from JSON data files to read in extractFeatures() for eFEL
 
-import json
-import os
-import sys
-
-import csv
+import json, os, csv
 import pathlib as pl
 import numpy as np
 from constants import *
-import efel
+
 
 def getNans(x):
     indices = np.argwhere(np.isnan(x)).flatten()

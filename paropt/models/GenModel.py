@@ -4,11 +4,16 @@
 # Child HOCModel is outsourced in HocModels.py
 
 import sys, pathlib
+from neuron import h
+import efel
+import numpy as np
+import pandas as pd
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
 
-from constants import *
+import constants as cs
+import functions as fnc
 
 class GenModel():           # General Model
     """ 
@@ -27,7 +32,7 @@ class GenModel():           # General Model
         if modpath:
             self.modpath = modpath
         else:
-            self.modpath = MODPATH          # use constant
+            self.modpath = cs.MODPATH          # use constant
 
         if channelblocknames:    # TODO print detected ionchnames in terminal, select which one by readline of the index by the user, then send the string to blockIonChannel()
             self.channelblocknames = channelblocknames
@@ -61,7 +66,7 @@ class GenModel():           # General Model
         self.loadNeuronScope()
         self.createFeatureDict()
 
-        if verbose:     # TODO do with flags
+        if verbose:  # TODO do with flags
             self.printVerbose()
 
     def loadNeuronScope(self):
@@ -86,7 +91,7 @@ class GenModel():           # General Model
             if self.modpath:
                 h.nrn_load_dll(self.modpath)
             else: 
-                h.nrn_load_dll(MODPATH)     # use constant: MODPATH
+                h.nrn_load_dll(cs.MODPATH)     # use constant: MODPATH
             print("Mod files are loaded in!")
         except Exception as e:
             print("Mod files weren't able to load, check your pwd and if they are in your \
@@ -95,7 +100,7 @@ class GenModel():           # General Model
     def deleteCell(self):
         # Not sure if needed, I think I rather have to delete the cells in the neuron scope
         # But works to garbage collect old cells in RAM, as tested experimentally on total RAM usage.
-        self.mycell = None
+        self.current_cell = None
 
     def blockIonChannel(self):
         #### Block Ion Channel for Pharmacodynamics Testing - bandaid gbar to 0
@@ -109,12 +114,12 @@ class GenModel():           # General Model
         if isinstance(self.channelblocknames, list):            # if multiple are given
             for element in self.channelblocknames: 
                 for sl in self.sectionlist_list: 
-                    inputsl = getattr(self.mycell, sl) 
+                    inputsl = getattr(self.current_cell, sl) 
                     for sec in inputsl:
                         setattr(sec, element, 0)                # set to 0
         else:
             for sl in self.sectionlist_list:            
-                inputsl = getattr(self.mycell, sl)           
+                inputsl = getattr(self.current_cell, sl)           
                 for sec in inputsl:
                     setattr(sec, self.channelblocknames, 0)     # set to 0
 
@@ -128,7 +133,7 @@ class GenModel():           # General Model
             mechname_list.append(mname[0]) 
 
         for sl in self.sectionlist_list:            
-            inputsl = getattr(self.mycell, sl)           
+            inputsl = getattr(self.current_cell, sl)           
             for sec in inputsl:
                 setattr(sec, self.channelblocknames, 0) 
                 for mech in sec.psection()['density_mechs'].keys():             
@@ -141,7 +146,7 @@ class GenModel():           # General Model
 
     def createFeatureDict(self):
         ## Target Features from experimental data file
-        self.somatic_features_dict = experimentalDataToDict(file_name = self.target_feature_file, file_path = str(PP / '..' / 'data' / 'features' / 'target_features'))         
+        self.somatic_features_dict = fnc.experimentalDataToDict(file_name = self.target_feature_file, file_path = str(PP / '..' / 'data' / 'features' / 'target_features'))         
         temp_list = []
         temp_hpol_list = []
         temp_dpol_list = []
@@ -446,34 +451,3 @@ class GenModel():           # General Model
         print("bAP Features: ", self.bAP_features)
         print("\n")
 
-## Model created in Python, without HOC as input.
-# Basically needs a lot of input or preformatted data to read-in, will see
-class PyModel(GenModel):
-    """ 
-    Inherits from GenModel.
-    PyModel to create a NEURON model in Python 
-    """
-    def __init__(   self, 
-                    model_name, 
-                    modpath = None,             # in constants.py if not given
-                    target_feature_file = None, # in constants.py if not given
-                    bap_target_file = None, 
-                    hippo_bAP = None,  
-                    channelblocknames = None  # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back)
-                    ):
-        super().__init__(   model_name, 
-                            modpath = None,             # in constants.py if not given
-                            target_feature_file = None, # in constants.py if not given
-                            bap_target_file = None, 
-                            hippo_bAP = None,  
-                            channelblocknames = None # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  (for the start, i couldve solved it differently, but pressure in the back))
-                            )
-        pass
-
-
-class HippoModel():
-    """ 
-    Additional class to run HippoUnit tests
-    """
-    def __init__():
-        pass

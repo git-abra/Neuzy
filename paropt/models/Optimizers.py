@@ -14,7 +14,7 @@ class ScipyOpt(GenOpt):
     """
     def __init__(self, x0, indices, method:str = "Nelder-Mead", bounds = False):
         """ 
-        constructor consisting of input vector x0 with the parameters to be optimized,
+        Constructor consisting of input vector x0 with the parameters to be optimized,
         indices to match them to their morphology and regions, bounds to 
         """
         super().__init__()

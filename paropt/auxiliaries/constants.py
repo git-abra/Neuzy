@@ -7,8 +7,6 @@
 
 ## File for global constants
 
-import os
-import sys
 import pathlib as pl
 
 ## Pathlib Paths
