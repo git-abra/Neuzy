@@ -7,7 +7,6 @@ from neuron import h
 from neuron.units import ms, mV
 import efel
 
-
 class GenStim():
     def __init__(   self, 
                     delay: int = 150, 

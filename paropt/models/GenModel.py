@@ -10,10 +10,10 @@ import numpy as np
 import pandas as pd
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
-sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
+sys.path.insert(1, str(PP / '..'))
 
-import constants as cs
-import functions as fnc
+import auxiliaries.constants as cs
+import auxiliaries.functions as fnc
 
 class GenModel():           # General Model
     """ 
@@ -50,10 +50,9 @@ class GenModel():           # General Model
             self.hippo_bAP = False
             self.bAP_features_dict = None  
             self.bAP_dpol_features  = ['AP1_amp', 'AP2_amp', 'APlast_amp', 'AP_amplitude', 'time_to_first_spike', 'time_to_second_spike', 'time_to_last_spike', \
-                                   'AP_rise_time', 'AP_rise_rate', 'AP_duration', 'AP_duration_half_width', 'Spikecount']
-            self.bAP_features = self.bAP_dpol_features + self.bAP_hpol_features   
+                                   'AP_rise_time', 'AP_rise_rate', 'AP_duration', 'AP_duration_half_width', 'Spikecount']   
 
-            self.getTargetFeatures()       # EXTRACTS Target Features with extractTargetFeatures() and therefore doesn't use given, but generates a set of target features based on a model which serves as reference
+            self.getTargetFeatures()  # EXTRACTS Target Features with extractTargetFeatures() and therefore doesn't use given, but generates a set of target features based on a model which serves as reference
 
             self.target_features['bAP'] = self.bAP_features_dict
             self.bAP_features = self.bAP_dpol_features + self.bAP_hpol_features
@@ -77,11 +76,7 @@ class GenModel():           # General Model
         self.modpath : Path to mod files. For multiple models add all their mod files into this folder. 
         Different but same-named mod files for different models have to be manually changed to not overwrite each other.
 
-        Returns
-        -------
-        void : No return value
-
-        // Note // In a future version there will probably be the option to create multiple modpaths, one for each model.   
+        // TODO In a future version there will probably be the option to create multiple modpaths, one for each model.   
         """
         ## Load Run Controls
         h.load_file('stdrun.hoc')  # define h.run() function ; not needed if "gui" is imported from neuron
@@ -146,8 +141,7 @@ class GenModel():           # General Model
 
     def createFeatureDict(self):
         ## Target Features from experimental data file
-        self.somatic_features_dict = fnc.experimentalDataToDict(file_name = self.target_feature_file, file_path = str(PP / '..' / 'data' / 'features' / 'target_features'))         
-        temp_list = []
+        self.somatic_features_dict = fnc.experimentalDataToDict(file_name = self.target_feature_file, file_path = str(PP / '..' / 'data' / 'features' / 'target_features'))
         temp_hpol_list = []
         temp_dpol_list = []
 
@@ -166,8 +160,8 @@ class GenModel():           # General Model
         self.bAP_hpol_features = []
         
         # TODO read dict elements (stepX: {})in depending on the step protocol given with self.stepamps
-        #print("\n")
-        #print("Target Features: ", self.target_features)
+        # print("\n")
+        # print("Target Features: ", self.target_features)
         self.target_features = {}
         self.target_features['Soma'] = self.somatic_features_dict 
 
@@ -188,7 +182,7 @@ class GenModel():           # General Model
         
         # TODO handle bAP differently - maybe split into two functions, one for bAP, one for somatic
         # i can stimulate everything, I just don't have to add the stepampname -0.4 to the dict, removing it at the last point
-        #print(traces_per_stepamp)
+        # print(traces_per_stepamp)
         traces = []
         traces_dict = {}
         for stepampname, locationtraces in traces_per_stepamp.items():              # -0,4 then 0.8, ... (then 1.0)
@@ -405,9 +399,9 @@ class GenModel():           # General Model
         self.bAP_hpol_features = []
         self.bAP_features = self.bAP_dpol_features + self.bAP_hpol_features   
         
-        if bap_target_file:         # If True, check if bAP Target Features are given with a file           # TODO
+        if self.bap_target_file:         # If True, check if bAP Target Features are given with a file           # TODO
             # TODO add ez json load
-            self.bAP_features_dict = experimentalDataToDict(file_name = bap_target_file, file_path = str(PP / '..' / 'data' / 'features' /' target_features'))
+            self.bAP_features_dict = fnc.experimentalDataToDict(file_name = self.bap_target_file, file_path = str(PP / '..' / 'data' / 'features' /' target_features'))
             # TODO
         else:  # hardcoded crap
             self.target_features['bAP_50um'] = {    'Step08' : { 'AP1_amp': {'Std': 3.84, 'Mean': 66.6474010216}, \

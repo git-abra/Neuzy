@@ -7,8 +7,11 @@
 
 ## File to create Lists or Dictionaries from JSON data files to read in extractFeatures() for eFEL
 
-import json, os, csv
-import pathlib as pl
+import json, os, csv, sys, pathlib
+
+PP = pathlib.Path(__file__).parent  # parent path on directory
+sys.path.insert(1, str(PP))
+
 import numpy as np
 from constants import *
 

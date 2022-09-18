@@ -19,7 +19,6 @@ sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call
 import myplots
 from create_data import *
 from constants import *
-from Testingfinaldata import TestingFinalData
 
 from copy import *
 import logging as lg
@@ -1379,7 +1378,7 @@ class CompleteOptModel():
 
         ## test single outputs
         if self.testing is True:
-            testingfinaldata = TestingFinalData("./paropt/data/parameter_values/data.csv", line = 1)
+            testingfinaldata = TestingCompleteModel("./paropt/data/parameter_values/data.csv", line = 1)
             testdata = testingfinaldata.testdata
             # testdata = testSingleOutputs(PP_str + "../data/parameter_values/data.csv")
             init_cost = self.calculateFitness(testdata, indices)    # indices stay the same for one model and could be an object property but not now xD
@@ -1718,7 +1717,7 @@ if __name__ == '__main__':
                                         template_name = None, 
                                         hippo_bAP = True    )
     paroptmodel.line = 1
-    testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
+    testingfinaldata = TestingCompleteModel("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
 
     paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
     """

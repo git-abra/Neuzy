@@ -1,54 +1,59 @@
 #### Neuzy
 
 from neuron import h
-import sys, os, pathlib
+import sys, pathlib, copy
 import pandas as pd
 import numpy as np
+import logging as lg
 
-from Models import GenModel
+from GenModel import GenModel
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 PP_str = str(PP)    
 
 sys.path.insert(1, str(PP/'..'))
 
-import auxiliaries.constants as constants
+import auxiliaries.constants as cs
+import auxiliaries.functions as fnc
 
 ## Model with HOC as input
 class HocModel(GenModel):
+    """
+    Inherits from GenModel.
+    HocModel to create a Model automatically from 
+    extracting information out of an existing HOC model 
+    """
     def __init__(   self,
                     model_name, 
                     modpath = None,             # in constants.py if not given
                     target_feature_file = None, # in constants.py if not given
                     bap_target_file = None, 
                     hippo_bAP:bool = None,  
-                    channelblocknames = None,   # has to be in the fullname format: "gkabar_kad" or "gbar_nax"  
+                    channelblocknames = None,   # has to be in the fullname format: "gkabar_kad" or "gbar_nax"
+                    verbose = False,  
                     hocpath = None,             # in constants.py if not given
-                    sectionlist_list:list = None, 
-                    template_name = None,       # from hoc begintemplate "template_name") 
-                    parameterkeywords:list = None
+                    sectionlist_list:list = None,   # adapt sectionlist to your model #TODO make a function to retrieve sectionlist names, and not only section names
+                    template_name = None,           # from hoc begintemplate "template_name" 
+                    parameterkeywords:list = None   # Parameter Keywords from psection() density mechs, which are to be used.              
                     ):
-        """
-        Inherits from GenModel.
-        HocModel to create a Model automatically from 
-        extracting information out of an existing HOC model 
-        """
         super().__init__(   modpath = None,             # in constants.py if not given
                             target_feature_file = None, # in constants.py if not given
                             bap_target_file = None, 
                             hippo_bAP = None,  
-                            channelblocknames = None  # has to be in the fullname format: "gkabar_kad" or "gbar_nax" 
+                            channelblocknames = None,  # has to be in the fullname format: "gkabar_kad" or "gbar_nax" 
+                            verbose = False
                             )
+
         self.model_name = model_name
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
-            self.sectionlist_list = constants.SL_NAMES       # use constant
+            self.sectionlist_list = cs.SL_NAMES       # use constant
 
         if hocpath:
             self.hocpath = hocpath
         else:
-            self.hocpath = constants.HOCPATH          # use constant
+            self.hocpath = cs.HOCPATH          # use constant
 
         if template_name:
             self.template_name = template_name
@@ -73,7 +78,7 @@ class HocModel(GenModel):
         comment before the real begintemplate
         # Source: BluePyOpt
         """
-        with open(constants.HOCPATH + '/' + self.model_name) as hoc_file:
+        with open(cs.HOCPATH + '/' + self.model_name) as hoc_file:
             hoc_string = hoc_file.read()
         for i, line in enumerate(hoc_string.split('\n')):
             if 'begintemplate' in line:
@@ -111,7 +116,7 @@ class HocModel(GenModel):
         Create a Hoc Cell from template
         """
 
-        self.mycell = self.createHocModel()      # Create cell "mycell" from template.
+        self.current_cell = self.createHocModel()      # Create cell "current_cell" from template.
 
         if self.channelblocknames:               # Block ion channels, if set.
             self.blockIonChannel()
@@ -127,7 +132,7 @@ class HocModel(GenModel):
         try:
             if self.sectionlist_list:
                 for sl in self.sectionlist_list:
-                    inputsl = getattr(self.mycell, sl)
+                    inputsl = getattr(self.current_cell, sl)
                     mysecnamelist = []
                     for sec in inputsl:
                         mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])     # maxsplit = 1 , take second element after '.'
@@ -137,7 +142,7 @@ class HocModel(GenModel):
                 # Use best practice "all" Sectionlist Keyword
                 try:       
                     mysecnamelist = []
-                    for sec in self.mycell.all:
+                    for sec in self.current_cell.all:
                         mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])
                 except Exception as e:
                     print("Seems like there is no best practice Sectionlist called: 'all', specified in your model.")
@@ -175,7 +180,7 @@ class HocModel(GenModel):
        # TODO code style
         if self.sectionlist_list:
             for sl in self.sectionlist_list:        
-                inputsl = getattr(self.mycell, sl)
+                inputsl = getattr(self.current_cell, sl)
                 myionsdict_temp = {}           
                 for sec in inputsl:     
                     for mech in sec.psection()['density_mechs'].keys():                  
@@ -209,16 +214,16 @@ class HocModel(GenModel):
         #print(df)
         
         self.ionchnames = list(df.index)
-        x = convertDfTo1D(df)             # 1D array of Df , with Nans
-        indices = getNans(x)
-        x_nonan = removeNans(x)
+        x = fnc.convertDfTo1D(df)             # 1D array of Df , with Nans
+        indices = fnc.getNans(x)
+        x_nonan = fnc.removeNans(x)
     
         return x_nonan, indices
 
 
     def updateHOCParameters(self, x, indices):
         """
-        updateHOCParameters() updates the instantiated HocObject cell, self.mycell.
+        updateHOCParameters() updates the instantiated HocObject cell, self.current_cell.
 
         Parameters
         ----------
@@ -235,13 +240,13 @@ class HocModel(GenModel):
         # could split into multiple functions to reassign the dataframe from 1D array to 2D with self.ionchnames which comes from SciPy - 
         # so I don't have to give self.ionchnames as additional argument for this function
          
-        x = insertNans(x, indices)      # Give Nans back
-        X = convert1DTo2DnpArr(x)       # Convert back to 2D array
+        x = fnc.insertNans(x, indices)      # Give Nans back
+        X = fnc.convert1DTo2DnpArr(x)       # Convert back to 2D array
         df = pd.DataFrame(X, index = self.sectionlist_list, columns = self.ionchnames).transpose()      # updated df # Reassign model-specific ordered ion channel names 
         # print(df)
         if self.sectionlist_list:
             for sl in self.sectionlist_list:   
-                inputsl = getattr(self.mycell, sl)
+                inputsl = getattr(self.current_cell, sl)
                 for sec in inputsl: 
                     test1_dict = copy(sec.psection()['density_mechs'])
                     for ionchname in self.ionchnames:       # just make sure that my ionchnames are fitting, could probably also do assertions here
@@ -294,7 +299,7 @@ class HocModel(GenModel):
             pass
             # TODO build for 1-column "all" sectionlist with fixed indices
             """
-            for sec in self.mycell.all:
+            for sec in self.current_cell.all:
                 for ionchname in self.ionchnames:
                         ionchnamekey = ionchname.split('_', 1)[1]
                         ionchnamekeykey = ionchname.split('_', 1)[0]
@@ -314,7 +319,7 @@ class HocModel(GenModel):
 
             ## TODO , could intialize the first self.model_features after instantiating the cell, to check for spikes and then throw it overboard before even calculating the fitness
 
-            self.updateAutoParameters(parameter_data, indices)                          # update "self.mycell" Cell with random values
+            self.updateAutoParameters(parameter_data, indices)                          # update "self.current_cell" Cell with random values
 
             if self.AP_firstspike and self.bAP_firstspike:
                 traces_per_stepamp, time_vec = self.stimulateIClamp()
@@ -331,4 +336,4 @@ class HocModel(GenModel):
                     return
 
 if __name__ == "__main__":
-    print(constants.HOCPATH)
+    pass

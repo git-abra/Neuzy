@@ -7,15 +7,16 @@
 
 import os, sys, pathlib
 
-import Models
+PP = pathlib.Path(__file__).parent  # parent path on directory
+sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
+
 import logging as lg
 import pandas as pd
 import numpy as np
 from mpi4py import MPI
 
-import auxiliaries as ax
-from CompleteOptModel import CompleteOptModel
-from Testingfinaldata import *
+import auxiliaries.constants as cs
+import auxiliaries.functions as fnc
 
 # TODO should replace this kind of path management soon
 PP = pathlib.Path(__file__).parent  # parent path on directory
@@ -48,16 +49,16 @@ class MPIpar(Parallizer):
 
         ## MPI properties
         self.comm = MPI.COMM_WORLD
-        self.rank = comm.Get_rank()          # current used core/process
-        self.cpucount = comm.Get_size()      # number of cores/processes
-        self.last_process = cpucount - 1
+        self.rank = self.comm.Get_rank()          # current used core/process
+        self.cpucount = self.comm.Get_size()      # number of cores/processes
+        self.last_process = self.cpucount - 1
 
         # Create Log files for up to 9999 different ones
         for i in range(9999):
-            if os.path.exists(ax.constants.SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i)+ ".log"):
+            if os.path.exists(cs.SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i)+ ".log"):
                 continue
             else:
-                self.output_log_data = ((ax.constants.SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i) + ".log"))
+                self.output_log_data = ((cs.SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i) + ".log"))
                 break
 
         lg.basicConfig(filename = self.output_log_data, level = lg.INFO) 
@@ -92,18 +93,18 @@ class MPIpar(Parallizer):
                 lg.info("First created Cell is used.")
 
                 init_data, indices = model.getMechanismItems()  # Initial Conductances # tested
-                init_output_data = insertNans(init_data, indices).tolist()
+                init_output_data = fnc.insertNans(init_data, indices).tolist()
 
-                outfile = pathlib.Path(ax.constants.SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
+                outfile = pathlib.Path(cs.SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
                 if outfile.is_file():
                     print("Initial Conductances already in a JSON file.")        
                     pass
                 else:
-                    X = ax.functions.convert1DTo2DnpArr(init_output_data)
+                    X = fnc.convert1DTo2DnpArr(init_output_data)
                     df = pd.DataFrame(X, index = self.sectionlist_list, columns = self.ionchnames).transpose()
                     print("Creating Initial Conductances - JSON file")
                     print(df)         
-                    writeJSON(SAVEPATH_PAR, 'INITIAL_CONDUCTANCES_LIST.json', init_output_data)   
+                    fnc.writeJSON(cs.SAVEPATH_PAR, 'INITIAL_CONDUCTANCES_LIST.json', init_output_data)   
 
             elif counter > 1 :
                 self.deleteCell()      # garbage collector deletion for ram
@@ -179,20 +180,20 @@ class MPIpar(Parallizer):
                 print(str(i) + " results read in output file.")
                 lg.info(str(i) + " results read in output file.")
   
-        final_funcost_list = comm.gather(out_fun_list, root = 0)
-        final_output_list = comm.gather(out_par_list, root = 0)
-        final_rnd_out_list = comm.gather(init_rnd_par_list, root = 0)
-        counters = comm.gather(counter, root = 0)
-        end = time.time()
+        final_funcost_list = self.comm.gather(out_fun_list, root = 0)
+        final_output_list = self.comm.gather(out_par_list, root = 0)
+        final_rnd_out_list = self.comm.gather(init_rnd_par_list, root = 0)
+        counters = self.comm.gather(counter, root = 0)
+        end = self.time.time()
 
-        if rank == 0:
-            final_fun_list = []
+        if self.rank == 0:
+            self.final_fun_list = []
             final_out_list = []
             final_rnd_list = []
-            for i in range(cpucount):
-                final_fun_list = final_out_list + final_funcost_list[i]
-                final_out_list = final_out_list + final_output_list[i]
-                final_rnd_list = final_rnd_list + final_rnd_out_list[i]
+            for i in range(self.cpucount):
+                self.final_fun_list = final_out_list + final_funcost_list[i]
+                self.final_out_list = final_out_list + final_output_list[i]
+                self.final_rnd_list = final_rnd_list + final_rnd_out_list[i]
 
             print("ELAPSED TIME: ", end - start, " seconds")
             print("COUNTER WHETHER ALL CELLS WERE TRIED IN EACH RANK: ", counters)
@@ -210,16 +211,6 @@ class MPIpar(Parallizer):
 
             # writeJSON(SAVEPATH_OUT_PAR, 'OUTPUT_OUT_PAR_LIST_NESTED.json', final_output_list)
             # writeJSON(SAVEPATH_OUT_PAR, 'OUTPUT_RND_PAR_LIST_NESTED.json', final_rnd_out_list)
-            writeJSON(SAVEPATH_PAR, 'OUTPUT_OUT_PAR_LIST.json', final_out_list)
-            writeJSON(SAVEPATH_PAR, 'OUTPUT_RND_PAR_LIST.json', final_rnd_list)
-            writeJSON(SAVEPATH_PAR, 'OUTPUT_COSTS_LIST.json', final_fun_list)
-
-
-
-
-    def testData(self):
-        # TODO
-        paroptmodel.line = 1
-        testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
-
-        paroptmodel.run(populationsize, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
+            fnc.writeJSON(cs.SAVEPATH_PAR, 'OUTPUT_OUT_PAR_LIST.json', self.final_out_list)
+            fnc.writeJSON(cs.SAVEPATH_PAR, 'OUTPUT_RND_PAR_LIST.json', self.final_rnd_list)
+            fnc.writeJSON(cs.SAVEPATH_PAR, 'OUTPUT_COSTS_LIST.json', self.final_fun_list)
