@@ -1,7 +1,8 @@
 #### Neuzy ####
 
-## quickstart/run_default
-# runs with default config
+## Quickstart/run_default
+# Can be written as jupyter notebook and configured by the user
+# Runs with default parameters (e.g. population size)
 
 import os, sys, pathlib
 
@@ -23,16 +24,11 @@ from Simulations import GenSim          # Run all objects in concatenation
 
 from CompleteOptModel import CompleteOptModel
 
+
 def main():
-    pass
+    ## Building default objects with "1" as ID
 
-if __name__ == '__main__':
-    ## Building default objects
-
-    mpi1 = MPIpar(populationsize = 100)      # MPIrun object, 100 cells to generate
-
-
-    hoc1 = HocModel(
+    hoc_1 = HocModel(
                         model_name = "Roe22.hoc", 
                         modpath = None,
                         target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
@@ -41,37 +37,34 @@ if __name__ == '__main__':
                         channelblocknames = False,               # Run it with CompleteOptModel
                         verbose = True
                         )
-    # hoc1.mycell is now the hocobject property of hoc1 object.
-    # hoc1 describes the object of the instantiated meta files and properties.
-    # hoc1.mycell describes the instantiated hocobject with its extracted properties from hoc file
+    # hoc_1.mycell is now the hocobject property of hoc1 object.
+    # hoc_1 describes the object of the instantiated meta files and properties.
+    # hoc_1.mycell describes the instantiated hocobject with its extracted properties from hoc file
 
-    hoc1.getSectionNames
 
-    stim1 = SortOutStim()
+    
+    mpi_1 = MPIpar(populationsize = 100)      # MPIpar object, 100 cells to generate
 
-    fcalc1 = FitnessCalcSD(hoc1)
 
-    opt1 = ScipyOpt("Nelder-Mead")         # TODO need for inheritance, how?
+    stim_1 = SortOutStim()
+
+    fcalc_1 = FitnessCalcSD(hoc1)
+
+    opti_1 = ScipyOpt("Nelder-Mead")  
+
 
     ## Running default config
-    run_instance1 = GenSim()    # TODO check if classmethods are better
+    run_instance_1 = GenSim()    # TODO check if classmethods are better
 
     ## call the objects together in Runner.run() and print output files in it
-    run_instance1.run(par = mpi1, model = hoc1, stim = stim1, opt = opti1, calc = calc1)
-
-    finalpar = run_instance1.finalParameters()
+    run_instance_1.run(par = mpi_1, model = hoc_1, stim = stim_1, opt = opti_1, calc = fcalc_1)
 
     """
-    mpi1.run(    model_name = "Roe22.hoc",                               #"To21_nap_strong_trunk_together.hoc", 
-                target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
-                template_name = None, 
-                hippo_bAP = True    )                                    # Run it with CompleteOptModel
-    """
-
-    # git test comment test only
-
-
     ## Extra - HippoUnit
+    finalpar = run_instance_1.finalParameters() # finalpar will be input for HippoModel if needed
+    test1 = HippoModel(model_input_par = finalpar)
+    """
 
-    test1 = HippoModel()
-    ###
+if __name__ == '__main__':
+    main()
+   

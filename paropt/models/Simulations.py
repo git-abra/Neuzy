@@ -2,17 +2,26 @@
 
 ## Simulations concatenates input and runs the system
 
-import sys, pathlib, time
+import sys, pathlib, time, os
+import auxiliaries as ax
 
 PP = pathlib.Path(__file__).parent
 sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
 
-from constants import *
 
 class GenSim():
-    def __init__(   self, par:object, model:object, stim:object, opt:object, calc:object, 
+    def __init__(   self, 
+                    par:object, 
+                    model:object, 
+                    stim:object, 
+                    opt:object, 
+                    calc:object, 
                     testing:bool = None
                     ):
+        """
+        General Simulation Class GenSim() to run the simulations.
+        Concatenates all objects from the different classes and uses them to sim.
+        """
         if testing:
             self.testing = True
         else:
@@ -28,22 +37,22 @@ class GenSim():
         ## Creating output files as variables to append outputs/results
         # Standard output of regular optimized results
         for i in range(9999):
-            if os.path.exists(SAVEPATH_PAR + "/output_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/output_fun_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_output_par_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_fun_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_best_output_par_data_sim_" + str(i) + ".csv") or \
-                os.path.exists(SAVEPATH_PAR + "/sample_best_fun_data_sim_" + str(i) + ".csv"):
+            if os.path.exists(ax.constants.SAVEPATH_PAR + "/output_data_sim_" + str(i) + ".csv") or \
+                os.path.exists(ax.constants.SAVEPATH_PAR + "/output_fun_data_sim_" + str(i) + ".csv") or \
+                os.path.exists(ax.constants.SAVEPATH_PAR + "/sample_output_par_data_sim_" + str(i) + ".csv") or \
+                os.path.exists(ax.constants.SAVEPATH_PAR + "/sample_fun_data_sim_" + str(i) + ".csv") or \
+                os.path.exists(ax.constants.SAVEPATH_PAR + "/sample_best_output_par_data_sim_" + str(i) + ".csv") or \
+                os.path.exists(ax.constants.SAVEPATH_PAR + "/sample_best_fun_data_sim_" + str(i) + ".csv"):
                 continue
             else:
-                self.output_csv_data = (SAVEPATH_PAR + "/output_data_sim_" + str(i) + ".csv")
-                self.output_csv_fun_data = (SAVEPATH_PAR + "/output_fun_data_sim_" + str(i) + ".csv")
+                self.output_csv_data = (ax.constants.SAVEPATH_PAR + "/output_data_sim_" + str(i) + ".csv")
+                self.output_csv_fun_data = (ax.constants.SAVEPATH_PAR + "/output_fun_data_sim_" + str(i) + ".csv")
                  # Results after sampling
-                self.sample_output_csv_par_data = (SAVEPATH_PAR + "/sample_output_par_data_sim_" + str(i) + ".csv")
-                self.sample_output_csv_fun_data = (SAVEPATH_PAR + "/sample_fun_data_sim_" + str(i) + ".csv")
+                self.sample_output_csv_par_data = (ax.constants.SAVEPATH_PAR + "/sample_output_par_data_sim_" + str(i) + ".csv")
+                self.sample_output_csv_fun_data = (ax.constants.SAVEPATH_PAR + "/sample_fun_data_sim_" + str(i) + ".csv")
                 # Best sampling results
-                self.sample_best_output_csv_par_data = (SAVEPATH_PAR + "/sample_best_output_par_data_sim_" + str(i) + ".csv")
-                self.sample_best_output_csv_fun_data = (SAVEPATH_PAR + "/sample_best_fun_data_sim_" + str(i) + ".csv")
+                self.sample_best_output_csv_par_data = (ax.constants.SAVEPATH_PAR + "/sample_best_output_par_data_sim_" + str(i) + ".csv")
+                self.sample_best_output_csv_fun_data = (ax.constants.SAVEPATH_PAR + "/sample_best_fun_data_sim_" + str(i) + ".csv")
                 break
 
         self.starttime = time.time()

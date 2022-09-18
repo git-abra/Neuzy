@@ -1,13 +1,30 @@
 #### Neuzy
 
+import logging as lg
+import numpy as np
+import pandas as pd
+from neuron import h
+from neuron.units import ms, mV
+import efel
 
-class GenStim():    # General Stim
-    def __init( self, delay: int = 150, duration: int = 400, 
-                tstop: int = 750, cvode_active: bool = None,
-                stepamps:dict = {'Step-04': -0.4, 'Step08' : 0.8}
+
+class GenStim():
+    def __init__(   self, 
+                    delay: int = 150, 
+                    duration: int = 400, 
+                    tstop: int = 750, 
+                    cvode_active: bool = None,
+                    stepamps:dict = {'Step-04': -0.4, 'Step08' : 0.8}
                 ):
         """
-        docs for arguments tbc
+        General Stim Class GenStim() to set parameters for the NEURON simulation.
+        Constructor Parameters
+        ----------------------
+        - delay: int
+        - duration: int
+        - tstop: int
+        - cvode_active: bool
+        - stepamps: dict
         """
         ## Properties of the full call to run simulation
         self.delay = delay
@@ -19,22 +36,16 @@ class GenStim():    # General Stim
             self.cvode_active = cvode_active
         else:
             self.cvode_active = False  # Doesn't work because of EFEL X and Y axes "Assertion fired(efel/cppcore/Utils.cpp:33): X & Y have to have the same point count"
-
+    
     def stimulateIClamp(self):   # Default values are from Schneider et al. 2021
-        '''
+        """
         IClamp Optimization Protocols
-        Stimulate IClamp on self.mycell /w random values from rnddata.
-
-        Parameters
-        ----------
-        self.delay : int; Stim delay
-        self.duration : int; Stim duration
-        self.stepamps : List[int]; Step amplitude values, one simulation for each step amplitude
+        Stimulate IClamp on a cell.
 
         Returns
         -------
-        traces_per_stepamp : Dict: {stepampname: {'Soma': soma_arr , 'bAP': bAP1_arr}}
-        '''
+        tuple( traces_per_stepamp_dict: dict: {stepampname: {'Soma': soma_arr , 'bAP': bAP1_arr}}, time_vec )
+        """
         traces_per_stepamp_dict = {}
         for stepampname, stepamp in self.stepamps.items():
             #start = time.time()
@@ -128,18 +139,32 @@ class GenStim():    # General Stim
         return traces_per_stepamp_dict, time_vec
 
 
-class SortOutStim(GenStim):      # Stim with function to sort out early - i.e. Models which are not throwing APs
-    """
-    docs for arguments tbc
-    """
+class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - i.e. Models which are not throwing APs
 
     ## class properties which are the same on init for every instance of this class
     AP_firstspike = False
     bAP_firstspike = False
 
-    def __init__(   self, delay:int, duration:int, tstop:int, cvode_active:bool,     # as input arguments for super() to genmodel parent
-                    delay_firstspike:int = 50, duration_firstspike:int = 65, tstop_firstspike:int = 150,
+    def __init__(   self, 
+                    delay:int, 
+                    duration:int, 
+                    tstop:int, 
+                    cvode_active:bool,     # as input arguments for super() to genmodel parent
+                    delay_firstspike:int = 50, 
+                    duration_firstspike:int = 65, 
+                    tstop_firstspike:int = 150,
                     ):
+        """
+        Stim Class, which inherits from GenStim().
+        Adds functions to sort models out early in the optimization process, 
+        depending on its first (backpropagating) Action Potential.
+
+        Added Parameters
+        ----------------------
+        - delay_firstspike:int
+        - duration_firstspike:int
+        - tstop_firstspike:int
+        """
         super().__init__(delay, duration, tstop, cvode_active)
 
         ## Firstspike properties to check for the occurrence of the first few AP 

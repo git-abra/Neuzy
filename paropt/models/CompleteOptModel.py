@@ -1689,12 +1689,12 @@ class CompleteOptModel():
             
 
 def main():
-    pass
+    subprocess.call(['sh', str(PP / '..' / '..' / 'quickstart.sh')])      ## make sure to call it in bash from neuzy folder
     
 ## TODO which feature_name causes which models maximum cost? In output - needed or just tedious? Integrated in runtime - done.
 
 if __name__ == '__main__':
-    subprocess.call(['sh', str(PP / '..' / '..' / 'quickstart.sh')])       ## make sure to call it in bash from neuzy folder
+    main()
 
 ## Comment code for a rollback of this file. If output doesn't work, then uncomment.
     """

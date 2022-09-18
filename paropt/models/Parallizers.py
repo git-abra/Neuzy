@@ -5,23 +5,47 @@
 # Therefore the user can choose which model object has to be prioritized in core usage.
 # On the other hand, the choice to use another parallelization is made by creating objects of another class, currently placeholder.
 
-from CompleteOptModel import CompleteOptModel
+import os, sys, pathlib
+
 import Models
+import logging as lg
+import pandas as pd
+import numpy as np
 from mpi4py import MPI
+
+import auxiliaries as ax
+from CompleteOptModel import CompleteOptModel
 from Testingfinaldata import *
 
+# TODO should replace this kind of path management soon
+PP = pathlib.Path(__file__).parent  # parent path on directory
+sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
+
+
 class Parallizer():
+    """
+    Wrapper class for parallelization options.
+    """
     def __init__(self):
         pass
 
 
 class PlaceholderCls(Parallizer):
+    """
+    Placeholder until further parallelization gets integrated.
+    """
     def __init__(self):
         pass
 
 
 class MPIpar(Parallizer):
+    """
+    Class for usage of MPI as parallization option.
+    """
     def __init__(self, populationsize:int = 100):
+
+        self.populationsize = 100
+
         ## MPI properties
         self.comm = MPI.COMM_WORLD
         self.rank = comm.Get_rank()          # current used core/process
@@ -30,20 +54,21 @@ class MPIpar(Parallizer):
 
         # Create Log files for up to 9999 different ones
         for i in range(9999):
-            if os.path.exists(SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i)+ ".log"):
+            if os.path.exists(ax.constants.SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i)+ ".log"):
                 continue
             else:
-                self.output_log_data = ((SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i) + ".log"))
+                self.output_log_data = ((ax.constants.SAVEPATH_LOG + "/rank_" + str(self.rank) + "_consolelog_sim_" + str(i) + ".log"))
                 break
 
         lg.basicConfig(filename = self.output_log_data, level = lg.INFO) 
 
-    def concat(self):
+    def gather_output(  self, 
+                        model,
+                        testing = None):
+        """
+        Gathers the output of the optimizations and 
+        """
 
-
-    def (self, cell_destination_size, testing = None):
-        
-           
         counter = 0
         successcounter = 0 
         out_fun_list = []  
@@ -51,7 +76,7 @@ class MPIpar(Parallizer):
         out_par_list = []    
         i = 0
 
-        while i <= self.cell_destination_size:
+        while i <= self.populationsize:
             counter = counter + 1
 
             self.AP_firstspike = False      # reset AP_firstspike
@@ -66,15 +91,15 @@ class MPIpar(Parallizer):
                 print("First created Cell is used.")
                 lg.info("First created Cell is used.")
 
-                init_data, indices = self.getMechanismItems()  # Initial Conductances # tested
+                init_data, indices = model.getMechanismItems()  # Initial Conductances # tested
                 init_output_data = insertNans(init_data, indices).tolist()
 
-                outfile = pathlib.Path(SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
+                outfile = pathlib.Path(ax.constants.SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
                 if outfile.is_file():
                     print("Initial Conductances already in a JSON file.")        
                     pass
                 else:
-                    X = convert1DTo2DnpArr(init_output_data)
+                    X = ax.functions.convert1DTo2DnpArr(init_output_data)
                     df = pd.DataFrame(X, index = self.sectionlist_list, columns = self.ionchnames).transpose()
                     print("Creating Initial Conductances - JSON file")
                     print(df)         
@@ -197,4 +222,4 @@ class MPIpar(Parallizer):
         paroptmodel.line = 1
         testingfinaldata = TestingFinalData("./paropt/datadump/parameter_values/best10_par.csv", line = paroptmodel.line)
 
-        paroptmodel.run(cell_destination_size, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
+        paroptmodel.run(populationsize, testing = False)   # testing flag if testingfinaldata is wanted or if it should proceed to random initialization
