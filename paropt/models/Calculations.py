@@ -1,24 +1,32 @@
 #### Neuzy
 
+import logging as lg
+import pathlib, sys
+import pandas as pd
+
+PP = pathlib.Path(__file__).parent   # PP Parentpath from current file  
+sys.path.insert(1, str(PP/'..'))
+
+import auxiliaries.constants as cs
+import auxiliaries.functions as fnc
 
 class GenCalc():
     """
     Class for Fitness Calculations
-
-    Parameters
-    ----------
-    hocmodel: Object of HOCModel
-    pymodel: object of PyModel
     """
-    def __init__(self, hocmodel, pymodel):
-        #
-        # placeholder for calculation variables if needed in extension
-        #
+    def __init__(self, model):
+        """
+        Parameters
+        ----------
+        hocmodel: Object of HOCModel
+        pymodel: object of PyModel
+        """
+        self.model = model
         pass
 
     def calculateFitness(self, parameter_data, indices):  
         # print("test: ", parameter_data)
-        if self.updateParAndModel(parameter_data, indices) is None:
+        if self.model.updateParAndModel(self.parameter_data, self.indices) is None:
             print("No spiking, aborting on rank, " + str(self.rank))  
             lg.info("No spiking, aborting on rank, " + str(self.rank))
             return 10000
@@ -34,6 +42,7 @@ class GenCalc():
         fitness_values_names = []
         fitness_values = []
         fitness_values_dict = {}
+
 
     def sampleRecAround(    self, 
                             output_array, 
@@ -67,8 +76,8 @@ class GenCalc():
         if counter < maxresults and maxcounter < maxiter:  # sample XX times around and check if costs become better
             ## use result for more results
             try:     
-                sample_array = sampleResultsAround(output_array, multiplier = multiplier)
-                sample_array_nonan = removeNans(sample_array)
+                sample_array = fnc.sampleResultsAround(output_array, multiplier = multiplier)
+                sample_array_nonan = fnc.removeNans(sample_array)
                 ## TODO abortion because of NEURON scopmath library error, convergence not achieved ... this API
                 # so it has problems to overwrite itself every time and instead should be a reinitialized cell
                 sample_fun = self.calculateFitness(sample_array_nonan, indices)
@@ -127,8 +136,8 @@ class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominat
     calculating fitness with averaging feature values 
     in terms of standard deviation.
     """
-    def __init__(self, hocmodel, pymodel):
-        super().__init__(hocmodel, pymodel)
+    def __init__(self, model):
+        super().__init__(model)
 
         ## TODO
         """

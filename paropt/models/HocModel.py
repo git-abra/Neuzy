@@ -7,6 +7,7 @@ import numpy as np
 import logging as lg
 
 from GenModel import GenModel
+from Stims import 
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 PP_str = str(PP)    
@@ -24,7 +25,8 @@ class HocModel(GenModel):
     extracting information out of an existing HOC model 
     """
     def __init__(   self,
-                    model_name, 
+                    model_name,
+                    stim:object,
                     modpath = None,             # in constants.py if not given
                     target_feature_file = None, # in constants.py if not given
                     bap_target_file = None, 
@@ -45,6 +47,8 @@ class HocModel(GenModel):
                             )
 
         self.model_name = model_name
+        self.stim = stim
+        
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
@@ -319,17 +323,17 @@ class HocModel(GenModel):
 
             ## TODO , could intialize the first self.model_features after instantiating the cell, to check for spikes and then throw it overboard before even calculating the fitness
 
-            self.updateAutoParameters(parameter_data, indices)                          # update "self.current_cell" Cell with random values
+            self.updateHOCParameters(parameter_data, indices)     # update "self.current_cell" Cell with random values
 
-            if self.AP_firstspike and self.bAP_firstspike:
+            if self.stim.AP_firstspike and self.stim.bAP_firstspike:
                 traces_per_stepamp, time_vec = self.stimulateIClamp()
                 self.extractModelFeatures(traces_per_stepamp, time_vec)
                 return True 
             else:
-                if self.stimulateIClamp_firstspike():                           # if firstspike features
-                    self.AP_firstspike = True
-                    self.bAP_firstspike = True
-                    traces_per_stepamp, time_vec = self.stimulateIClamp()       # starting full-fledged stimulation
+                if self.stim.stimulateIClamp_firstspike():                           # if firstspike features
+                    self.stim.AP_firstspike = True
+                    self.stim.bAP_firstspike = True
+                    traces_per_stepamp, time_vec = self.stim.stimulateIClamp()       # starting full-fledged stimulation
                     self.extractModelFeatures(traces_per_stepamp, time_vec)     # extracting all features
                     return True
                 else:

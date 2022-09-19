@@ -45,7 +45,7 @@ class MPIpar(Parallizer):
     """
     def __init__(self, populationsize:int = 100):
 
-        self.populationsize = 100
+        self.populationsize = populationsize
 
         ## MPI properties
         self.comm = MPI.COMM_WORLD
