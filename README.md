@@ -72,30 +72,6 @@ Two folders will be created in /neuzy/paropt/data
 ![Implementation](./docs/figures/Implementation.pdf)
 
 ---
-## TODO's are partly the following:
-
-- Documentation
-- General improvements
-- Accessibility for the general neuroscientist, i.e. less explicit source code configuration input for hyperparameters
-- Offer the option to test for multiple kinds of cell optimization, i.e. more features
-- Extend for:
-  - Efficiency
-    - e.g. dynamic programming
-    - improvements to mpi usage
-    - techniques
-  - Synaptic features and testing
-    - dendritic integration
-  - More than CA1
-    - region is limited by experimental data, not by the software
-  - Network modelling
-    - various cell numbers in conjunction
-    - machine learning for neural networks
-  - Glia influence
-    - simulate neurotransmitter density in extracellular space
-  - ...
-- ...
-
----
 ## License
 Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
 
