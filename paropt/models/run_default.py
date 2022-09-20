@@ -35,30 +35,28 @@ def main():
     """ 
     ## Building default objects with "1" as ID
     hoc_1 = HocModel(
-                        model_name = "Roe22.hoc", 
-                        stim = stim_1,
+                        model_name = "Roe22.hoc",
                         modpath = None,
                         target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
-                        template_name = None, 
+                        template_name = "Roe22_reduced_CA1", 
                         hippo_bAP = True,
                         channelblocknames = None,               # Run it with CompleteOptModel
                         verbose = True
                         )
+    mpi_1 = MPIpar(populationsize = 100)    # MPIpar object, 100 cells to generate
 
-    stim_1 = Firstspike_SortOutStim(hoc_1)   # default parameters
+    stim_1 = Firstspike_SortOutStim(model = hoc_1, par = mpi_1)   # default parameters
 
-    mpi_1 = MPIpar(populationsize = 100)      # MPIpar object, 100 cells to generate
-
-    fcalc_1 = FitnessCalcSD(hoc_1, stim_1)            # obj(__init__(): self.model = model)
+    calc_1 = FitnessCalcSD(hoc_1, stim_1)            # obj(__init__(): self.model = model)
 
     opt_1 = ScipyOpt("Nelder-Mead")  
 
 
     ## Running default config
-    run_instance_1 = GenSim()  # TODO check if classmethods are better
+    run_instance_1 = GenSim(par = mpi_1, model = hoc_1, stim = stim_1, opt = opt_1, calc = calc_1)
 
     ## call the objects together in Runner.run() and print output files in it
-    run_instance_1.run(par = mpi_1, model = hoc_1, stim = stim_1, opt = opt_1, calc = fcalc_1)
+    run_instance_1.run()
     
 
     """

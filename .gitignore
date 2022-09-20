@@ -1,0 +1,4 @@
+x86_64
+__pycache__
+INITIAL_CONDUCTANCES_LIST.json
+*.pyc

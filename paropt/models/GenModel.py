@@ -39,7 +39,7 @@ class GenModel():           # General Model
                     modpath = None,             # in constants.py if not given
                     target_feature_file = None,
                     bap_target_file = None, 
-                    hippo_bAP = None,  
+                    hippo_bAP = True,  
                     channelblocknames = None, # has to be in the fullname format: "gkabar_kad" or "gbar_nax"
                     verbose = False 
                     ):
@@ -56,17 +56,19 @@ class GenModel():           # General Model
         self.target_feature_file = target_feature_file
         self.bap_target_file = bap_target_file
 
+        self.createFeatureDict()
+
         self.hippo_bAP = hippo_bAP
         if self.hippo_bAP == True:   # Check for hippo_bAP Flag. If True then only a few bAP Features are used, analogue to HippoUnits extraction. This is due to a shortage in experimental data till today.
             self.createBAPTargets()
             #self.createAveragedDistanceBAPList(inputlist_of_dicts)
-        else:
+        else:   ## atm unused, hippo_bAP defaults to True
             self.hippo_bAP = False
             self.bAP_features_dict = None  
             self.bAP_dpol_features  = ['AP1_amp', 'AP2_amp', 'APlast_amp', 'AP_amplitude', 'time_to_first_spike', 'time_to_second_spike', 'time_to_last_spike', \
                                    'AP_rise_time', 'AP_rise_rate', 'AP_duration', 'AP_duration_half_width', 'Spikecount']   
 
-            self.getTargetFeatures()  # EXTRACTS Target Features with extractTargetFeatures() and therefore doesn't use given, but generates a set of target features based on a model which serves as reference
+            # self.getTargetFeatures()  # EXTRACTS Target Features with extractTargetFeatures() and therefore doesn't use given, but generates a set of target features based on a model which serves as reference
 
             self.target_features['bAP'] = self.bAP_features_dict
             self.bAP_features = self.bAP_dpol_features + self.bAP_hpol_features
@@ -76,8 +78,11 @@ class GenModel():           # General Model
 
         self.model_features = None # Placeholder for extended functions
 
+        self.AP_firstspike = False      # reset AP_firstspike
+        self.bAP_firstspike = False     # reset bAP_firstspike
+
         self.loadNeuronScope()
-        self.createFeatureDict()
+        
 
         if verbose:  # TODO do with flags
             self.printVerbose()
@@ -184,13 +189,7 @@ class GenModel():           # General Model
         """
         Function to extract Model Features.
         These have to be somatic and bAP features.
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        feature_values_array_list : List of Numpy Arrays of exactly one value for each feature.
+    
         """  
         efel.api.reset()
         
@@ -299,7 +298,7 @@ class GenModel():           # General Model
             print("MODEL FEATURES")
             print(self.model_features)
             print("\n")
-        else:
+        else:   
             for count, value in enumerate(bAP_model_feature_list):      # if hippo_bAP is set to false, it only has 1 stepamp and 1 bAP recording so this loop is just askdwbjwdwqjbfjk
                 bAP_model_feature_dict[bAP_stepampnames[count]] = value
 
@@ -341,12 +340,14 @@ class GenModel():           # General Model
 
             
             self.model_features['bAP'] = bAP_model_feature_dict_temp
-            #print(self.model_features)
+            print(self.model_features)
 
+    """
     def getTargetFeatures(self):
-        """Auxiliary function to set self.bAP_features_dict"""
+        # Auxiliary function to set self.bAP_features_dict
         traces_per_stepamp, time_vec = self.stimulateIClamp()       # stimulate with read-in cell which wasn't change yet for the baseline traces
         self.extractTargetFeatures(traces_per_stepamp, time_vec)    # extract target features from baseline read-in cell which wasn't changed yet
+    """
 
     def createAveragedDistanceBAPList(self, inputlist_of_dicts):
         # TODO make a distance check to average it. Average values then by indices or not

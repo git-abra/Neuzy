@@ -6,7 +6,7 @@ import sys, pathlib, time, os
 import pandas as pd
 import logging as lg
 
-from paropt.models.Optimizers import ScipyOpt
+from Optimizers import ScipyOpt
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 sys.path.insert(1, str(PP/'..'))
@@ -36,7 +36,7 @@ class GenSim():
         self.model = model
         self.stim = stim
         self.opt = opt
-        self.fcalc = calc
+        self.calc = calc
 
         if testing:
             self.testing = True
@@ -91,10 +91,10 @@ class GenSim():
             lg.info("No spiking, aborting on rank, " + str(self.par.rank))
             return 10000
         else:
-            pass
+            pass    # return None
 
     def updateParAndModel(self, parameter_data, indices):
-            if self.method == "CG":
+            if self.opt.method == "CG":
                 parameter_data = abs(parameter_data)    # especially for CG, don't make negative values possible for conductances. 
                                                         # Negative "bar" values produce a NEURON error. 
 
@@ -103,14 +103,14 @@ class GenSim():
 
             self.model.updateHOCParameters(parameter_data, indices)     # update "self.current_cell" Cell with the initialized random values
 
-            if self.stim.AP_firstspike and self.stim.bAP_firstspike:
+            if self.model.AP_firstspike and self.model.bAP_firstspike:
                 traces_per_stepamp, time_vec = self.stim.stimulateIClamp()
                 self.model.extractModelFeatures(traces_per_stepamp, time_vec)
                 return True 
             else:   
                 if self.stim.stimulateIClamp_firstspike():                           # if firstspike features
-                    self.stim.AP_firstspike = True
-                    self.stim.bAP_firstspike = True
+                    self.model.AP_firstspike = True
+                    self.model.bAP_firstspike = True
                     traces_per_stepamp, time_vec = self.stim.stimulateIClamp()       # starting full-fledged stimulation
                     self.model.extractModelFeatures(traces_per_stepamp, time_vec)     # extracting all features
                     return True
@@ -172,18 +172,14 @@ class GenSim():
             init_rnd_data = fnc.randomizeAutoConductances(init_data)
             rnd_data = fnc.insertNans(init_rnd_data, indices) 
 
-            # This area TODO 
-            # Sim -> Optimizer -> Calc -> Sim/Hoc/Stim/Opt
-            # ENTANGLE
-            ## TODO TODO TODO
-            self.updateModel()
-            self.updateParAndModel()
 
-            init_cost = self.calc.calculateFitness(init_rnd_data, indices) 
+            init_cost = self.calc.calculateFitness(sim = self, model = self.model, stim = self.stim, init_rnd_data = init_rnd_data, indices = indices) 
             
-            
-            ## Get Ouput         
-            output = self.opt.runOptimizer(init_data, indices, self.calc, init_cost, init_rnd_data, rnd_data) #   # output of optimizers
+            if init_cost == 10000:  # TODO add the other forms from Optimizer in this GenSim method.
+                output = 1
+            else:
+                ## Get Ouput         
+                output = self.opt.runOptimizer(init_data, indices, self.calc, init_rnd_data, rnd_data, init_cost) #   # output of optimizers
 
 
             if isinstance(output, int) and output == 1:

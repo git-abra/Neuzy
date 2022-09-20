@@ -2,7 +2,7 @@
 import sys, pathlib, copy
 
 PP = pathlib.Path(__file__).parent  # parent path on directory
-sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
+sys.path.insert(1, str(PP / '..' ))
 
 import auxiliaries.constants as cs
 import auxiliaries.functions as fnc
@@ -41,10 +41,10 @@ class ScipyOpt(GenOpt):
         self.init_cost_optimizer_threshold = init_cost_optimizer_threshold
         self.method = method
 
-    def callScipyNelderMead(self): 
+    def callScipyNelderMead(self, x0, indices, calc): 
         # Scipy for Nelder-Mead
-        minimum = scp.minimize( self.calc.calculateFitness, self.x0, 
-                                    args=(self.indices), 
+        minimum = scp.minimize( calc.calculateFitness, x0, 
+                                    args=(indices), 
                                     bounds=[(0, 1) for i in range(len(x0))],
                                     method = self.method, 
                                     options={'xatol': 1e-6, 'maxiter': 1500, 'disp': True})     # xatol, fatol
@@ -52,11 +52,11 @@ class ScipyOpt(GenOpt):
             return minimum.x, minimum.fun    # key = population index, value = tempdict; update result dictionary with one cell iteration dictionary per key
         return None, None
 
-    def callScipyLBFGSB(self):
+    def callScipyLBFGSB(self, x0, indices, calc, bounds):
         # stopper = callBackScipyTimeStopper() # timestopper
         # Scipy for L-BFGS-B
-        minimum = scp.minimize( self.calculateFitness, self.x0, 
-                                    args=(self.indices), 
+        minimum = scp.minimize( calc.calculateFitness, x0, 
+                                    args=(indices), 
                                     bounds=[(0, 1) for i in range(len(x0))] ,   # bounds
                                     method = self.method, 
                                     options={'gtol': 1e-06, 'disp': True, 'maxiter': 300, 'eps': 1e-07})
@@ -66,10 +66,10 @@ class ScipyOpt(GenOpt):
             return minimum.x, minimum.fun
         return None, None
 
-    def callScipyCG(self):
+    def callScipyCG(self, x0, indices, calc):
         # Scipy for CG
-        minimum = scp.minimize( self.calculateFitness, self.x0, 
-                                args=(self.indices),
+        minimum = scp.minimize( calc.calculateFitness, x0, 
+                                args=(indices),
                                 method = self.method, 
                                 options={'disp': True, 'maxiter': 300, 'eps': 1e-4})
 
@@ -88,7 +88,7 @@ class ScipyOpt(GenOpt):
             self.callScipyNelderMead()
 
 
-    def runOptimizer(self, init_data, indices, calc, init_cost, init_rnd_data, rnd_data):
+    def runOptimizer(self, init_data, indices, calc, init_rnd_data, rnd_data, init_cost):
         """ Calling the optimizer and using its output """
         #init_data2 = copy(init_data)        # init_data2 to test calculateFitness with initial data against no update with updateHOCParameters
         #print("INIT DATA:", init_data)  # tested, approved, no nans
@@ -123,17 +123,17 @@ class ScipyOpt(GenOpt):
         print(par_comb) 
         init_cost = self.calculateFitness(par_comb, indices)     # use own data"""
 
-        if init_cost == 10000:
-            return 1                                # int
+        """if init_cost == 10000:
+            return 1                                # int"""
 
-        elif init_cost <= self.init_cost_threshold:                    
+        if init_cost <= self.init_cost_threshold:                    
             return rnd_data, init_cost              # tuple
 
         elif init_cost > self.init_cost_threshold and init_cost <= self.init_cost_optimizer_threshold:
 
             if self.method == 'L-BFGS-B':
                 bounds = fnc.calculateBounds(init_rnd_data)
-                x, fun = self.callScipyLBFGSB(init_rnd_data, indices, bounds)     # only take the ones with output which fulfill the fitness function 
+                x, fun = self.callScipyLBFGSB(init_rnd_data, indices, calc, bounds)     # only take the ones with output which fulfill the fitness function 
                 if np.any(x) is not None and fun is not None:
                     x = fnc.insertNans(x, indices)    
                     return [x, rnd_data, fun]             # list
@@ -141,7 +141,7 @@ class ScipyOpt(GenOpt):
                     return 2
 
             elif self.method == 'CG':
-                x, fun = self.callScipyCG(init_rnd_data, indices)                 # only take the ones with output which fulfill the fitness function
+                x, fun = self.callScipyCG(init_rnd_data, indices, calc)                 # only take the ones with output which fulfill the fitness function
                 if np.any(x) is not None and fun is not None:
                     x = fnc.insertNans(x, indices)    
                     return [x, rnd_data, fun]             # list
@@ -149,7 +149,7 @@ class ScipyOpt(GenOpt):
                     return 2
 
             elif self.method == 'Nelder-Mead':                                    # https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html
-                x, fun = self.callScipyNelderMead(init_rnd_data, indices)         # only take the ones with output which fulfill the fitness function
+                x, fun = self.callScipyNelderMead(init_rnd_data, indices, calc)         # only take the ones with output which fulfill the fitness function
                 if np.any(x) is not None and fun is not None:
                     x = fnc.insertNans(x, indices)       # too many values to unpack, expected 2  
                     return [x, rnd_data, fun]             # list

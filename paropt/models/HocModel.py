@@ -1,13 +1,13 @@
 #### Neuzy
 
 from neuron import h
-import sys, pathlib, copy
+import sys, pathlib
+from copy import copy
 import pandas as pd
 import numpy as np
 import logging as lg
 
 from GenModel import GenModel
-from Stims import Firstspike_SortOutStim
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 sys.path.insert(1, str(PP/'..'))
@@ -27,7 +27,7 @@ class HocModel(GenModel):
                     modpath = None,             # in constants.py if not given
                     target_feature_file = None, # in constants.py if not given
                     bap_target_file = None, 
-                    hippo_bAP:bool = None,  
+                    hippo_bAP:bool = True,  
                     channelblocknames = None,   # has to be in the fullname format: "gkabar_kad" or "gbar_nax"
                     verbose = False,  
                     hocpath = None,             # in constants.py if not given
@@ -35,16 +35,14 @@ class HocModel(GenModel):
                     template_name = None,           # from hoc begintemplate "template_name" 
                     parameterkeywords:list = None   # Parameter Keywords from psection() density mechs, which are to be used.              
                     ):
-        super().__init__(   modpath = None,             # in constants.py if not given
-                            target_feature_file = None, # in constants.py if not given
-                            bap_target_file = None, 
-                            hippo_bAP = None,  
-                            channelblocknames = None,  # has to be in the fullname format: "gkabar_kad" or "gbar_nax" 
-                            verbose = False
+        super().__init__(   modpath,             # in constants.py if not given
+                            target_feature_file, # in constants.py if not given
+                            bap_target_file, 
+                            hippo_bAP,  
+                            channelblocknames,  # has to be in the fullname format: "gkabar_kad" or "gbar_nax" 
+                            verbose
                             )
 
-        self.AP_firstspike = False      # reset AP_firstspike
-        self.bAP_firstspike = False     # reset bAP_firstspike
         self.model_name = model_name
 
         if sectionlist_list:
@@ -249,7 +247,7 @@ class HocModel(GenModel):
         if self.sectionlist_list:
             for sl in self.sectionlist_list:   
                 inputsl = getattr(self.current_cell, sl)
-                for sec in inputsl: 
+                for sec in inputsl:
                     test1_dict = copy(sec.psection()['density_mechs'])
                     for ionchname in self.ionchnames:       # just make sure that my ionchnames are fitting, could probably also do assertions here
                         ionchnamekey = ionchname.split('_', 1)[1]

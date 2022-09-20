@@ -14,6 +14,8 @@ import auxiliaries.functions as fnc
 class GenCalc():
     """
     Class for Fitness Calculations
+    Depending on instantiated children, 
+    the method of calculating fitness can be chosen.
 
     Methods
     -------
@@ -111,7 +113,7 @@ class GenCalc():
 
             return
 
-class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominator
+class FitnessCalcSD(GenCalc):         # calculate Fitness with SD in denominator
     """
     Child class of GenCalc, 
     calculating fitness with averaging feature values 
@@ -128,82 +130,85 @@ class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominat
         pass
 
 
-    def calculateFitness(self, model, stim):
+    def calculateFitness(self, sim, model, stim, init_rnd_data, indices):
         
+        val = sim.updateModel(init_rnd_data, indices)  # implicitly calls sim.updateParAndModel
 
-        fitness_values_names = []
-        fitness_values = []
-        fitness_values_dict = {}
+        if val == 10000:
+            return val
+        else:
+            fitness_values_names = []
+            fitness_values = []
+            fitness_values_dict = {}
 
-        ## TODO
-        """
-        ## Based on model_feature_dict 
-        for locationkey, locationvalues in self.model_features.items():         # using model_features in case you want to change the step amp protocol in self.stepamps
-            #if locationkey == 'Soma':                                          # test only somatic features
-            for stepamp, stepampvalues in locationvalues.items():
-                for feature_name, featurevalues in stepampvalues.items():
-                    if featurevalues['Mean'] is None:
-                        continue
-                    elif featurevalues['Mean'] is not None:
-                        # numpy.core._exceptions.UFuncTypeError: ufunc 'subtract' did not contain a loop with signature matching types (dtype('<U32'), dtype('<U32')) -> dtype('<U32')                                                       
-                        feature_fitness = (np.abs(float(featurevalues['Mean'] - float(self.target_features[locationkey][stepamp][feature_name]['Mean']))) \
-                                            /float(self.target_features[locationkey][stepamp][feature_name]['Std']))
-                        # TODO prove that this change for model_features instead of target_features works                
-                        print(feature_name, " : ", featurevalues['Mean'], " blabla", self.target_features[locationkey][stepamp][feature_name]['Mean'] ," \
-                            standard deviation: ", self.target_features[locationkey][stepamp][feature_name]['Std'])
-
-                        fitness_values_names.append(feature_name + " fitness value: ")
-                        fitness_values.append(feature_fitness)
-                        df = pd.DataFrame(fitness_values, index = fitness_values_names)
-                        fitness_values_dict.update({feature_name : feature_fitness})
-        """
-
-
-        ## Based on target_feature_dict 
-        for locationkey, locationvalues in model.target_features.items():         # using model_features in case you want to change the step amp protocol in self.stepamps
-            #if locationkey == 'Soma':                                          # test only somatic features
-            for stepamp, stepampvalues in locationvalues.items():
-                for feature_name, featurevalues in stepampvalues.items():
-                    if stepamp in stim.stepamps.keys():
-                        if model.model_features[locationkey][stepamp][feature_name]['Mean'] is None or self.model_features[locationkey][stepamp][feature_name]['Mean'] is False:
-                            fitness_values_names.append(feature_name + " fitness ")
-                            feature_fitness = 1000
-                            fitness_values.append(feature_fitness)
-
-                        elif featurevalues['Mean'] and self.model_features[locationkey][stepamp][feature_name]['Mean']:
-                            # numpy.core._exceptions.UFuncTypeError: ufunc 'subtract' did not contain a loop with signature matching types (dtype('<U32'), dtype('<U32')) -> dtype('<U32')   
-                            #print("1", self.model_features[locationkey][stepamp][feature_name]['Mean'], bool(self.model_features[locationkey][stepamp][feature_name]['Mean']))
-                            #print("2", float(featurevalues['Mean']), bool(float(featurevalues['Mean'])))                                                    
-                            feature_fitness = (np.abs(float(self.model_features[locationkey][stepamp][feature_name]['Mean']) - float(featurevalues['Mean'])) \
-                                                /float(featurevalues['Std']))
+            ## TODO
+            """
+            ## Based on model_feature_dict 
+            for locationkey, locationvalues in self.model_features.items():         # using model_features in case you want to change the step amp protocol in self.stepamps
+                #if locationkey == 'Soma':                                          # test only somatic features
+                for stepamp, stepampvalues in locationvalues.items():
+                    for feature_name, featurevalues in stepampvalues.items():
+                        if featurevalues['Mean'] is None:
+                            continue
+                        elif featurevalues['Mean'] is not None:
+                            # numpy.core._exceptions.UFuncTypeError: ufunc 'subtract' did not contain a loop with signature matching types (dtype('<U32'), dtype('<U32')) -> dtype('<U32')                                                       
+                            feature_fitness = (np.abs(float(featurevalues['Mean'] - float(self.target_features[locationkey][stepamp][feature_name]['Mean']))) \
+                                                /float(self.target_features[locationkey][stepamp][feature_name]['Std']))
                             # TODO prove that this change for model_features instead of target_features works                
-                            #print(feature_name, " : ", self.model_features[locationkey][stepamp][feature_name]['Mean'] , " blabla", featurevalues['Mean'] ," \
-                            #    standard deviation: ", self.target_features[locationkey][stepamp][feature_name]['Std'])
+                            print(feature_name, " : ", featurevalues['Mean'], " blabla", self.target_features[locationkey][stepamp][feature_name]['Mean'] ," \
+                                standard deviation: ", self.target_features[locationkey][stepamp][feature_name]['Std'])
 
-                            fitness_values_names.append(feature_name)    # add label suffix like feature_name + " fitness" or + " cost" if wanted
+                            fitness_values_names.append(feature_name + " fitness value: ")
                             fitness_values.append(feature_fitness)
+                            df = pd.DataFrame(fitness_values, index = fitness_values_names)
+                            fitness_values_dict.update({feature_name : feature_fitness})
+            """
 
-                        fitness_values_dict.update({feature_name : feature_fitness})
-                    else:
-                        #print(stepamp, " was not in Model Features and got skipped")
-                        pass
-        ## Outputs for testing
-        # print("Fitness values are:")
-        pd.set_option("display.max_rows", None, "display.max_columns", None)
-        df = pd.DataFrame(fitness_values, index = fitness_values_names)
 
-        # inline
-        print(df)           
+            ## Based on target_feature_dict 
+            for locationkey, locationvalues in model.target_features.items():         # using model_features in case you want to change the step amp protocol in self.stepamps
+                #if locationkey == 'Soma':                                          # test only somatic features
+                for stepamp, stepampvalues in locationvalues.items():
+                    for feature_name, featurevalues in stepampvalues.items():
+                        if stepamp in stim.stepamps.keys():
+                            if model.model_features[locationkey][stepamp][feature_name]['Mean'] is None or self.model_features[locationkey][stepamp][feature_name]['Mean'] is False:
+                                fitness_values_names.append(feature_name + " fitness ")
+                                feature_fitness = 1000
+                                fitness_values.append(feature_fitness)
 
-        # csv
-        # df.to_csv("./paropt/data/parameter_values//dataframe_costs/dataframe_output_model_" + str(self.line) + ".csv")
+                            elif featurevalues['Mean'] and self.model_features[locationkey][stepamp][feature_name]['Mean']:
+                                # numpy.core._exceptions.UFuncTypeError: ufunc 'subtract' did not contain a loop with signature matching types (dtype('<U32'), dtype('<U32')) -> dtype('<U32')   
+                                #print("1", self.model_features[locationkey][stepamp][feature_name]['Mean'], bool(self.model_features[locationkey][stepamp][feature_name]['Mean']))
+                                #print("2", float(featurevalues['Mean']), bool(float(featurevalues['Mean'])))                                                    
+                                feature_fitness = (np.abs(float(self.model_features[locationkey][stepamp][feature_name]['Mean']) - float(featurevalues['Mean'])) \
+                                                    /float(featurevalues['Std']))
+                                # TODO prove that this change for model_features instead of target_features works                
+                                #print(feature_name, " : ", self.model_features[locationkey][stepamp][feature_name]['Mean'] , " blabla", featurevalues['Mean'] ," \
+                                #    standard deviation: ", self.target_features[locationkey][stepamp][feature_name]['Std'])
 
-        # print("Fitness values are: ", fitness_values_dict, "on rank " + str(self.rank))
-        print("Cost is: ", max(fitness_values), " on rank " + str(self.rank))
-        lg.info("Cost is " + str(max(fitness_values)) + "on rank " + str(self.rank))
+                                fitness_values_names.append(feature_name)    # add label suffix like feature_name + " fitness" or + " cost" if wanted
+                                fitness_values.append(feature_fitness)
 
-        # maximum fitness value # TODO print only in verbose mode... get them flags
-        print(df.idxmax())      # max(fitness_values) feature_name
+                            fitness_values_dict.update({feature_name : feature_fitness})
+                        else:
+                            #print(stepamp, " was not in Model Features and got skipped")
+                            pass
+            ## Outputs for testing
+            # print("Fitness values are:")
+            pd.set_option("display.max_rows", None, "display.max_columns", None)
+            df = pd.DataFrame(fitness_values, index = fitness_values_names)
 
-        return max(fitness_values)
-    
+            # inline
+            print(df)           
+
+            # csv
+            # df.to_csv("./paropt/data/parameter_values//dataframe_costs/dataframe_output_model_" + str(self.line) + ".csv")
+
+            # print("Fitness values are: ", fitness_values_dict, "on rank " + str(self.rank))
+            print("Cost is: ", max(fitness_values), " on rank " + str(self.rank))
+            lg.info("Cost is " + str(max(fitness_values)) + "on rank " + str(self.rank))
+
+            # maximum fitness value # TODO print only in verbose mode... get them flags
+            print(df.idxmax())      # max(fitness_values) feature_name
+
+            return max(fitness_values)
