@@ -1,5 +1,6 @@
 #### Neuzy
 
+import time
 import logging as lg
 import numpy as np
 import pandas as pd
@@ -8,7 +9,8 @@ from neuron.units import ms, mV
 import efel
 
 class GenStim():
-    def __init__(   self, 
+    def __init__(   self,
+                    model, 
                     delay: int = 150, 
                     duration: int = 400, 
                     tstop: int = 750, 
@@ -31,6 +33,7 @@ class GenStim():
         self.tstop = tstop
 
         self.stepamps = stepamps
+
         if cvode_active:
             self.cvode_active = cvode_active
         else:
@@ -49,11 +52,11 @@ class GenStim():
         for stepampname, stepamp in self.stepamps.items():
             #start = time.time()
 
-            stim = h.IClamp(self.mycell.soma[0](0.5)) # stim at soma
+            stim = h.IClamp(self.current_cell.soma[0](0.5)) # stim at soma
             stim.delay = self.delay
             stim.dur = self.duration
             stim.amp = stepamp
-            soma_vec = h.Vector().record(self.mycell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
+            soma_vec = h.Vector().record(self.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
 
             # TODO get section names automatically by distance from bAP recordings in HippoUnit
             # commented function, can be implemented
@@ -70,19 +73,19 @@ class GenStim():
                             print(bAP_secnames)"""
 
 
-            if self.hippo_bAP == True:
+            if model.hippo_bAP == True:
                 ## Hippounit bap positions
-                bAP1_vec = h.Vector().record(self.mycell.radTprox(0.5)._ref_v)   # 50 um
-                bAP2_vec = h.Vector().record(self.mycell.radTmed(0.5)._ref_v)    # 150 um
-                bAP3_vec = h.Vector().record(self.mycell.radTdist(0.22727272727272727)._ref_v)  # 245 um
-                bAP4_vec = h.Vector().record(self.mycell.radTdist(0.3181818181818182)._ref_v)   # 263 um
-                bAP5_vec = h.Vector().record(self.mycell.radTdist(0.6818181818181819)._ref_v)   # 336 um
-                bAP6_vec = h.Vector().record(self.mycell.radTdist(0.7727272727272728)._ref_v)   # 354 um
+                bAP1_vec = h.Vector().record(self.current_cell.radTprox(0.5)._ref_v)   # 50 um
+                bAP2_vec = h.Vector().record(self.current_cell.radTmed(0.5)._ref_v)    # 150 um
+                bAP3_vec = h.Vector().record(self.current_cell.radTdist(0.22727272727272727)._ref_v)  # 245 um
+                bAP4_vec = h.Vector().record(self.current_cell.radTdist(0.3181818181818182)._ref_v)   # 263 um
+                bAP5_vec = h.Vector().record(self.current_cell.radTdist(0.6818181818181819)._ref_v)   # 336 um
+                bAP6_vec = h.Vector().record(self.current_cell.radTdist(0.7727272727272728)._ref_v)   # 354 um
             else:
-                bAP1_vec = h.Vector().record(self.mycell.radTmed(1)._ref_v)    # 205um distance from middle of soma, 200 from end of soma, 210 from start of soma with 10um diameter.
+                bAP1_vec = h.Vector().record(self.current_cell.radTmed(1)._ref_v)    # 205um distance from middle of soma, 200 from end of soma, 210 from start of soma with 10um diameter.
 
             
-            # TODO get region names automatically by distance and use setattr(self.mycell, sectionname)._ref_v
+            # TODO get region names automatically by distance and use setattr(self.current_cell, sectionname)._ref_v
             
             time_vec = h.Vector().record(h._ref_t)
 
@@ -120,7 +123,7 @@ class GenStim():
 
             # TODO automatic section dictionaries, not hardcoded names and amount of arrays. detect how many traces are recorded with a counter or something and use that.
             # I don't like this programming just for one purpose... it's crap
-            if self.hippo_bAP == True:           
+            if model.hippo_bAP == True:           
                 bAP1_arr = np.array(bAP1_vec)
                 bAP2_arr = np.array(bAP2_vec)
                 bAP3_arr = np.array(bAP3_vec)
@@ -144,11 +147,13 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
     AP_firstspike = False
     bAP_firstspike = False
 
-    def __init__(   self, 
+    def __init__(   self,
+                    model, 
                     delay:int, 
                     duration:int, 
                     tstop:int, 
                     cvode_active:bool,     # as input arguments for super() to genmodel parent
+                    stepamps,
                     delay_firstspike:int = 50, 
                     duration_firstspike:int = 65, 
                     tstop_firstspike:int = 150,
@@ -164,7 +169,7 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
         - duration_firstspike:int
         - tstop_firstspike:int
         """
-        super().__init__(delay, duration, tstop, cvode_active)
+        super().__init__(model, delay, duration, tstop, cvode_active, stepamps)
 
         ## Firstspike properties to check for the occurrence of the first few AP 
         self.delay_firstspike = delay_firstspike
@@ -174,7 +179,7 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
     def stimulateIClamp_firstspike(self):   # Default values are from Schneider et al. 2021
         '''
         IClamp Optimization Protocols
-        Stimulate IClamp on self.mycell /w random values from rnddata.
+        Stimulate IClamp on self.current_cell /w random values from rnddata.
 
         Parameters
         ----------
@@ -196,24 +201,24 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
             #print(stepampname)
             start = time.time()
 
-            stim = h.IClamp(self.mycell.soma[0](0.5)) # stim at soma
+            stim = h.IClamp(self.current_cell.soma[0](0.5)) # stim at soma
             stim.delay = self.delay_firstspike
             stim.dur = self.duration_firstspike
             stim.amp = stepamp
-            soma_vec = h.Vector().record(self.mycell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
+            soma_vec = h.Vector().record(self.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
 
             if self.hippo_bAP == True:
                 ## Hippounit bap positions, manual way.
-                bAP1_vec = h.Vector().record(self.mycell.radTprox(0.5)._ref_v)
-                bAP2_vec = h.Vector().record(self.mycell.radTmed(0.5)._ref_v)    # 205um distance, radtprox makes positive ap_peak also  
-                bAP3_vec = h.Vector().record(self.mycell.radTdist(0.22727272727272727)._ref_v)
-                bAP4_vec = h.Vector().record(self.mycell.radTdist(0.3181818181818182)._ref_v)
-                bAP5_vec = h.Vector().record(self.mycell.radTdist(0.6818181818181819)._ref_v)
-                bAP6_vec = h.Vector().record(self.mycell.radTdist(0.7727272727272728)._ref_v)
+                bAP1_vec = h.Vector().record(self.current_cell.radTprox(0.5)._ref_v)
+                bAP2_vec = h.Vector().record(self.current_cell.radTmed(0.5)._ref_v)    # 205um distance, radtprox makes positive ap_peak also  
+                bAP3_vec = h.Vector().record(self.current_cell.radTdist(0.22727272727272727)._ref_v)
+                bAP4_vec = h.Vector().record(self.current_cell.radTdist(0.3181818181818182)._ref_v)
+                bAP5_vec = h.Vector().record(self.current_cell.radTdist(0.6818181818181819)._ref_v)
+                bAP6_vec = h.Vector().record(self.current_cell.radTdist(0.7727272727272728)._ref_v)
             else:
-                bAP1_vec = h.Vector().record(self.mycell.radTmed(1)._ref_v)    # 205um distance, radtprox makes positive ap_peak also
+                bAP1_vec = h.Vector().record(self.current_cell.radTmed(1)._ref_v)    # 205um distance, radtprox makes positive ap_peak also
 
-            # TODO extension: get region names automatically by distance and use setattr(self.mycell, sectionname)._ref_v
+            # TODO extension: get region names automatically by distance and use setattr(self.current_cell, sectionname)._ref_v
             
             time_vec = h.Vector().record(h._ref_t)
             

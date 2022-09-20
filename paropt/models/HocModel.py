@@ -7,11 +7,9 @@ import numpy as np
 import logging as lg
 
 from GenModel import GenModel
-from Stims import 
+from Stims import Firstspike_SortOutStim
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
-PP_str = str(PP)    
-
 sys.path.insert(1, str(PP/'..'))
 
 import auxiliaries.constants as cs
@@ -46,9 +44,11 @@ class HocModel(GenModel):
                             verbose = False
                             )
 
+        self.AP_firstspike = False      # reset AP_firstspike
+        self.bAP_firstspike = False     # reset bAP_firstspike
         self.model_name = model_name
         self.stim = stim
-        
+
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
@@ -71,7 +71,7 @@ class HocModel(GenModel):
         else: 
             self.parameterkeywords = ["bar"]    # List of parameter key words like "bar" for gbar active ion channels. You can basically choose anything from neuron's psection() density_mech dict.
                                                 # check for "bar", "tau", "pas" or whatever you want
-
+        
         self.readHocModel()
         self.initializeCell()     # calls createHocModel for cell
 
@@ -315,29 +315,6 @@ class HocModel(GenModel):
                             continue
             """
         print(df)
-
-        def updateParAndModel(self, parameter_data, indices):
-            if self.method == "CG":
-                parameter_data = abs(parameter_data)    # especially for CG, don't make negative values possible for conductances. Negative "bar" values produce a NEURON error. 
-                                                        # If you want to add e_pas to the parameters, you have to specify this line
-
-            ## TODO , could intialize the first self.model_features after instantiating the cell, to check for spikes and then throw it overboard before even calculating the fitness
-
-            self.updateHOCParameters(parameter_data, indices)     # update "self.current_cell" Cell with random values
-
-            if self.stim.AP_firstspike and self.stim.bAP_firstspike:
-                traces_per_stepamp, time_vec = self.stimulateIClamp()
-                self.extractModelFeatures(traces_per_stepamp, time_vec)
-                return True 
-            else:
-                if self.stim.stimulateIClamp_firstspike():                           # if firstspike features
-                    self.stim.AP_firstspike = True
-                    self.stim.bAP_firstspike = True
-                    traces_per_stepamp, time_vec = self.stim.stimulateIClamp()       # starting full-fledged stimulation
-                    self.extractModelFeatures(traces_per_stepamp, time_vec)     # extracting all features
-                    return True
-                else:
-                    return
 
 if __name__ == "__main__":
     pass

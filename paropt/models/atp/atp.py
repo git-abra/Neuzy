@@ -10,7 +10,7 @@ sys.path.insert(1, str(PP / '..'))
 from constants import *
 import create_data
 from CompleteOptModel import CompleteOptModel
-from Testingfinaldata import *
+from paropt.models.TestingCompleteModel import *
 
 from neuron import h
 from neuron.units import ms, mV

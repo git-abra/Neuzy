@@ -19,7 +19,21 @@ class GenModel():           # General Model
     """ 
     Model class for general properties
     This class should take any method, which can be used by the 
-    child classes respectively 
+    child classes respectively.
+    Makes use of eFEL to extract features of the models. # TODO outsource efel extraction into an own class to also offer the option to use another feature extraction library
+
+
+    Methods
+    -------
+    - loadNeuronScope
+    - deleteCell
+    - blockIonChannel
+    - createFeatureDict
+    - extractModelFeatures
+    - getTargetFeatures
+    - createAveragedDistanceBAPList
+    - createBAPTargets
+
     """
     def __init__(   self,
                     modpath = None,             # in constants.py if not given

@@ -3,6 +3,7 @@
 import logging as lg
 import pathlib, sys
 import pandas as pd
+import numpy as np
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file  
 sys.path.insert(1, str(PP/'..'))
@@ -13,41 +14,21 @@ import auxiliaries.functions as fnc
 class GenCalc():
     """
     Class for Fitness Calculations
+
+    Methods
+    -------
+    - sampleRecAround
     """
     def __init__(self, model):
-        """
-        Parameters
-        ----------
-        hocmodel: Object of HOCModel
-        pymodel: object of PyModel
-        """
         self.model = model
         pass
-
-    def calculateFitness(self, parameter_data, indices):  
-        # print("test: ", parameter_data)
-        if self.model.updateParAndModel(self.parameter_data, self.indices) is None:
-            print("No spiking, aborting on rank, " + str(self.rank))  
-            lg.info("No spiking, aborting on rank, " + str(self.rank))
-            return 10000
-        else:
-            pass
-
-        ## To iterate over all values, create one big dic out of both dictionaries ### unused hahah :D
-        self.features = {}
-        self.features['Target'] = self.target_features
-        self.features['Model'] = self.model_features
-
-
-        fitness_values_names = []
-        fitness_values = []
-        fitness_values_dict = {}
-
 
     def sampleRecAround(    self, 
                             output_array, 
                             out_fun, 
                             indices, 
+                            calc,
+                            model,
                             multiplier = 1.05, 
                             counter = 0,
                             maxcounter = 0, 
@@ -80,7 +61,7 @@ class GenCalc():
                 sample_array_nonan = fnc.removeNans(sample_array)
                 ## TODO abortion because of NEURON scopmath library error, convergence not achieved ... this API
                 # so it has problems to overwrite itself every time and instead should be a reinitialized cell
-                sample_fun = self.calculateFitness(sample_array_nonan, indices)
+                sample_fun = calc.calculateFitness(sample_array_nonan, indices)
                 
                 if sample_fun < out_fun:
                     counter = counter + 1
@@ -135,9 +116,23 @@ class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominat
     Child class of GenCalc, 
     calculating fitness with averaging feature values 
     in terms of standard deviation.
+
+    Methods
+    -------
+    - calculateFitness()
+    - updateModel
     """
-    def __init__(self, model):
+    def __init__(self, model, stim):
         super().__init__(model)
+        self.stim = stim
+        pass
+
+
+    def calculateFitness(self, model, stim):
+
+        fitness_values_names = []
+        fitness_values = []
+        fitness_values_dict = {}
 
         ## TODO
         """
@@ -161,13 +156,15 @@ class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominat
                         df = pd.DataFrame(fitness_values, index = fitness_values_names)
                         fitness_values_dict.update({feature_name : feature_fitness})
         """
+
+
         ## Based on target_feature_dict 
-        for locationkey, locationvalues in self.target_features.items():         # using model_features in case you want to change the step amp protocol in self.stepamps
+        for locationkey, locationvalues in model.target_features.items():         # using model_features in case you want to change the step amp protocol in self.stepamps
             #if locationkey == 'Soma':                                          # test only somatic features
             for stepamp, stepampvalues in locationvalues.items():
                 for feature_name, featurevalues in stepampvalues.items():
-                    if stepamp in self.stepamps.keys():
-                        if self.model_features[locationkey][stepamp][feature_name]['Mean'] is None or self.model_features[locationkey][stepamp][feature_name]['Mean'] is False:
+                    if stepamp in stim.stepamps.keys():
+                        if model.model_features[locationkey][stepamp][feature_name]['Mean'] is None or self.model_features[locationkey][stepamp][feature_name]['Mean'] is False:
                             fitness_values_names.append(feature_name + " fitness ")
                             feature_fitness = 1000
                             fitness_values.append(feature_fitness)

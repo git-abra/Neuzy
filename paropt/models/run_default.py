@@ -13,10 +13,9 @@ sys.path.insert(1, str(PP / '..'))
 ## Classes
 from Parallizers import MPIpar          # Parallelization Class
 from HocModel import HocModel          # Model Class to read in HOC and have methods on the model
-"""from Stims import Firstspike_SortOutStim           # Stim protocol class
+from Stims import Firstspike_SortOutStim           # Stim protocol class
 from Calculations import FitnessCalcSD  # Calculations for Fitness
 from Optimizers import ScipyOpt         # Optimizer
-
 from Simulations import GenSim          # Run all objects in concatenation"""
 
 # from CompleteOptModel import CompleteOptModel
@@ -28,13 +27,19 @@ args = parser.parse_args()
 print(args.legacy)
 
 def main():
-    """if args.legacy is not None:
+    """
+    if args.legacy is not None:
         pass
         # Legacy Version Run
-        # CompleteOptModel.run()   """ 
+        # CompleteOptModel.run()   
+    """ 
     ## Building default objects with "1" as ID
+
+    stim_1 = Firstspike_SortOutStim()   # default parameters
+
     hoc_1 = HocModel(
                         model_name = "Roe22.hoc", 
+                        stim = stim_1,
                         modpath = None,
                         target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
                         template_name = None, 
@@ -42,33 +47,27 @@ def main():
                         channelblocknames = None,               # Run it with CompleteOptModel
                         verbose = True
                         )
-    # hoc_1.mycell is now the hocobject property of hoc1 object.
-    # hoc_1 describes the object of the instantiated meta files and properties.
-    # hoc_1.mycell describes the instantiated hocobject with its extracted properties from hoc file
-    print(hoc_1)
 
-    
     mpi_1 = MPIpar(populationsize = 100)      # MPIpar object, 100 cells to generate
 
+    fcalc_1 = FitnessCalcSD(hoc_1, stim_1)            # obj(__init__(): self.model = model)
 
-    stim_1 = SortOutStim()
-
-    fcalc_1 = FitnessCalcSD(hoc_1)
-
-    opti_1 = ScipyOpt("Nelder-Mead")  
+    opt_1 = ScipyOpt("Nelder-Mead")  
 
 
     ## Running default config
-    run_instance_1 = GenSim()    # TODO check if classmethods are better
+    run_instance_1 = GenSim()  # TODO check if classmethods are better
 
     ## call the objects together in Runner.run() and print output files in it
-    run_instance_1.run(par = mpi_1, model = hoc_1, stim = stim_1, opt = opti_1, calc = fcalc_1)
+    run_instance_1.run(par = mpi_1, model = hoc_1, stim = stim_1, opt = opt_1, calc = fcalc_1)
+    
 
     """
     ## Extra - HippoUnit
     finalpar = run_instance_1.finalParameters() # finalpar will be input for HippoModel if needed
     test1 = HippoModel(model_input_par = finalpar)
     """
+
 
 if __name__ == '__main__':
     main()
