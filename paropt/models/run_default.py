@@ -34,9 +34,6 @@ def main():
         # CompleteOptModel.run()   
     """ 
     ## Building default objects with "1" as ID
-
-    stim_1 = Firstspike_SortOutStim()   # default parameters
-
     hoc_1 = HocModel(
                         model_name = "Roe22.hoc", 
                         stim = stim_1,
@@ -47,6 +44,8 @@ def main():
                         channelblocknames = None,               # Run it with CompleteOptModel
                         verbose = True
                         )
+
+    stim_1 = Firstspike_SortOutStim(hoc_1)   # default parameters
 
     mpi_1 = MPIpar(populationsize = 100)      # MPIpar object, 100 cells to generate
 

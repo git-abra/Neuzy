@@ -86,32 +86,33 @@ class GenSim():
         model: model to be updated
         """  
         # print("test: ", parameter_data)
-        if self.model.updateParAndModel(self.parameter_data, self.indices) is None:
-            print("No spiking, aborting on rank, " + str(self.rank))  
-            lg.info("No spiking, aborting on rank, " + str(self.rank))
+        if self.updateParAndModel(parameter_data, indices) is None:
+            print("No spiking, aborting on rank, " + str(self.par.rank))  
+            lg.info("No spiking, aborting on rank, " + str(self.par.rank))
             return 10000
         else:
             pass
 
     def updateParAndModel(self, parameter_data, indices):
             if self.method == "CG":
-                parameter_data = abs(parameter_data)    # especially for CG, don't make negative values possible for conductances. Negative "bar" values produce a NEURON error. 
-                                                        # If you want to add e_pas to the parameters, you have to specify this line
+                parameter_data = abs(parameter_data)    # especially for CG, don't make negative values possible for conductances. 
+                                                        # Negative "bar" values produce a NEURON error. 
 
-            ## TODO , could intialize the first self.model_features after instantiating the cell, to check for spikes and then throw it overboard before even calculating the fitness
+            ## TODO , could intialize the first self.model_features after instantiating the cell, 
+            # to check for spikes and then throw it overboard before even calculating the fitness
 
-            self.updateHOCParameters(parameter_data, indices)     # update "self.current_cell" Cell with random values
+            self.model.updateHOCParameters(parameter_data, indices)     # update "self.current_cell" Cell with the initialized random values
 
             if self.stim.AP_firstspike and self.stim.bAP_firstspike:
-                traces_per_stepamp, time_vec = self.stimulateIClamp()
-                self.extractModelFeatures(traces_per_stepamp, time_vec)
+                traces_per_stepamp, time_vec = self.stim.stimulateIClamp()
+                self.model.extractModelFeatures(traces_per_stepamp, time_vec)
                 return True 
-            else:
+            else:   
                 if self.stim.stimulateIClamp_firstspike():                           # if firstspike features
                     self.stim.AP_firstspike = True
                     self.stim.bAP_firstspike = True
                     traces_per_stepamp, time_vec = self.stim.stimulateIClamp()       # starting full-fledged stimulation
-                    self.extractModelFeatures(traces_per_stepamp, time_vec)     # extracting all features
+                    self.model.extractModelFeatures(traces_per_stepamp, time_vec)     # extracting all features
                     return True
                 else:
                     return
@@ -167,8 +168,23 @@ class GenSim():
                 init_data, indices = self.model.getMechanismItems()  # Initial Conductances for new cell
                 # print(init_data)
 
+
+            init_rnd_data = fnc.randomizeAutoConductances(init_data)
+            rnd_data = fnc.insertNans(init_rnd_data, indices) 
+
+            # This area TODO 
+            # Sim -> Optimizer -> Calc -> Sim/Hoc/Stim/Opt
+            # ENTANGLE
+            ## TODO TODO TODO
+            self.updateModel()
+            self.updateParAndModel()
+
+            init_cost = self.calc.calculateFitness(init_rnd_data, indices) 
+            
+            
             ## Get Ouput         
-            output = self.opt.runOptimizer(init_data, indices, self.calc) #   # output of optimizers
+            output = self.opt.runOptimizer(init_data, indices, self.calc, init_cost, init_rnd_data, rnd_data) #   # output of optimizers
+
 
             if isinstance(output, int) and output == 1:
                 print("Abort Error 1: Model didn't spike at enough frequency at start i.e. no Action Potentials at the start. No save.")

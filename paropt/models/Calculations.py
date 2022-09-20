@@ -129,6 +129,7 @@ class FitnessCalcSD(GenCalc()):         # calculate Fitness with SD in denominat
 
 
     def calculateFitness(self, model, stim):
+        
 
         fitness_values_names = []
         fitness_values = []

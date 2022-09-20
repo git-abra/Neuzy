@@ -43,6 +43,9 @@ class MPIpar(Parallizer):
     Class for usage of MPI as parallization option.
     """
     def __init__(self, populationsize:int = 100):
+        """
+        Initialization of MPI properties and Logfiles. # TODO make logfile creation extra
+        """
 
         self.populationsize = populationsize
 

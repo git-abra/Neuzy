@@ -37,7 +37,7 @@ class GenModel():           # General Model
     """
     def __init__(   self,
                     modpath = None,             # in constants.py if not given
-                    target_feature_file = None, # in constants.py if not given
+                    target_feature_file = None,
                     bap_target_file = None, 
                     hippo_bAP = None,  
                     channelblocknames = None, # has to be in the fullname format: "gkabar_kad" or "gbar_nax"

@@ -31,6 +31,7 @@ class GenStim():
         self.delay = delay
         self.duration = duration
         self.tstop = tstop
+        self.model = model
 
         self.stepamps = stepamps
 
@@ -52,7 +53,7 @@ class GenStim():
         for stepampname, stepamp in self.stepamps.items():
             #start = time.time()
 
-            stim = h.IClamp(self.current_cell.soma[0](0.5)) # stim at soma
+            stim = h.IClamp(self.model.current_cell.soma[0](0.5)) # stim at soma
             stim.delay = self.delay
             stim.dur = self.duration
             stim.amp = stepamp

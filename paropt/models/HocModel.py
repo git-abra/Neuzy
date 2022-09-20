@@ -24,7 +24,6 @@ class HocModel(GenModel):
     """
     def __init__(   self,
                     model_name,
-                    stim:object,
                     modpath = None,             # in constants.py if not given
                     target_feature_file = None, # in constants.py if not given
                     bap_target_file = None, 
@@ -47,7 +46,6 @@ class HocModel(GenModel):
         self.AP_firstspike = False      # reset AP_firstspike
         self.bAP_firstspike = False     # reset bAP_firstspike
         self.model_name = model_name
-        self.stim = stim
 
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
@@ -71,7 +69,7 @@ class HocModel(GenModel):
         else: 
             self.parameterkeywords = ["bar"]    # List of parameter key words like "bar" for gbar active ion channels. You can basically choose anything from neuron's psection() density_mech dict.
                                                 # check for "bar", "tau", "pas" or whatever you want
-        
+
         self.readHocModel()
         self.initializeCell()     # calls createHocModel for cell
 

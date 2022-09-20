@@ -88,16 +88,15 @@ class ScipyOpt(GenOpt):
             self.callScipyNelderMead()
 
 
-    def runOptimizer(self, init_data, indices, calc):
+    def runOptimizer(self, init_data, indices, calc, init_cost, init_rnd_data, rnd_data):
         """ Calling the optimizer and using its output """
-        init_data2 = copy(init_data)        # init_data2 to test calculateFitness with initial data against no update with updateHOCParameters
-        
+        #init_data2 = copy(init_data)        # init_data2 to test calculateFitness with initial data against no update with updateHOCParameters
         #print("INIT DATA:", init_data)  # tested, approved, no nans
 
         ## Initiate Random Data
-        init_rnd_data = fnc.randomizeAutoConductances(init_data)  # randomizing conductance parameters of ion channels 'gbar_*' from the cell
+        # init_rnd_data = fnc.randomizeAutoConductances(init_data)  # randomizing conductance parameters of ion channels 'gbar_*' from the cell
         #print("INIT RND DATA: ", init_rnd_data)
-        rnd_data = fnc.insertNans(init_rnd_data, indices)         # for output
+        # rnd_data = fnc.insertNans(init_rnd_data, indices)         # for output
         #print("INIT RND DATA: ", rnd_data)
         #print(type(rnd_data))     # <class 'numpy.ndarray'>
 
@@ -114,7 +113,7 @@ class ScipyOpt(GenOpt):
         else:
         """
         
-        init_cost = calc.calculateFitness(init_rnd_data, indices)     # 100 is target feature atm
+        # init_cost = calc.calculateFitness(init_rnd_data, indices)     # 100 is target feature atm
 
         ## extract some initial values with parameter combination
         """par_comb_df = pd.read_csv(PP_str + "/data.csv", dtype=np.float64)
