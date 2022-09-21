@@ -10,8 +10,6 @@ import efel
 
 class GenStim():
     def __init__(   self,
-                    model,
-                    par, 
                     delay: int = 150, 
                     duration: int = 400, 
                     tstop: int = 750, 
@@ -32,9 +30,6 @@ class GenStim():
         self.delay = delay
         self.duration = duration
         self.tstop = tstop
-        
-        self.model = model
-        self.par = par
 
         self.stepamps = stepamps
 
@@ -43,7 +38,7 @@ class GenStim():
         else:
             self.cvode_active = False  # Doesn't work because of EFEL X and Y axes "Assertion fired(efel/cppcore/Utils.cpp:33): X & Y have to have the same point count"
     
-    def stimulateIClamp(self):   # Default values are from Schneider et al. 2021
+    def stimulateIClamp(self, model):   # Default values are from Schneider et al. 2021
         """
         IClamp Optimization Protocols
         Stimulate IClamp on a cell.
@@ -56,11 +51,11 @@ class GenStim():
         for stepampname, stepamp in self.stepamps.items():
             #start = time.time()
 
-            stim = h.IClamp(self.model.current_cell.soma[0](0.5)) # stim at soma
+            stim = h.IClamp(model.current_cell.soma[0](0.5)) # stim at soma
             stim.delay = self.delay
             stim.dur = self.duration
             stim.amp = stepamp
-            soma_vec = h.Vector().record(self.model.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
+            soma_vec = h.Vector().record(model.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
 
             # TODO get section names automatically by distance from bAP recordings in HippoUnit
             # commented function, can be implemented
@@ -77,16 +72,16 @@ class GenStim():
                             print(bAP_secnames)"""
 
 
-            if self.model.hippo_bAP == True:
+            if model.hippo_bAP == True:
                 ## Hippounit bap positions
-                bAP1_vec = h.Vector().record(self.model.current_cell.radTprox(0.5)._ref_v)   # 50 um
-                bAP2_vec = h.Vector().record(self.model.current_cell.radTmed(0.5)._ref_v)    # 150 um
-                bAP3_vec = h.Vector().record(self.model.current_cell.radTdist(0.22727272727272727)._ref_v)  # 245 um
-                bAP4_vec = h.Vector().record(self.model.current_cell.radTdist(0.3181818181818182)._ref_v)   # 263 um
-                bAP5_vec = h.Vector().record(self.model.current_cell.radTdist(0.6818181818181819)._ref_v)   # 336 um
-                bAP6_vec = h.Vector().record(self.model.current_cell.radTdist(0.7727272727272728)._ref_v)   # 354 um
+                bAP1_vec = h.Vector().record(model.current_cell.radTprox(0.5)._ref_v)   # 50 um
+                bAP2_vec = h.Vector().record(model.current_cell.radTmed(0.5)._ref_v)    # 150 um
+                bAP3_vec = h.Vector().record(model.current_cell.radTdist(0.22727272727272727)._ref_v)  # 245 um
+                bAP4_vec = h.Vector().record(model.current_cell.radTdist(0.3181818181818182)._ref_v)   # 263 um
+                bAP5_vec = h.Vector().record(model.current_cell.radTdist(0.6818181818181819)._ref_v)   # 336 um
+                bAP6_vec = h.Vector().record(model.current_cell.radTdist(0.7727272727272728)._ref_v)   # 354 um
             else:
-                bAP1_vec = h.Vector().record(self.model.current_cell.radTmed(1)._ref_v)    # 205um distance from middle of soma, 200 from end of soma, 210 from start of soma with 10um diameter.
+                bAP1_vec = h.Vector().record(model.current_cell.radTmed(1)._ref_v)    # 205um distance from middle of soma, 200 from end of soma, 210 from start of soma with 10um diameter.
 
             
             # TODO get region names automatically by distance and use setattr(self.current_cell, sectionname)._ref_v
@@ -127,7 +122,7 @@ class GenStim():
 
             # TODO automatic section dictionaries, not hardcoded names and amount of arrays. detect how many traces are recorded with a counter or something and use that.
             # I don't like this programming just for one purpose... it's crap
-            if self.model.hippo_bAP == True:           
+            if model.hippo_bAP == True:           
                 bAP1_arr = np.array(bAP1_vec)
                 bAP2_arr = np.array(bAP2_vec)
                 bAP3_arr = np.array(bAP3_vec)
@@ -146,9 +141,12 @@ class GenStim():
 
 
 class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - i.e. Models which are not throwing APs
+    """
+    Stim Class, which inherits from GenStim().
+    Adds functions to sort models out early in the optimization process, 
+    depending on its first (backpropagating) Action Potential.
+    """
     def __init__(   self,
-                    model,
-                    par, 
                     delay: int = 150, 
                     duration: int = 400, 
                     tstop: int = 750, 
@@ -159,37 +157,28 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
                     tstop_firstspike:int = 150,
                     ):
         """
-        Stim Class, which inherits from GenStim().
-        Adds functions to sort models out early in the optimization process, 
-        depending on its first (backpropagating) Action Potential.
-
         Added Parameters
         ----------------------
         - delay_firstspike:int
         - duration_firstspike:int
         - tstop_firstspike:int
         """
-        super().__init__(model, par, delay, duration, tstop, cvode_active, stepamps)
+        super().__init__(delay, duration, tstop, cvode_active, stepamps)
 
         ## Firstspike properties to check for the occurrence of the first few AP 
         self.delay_firstspike = delay_firstspike
         self.duration_firstspike = duration_firstspike
         self.tstop_firstspike = tstop_firstspike
 
-    def stimulateIClamp_firstspike(self):   # Default values are from Schneider et al. 2021
+    def stimulateIClamp_firstspike(self, model, par):   # Default values are from Schneider et al. 2021
         '''
         IClamp Optimization Protocols
         Stimulate IClamp on self.current_cell /w random values from rnddata.
 
         Parameters
         ----------
-        self.delay : int; Stim delay
-        self.duration : int; Stim duration
-        self.stepamps : List[int]; Step amplitude values, one simulation for each step amplitude
-
-        Returns
-        -------
-        traces_per_stepamp : Dict: {stepampname: {'Soma': soma_arr , 'bAP': bAP1_arr}}
+        - model: hocmodel object
+        - par : mpi object
         '''
         efel.api.reset()
         traces_per_stepamp_dict = {}
@@ -201,22 +190,22 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
             #print(stepampname)
             start = time.time()
 
-            stim = h.IClamp(self.model.current_cell.soma[0](0.5)) # stim at soma
+            stim = h.IClamp(model.current_cell.soma[0](0.5)) # stim at soma
             stim.delay = self.delay_firstspike
             stim.dur = self.duration_firstspike
             stim.amp = stepamp
-            soma_vec = h.Vector().record(self.model.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
+            soma_vec = h.Vector().record(model.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
 
-            if self.model.hippo_bAP == True:
+            if model.hippo_bAP == True:
                 ## Hippounit bap positions, manual way.
-                bAP1_vec = h.Vector().record(self.model.current_cell.radTprox(0.5)._ref_v)
-                bAP2_vec = h.Vector().record(self.model.current_cell.radTmed(0.5)._ref_v)    # 205um distance, radtprox makes positive ap_peak also  
-                bAP3_vec = h.Vector().record(self.model.current_cell.radTdist(0.22727272727272727)._ref_v)
-                bAP4_vec = h.Vector().record(self.model.current_cell.radTdist(0.3181818181818182)._ref_v)
-                bAP5_vec = h.Vector().record(self.model.current_cell.radTdist(0.6818181818181819)._ref_v)
-                bAP6_vec = h.Vector().record(self.model.current_cell.radTdist(0.7727272727272728)._ref_v)
+                bAP2_vec = h.Vector().record(model.current_cell.radTmed(0.5)._ref_v)    # 205um distance, radtprox makes positive ap_peak also  
+                bAP1_vec = h.Vector().record(model.current_cell.radTprox(0.5)._ref_v)
+                bAP3_vec = h.Vector().record(model.current_cell.radTdist(0.22727272727272727)._ref_v)
+                bAP4_vec = h.Vector().record(model.current_cell.radTdist(0.3181818181818182)._ref_v)
+                bAP5_vec = h.Vector().record(model.current_cell.radTdist(0.6818181818181819)._ref_v)
+                bAP6_vec = h.Vector().record(model.current_cell.radTdist(0.7727272727272728)._ref_v)
             else:
-                bAP1_vec = h.Vector().record(self.model.current_cell.radTmed(1)._ref_v)    # 205um distance, radtprox makes positive ap_peak also
+                bAP1_vec = h.Vector().record(model.current_cell.radTmed(1)._ref_v)    # 205um distance, radtprox makes positive ap_peak also
 
             # TODO extension: get region names automatically by distance and use setattr(self.current_cell, sectionname)._ref_v
             
@@ -240,7 +229,7 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
             # h.finitialize(-65 * mV) # alt: h.run() ; finitialize https://www.neuron.yale.edu/neuron/static/py_doc/simctrl/programmatic.html
             # h.continuerun(600 * ms) # alt: h.tstop = 200
             soma_arr = np.array(soma_vec)
-            if self.model.hippo_bAP == True:           
+            if model.hippo_bAP == True:           
                 bAP1_arr = np.array(bAP1_vec)
                 bAP2_arr = np.array(bAP2_vec)
                 bAP3_arr = np.array(bAP3_vec)
@@ -329,8 +318,8 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
                 and soma_model_feature_spike[i]['AP2_peak'] > 0 \
                 and soma_model_feature_spike[i]['AP2_amp'] > 0:
 
-                print("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(self.par.rank))
-                lg.info("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(self.par.rank))
+                print("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(par.rank))
+                lg.info("Spikecount on soma for stepamp " + str(stepampnames) + " at least 2 on rank " + str(par.rank))
                 soma_success = soma_success + 1  
                 # average for step 08 is 9, step10 is 11 , so mid is 10 and 7 is handmade hyperparameter; 16 is there, so it isn't too excitable and spikes spontaneously
             else:
@@ -353,8 +342,8 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
                             bAP_success = bAP_success + 1"""
                     bAP_success = bAP_success + 1
                     """else:
-                        print("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(self.rank))
-                        lg.info("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(self.rank))
+                        print("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(par.rank))
+                        lg.info("Spikecount on last bAP for stepamp " + str(stepampnames) + " at least 1 on rank " + str(par.rank))
                         bAP_success = bAP_success + 1"""
                     #bAP_success = bAP_success + 1    
                     #and bAP_model_feature_spike[i]['time_to_first_spike'] > 0:
@@ -363,14 +352,14 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
                     #and bAP_model_feature_spike[i]['AP2_amp'] > 0:
 
                 else:
-                    print("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(self.rank))
-                    lg.info("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(self.rank))
+                    print("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(par.rank))
+                    lg.info("No minimum Model Action Potential at bAP for stepamp " + str(stepampnames) + " on rank " + str(par.rank))
                     
                     # bAP tests and experimental data was for 1000ms stimuli; target feature for 400ms is 4 ; so setting it to 2 handmade hyperparameter, for 11 see upper explanation
                 
         else:
-            print("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(self.par.rank))
-            lg.info("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(self.par.rank))
+            print("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(par.rank))
+            lg.info("No minimum Model Action Potential at Soma for stepamp " + str(stepampnames) + " on rank " + str(par.rank))
 
 
         if bAP_success == len(bAP_model_feature_spike):
