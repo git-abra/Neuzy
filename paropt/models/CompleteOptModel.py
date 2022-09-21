@@ -8,7 +8,7 @@
 ## File with model generation, optimization and output
 
 ## Packages
-import sys, pathlib, os, time, warnings, subprocess, csv, json
+import sys, pathlib, os, time, warnings, subprocess
 
 PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
 PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
@@ -16,21 +16,19 @@ PP_str = str(PP)        # if wanted for quickfix without pathlib syntax
 sys.path.insert(1, str(PP / '..' / 'figures'))
 sys.path.insert(1, str(PP / '..' / 'auxiliaries'))      ## PP needed before call; sys.path[path/auxiliaries] needed for constants.py -> get pathnames like ROOTPATH
 
-import myplots
-from create_data import *
+from functions import *
 from constants import *
 
 from copy import *
 import logging as lg
-import multiprocessing as mp
 import numpy as np                  # Random Generator & Array
 import scipy.optimize as scp
 import pandas as pd                 # Dataframe Usage
 from neuron import h                # NEURON
 from neuron.units import ms, mV
 import efel                         # Extract Spike Features
-from mpi4py import MPI              # MPI support
-from matplotlib import pyplot
+# from mpi4py import MPI              # MPI support
+
 
 
 class CompleteOptModel():
@@ -1688,7 +1686,7 @@ class CompleteOptModel():
             
 
 def main():
-    subprocess.call(['sh', str(PP / '..' / '..' / 'quickstart.sh')])      ## make sure to call it in bash from neuzy folder
+    subprocess.call(['sh', str(PP / '..' / '..' / 'legacystart.sh')])      ## make sure to call it in bash from neuzy folder
     
 ## TODO which feature_name causes which models maximum cost? In output - needed or just tedious? Integrated in runtime - done.
 
