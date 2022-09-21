@@ -45,9 +45,9 @@ def main():
                         )
     mpi_1 = MPIpar(populationsize = 100)    # MPIpar object, 100 cells to generate
 
-    stim_1 = Firstspike_SortOutStim(model = hoc_1, par = mpi_1)   # default parameters
+    stim_1 = Firstspike_SortOutStim()       # default parameters
 
-    calc_1 = FitnessCalcSD(hoc_1, stim_1)            # obj(__init__(): self.model = model)
+    calc_1 = FitnessCalcSD()            # obj(__init__(): self.model = model)
 
     opt_1 = ScipyOpt("Nelder-Mead")  
 
