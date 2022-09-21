@@ -86,8 +86,9 @@ class HocModel(GenModel):
                 assert line[0] == 'begintemplate', \
                     'begintemplate must come first, line %d' % i
                 self.template_name = line[1]
-            else:
-                raise Exception('Could not find begintemplate and therefore template_name in hoc file')
+                break
+        else:   # no break
+            raise Exception('Could not find begintemplate and therefore template_name in hoc file')
 
     def readHocModel(self):
         """

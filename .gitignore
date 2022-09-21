@@ -3,3 +3,4 @@ __pycache__
 INITIAL_CONDUCTANCES_LIST.json
 *.pyc
 *.log
+.vscode

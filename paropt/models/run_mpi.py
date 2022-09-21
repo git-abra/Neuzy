@@ -35,7 +35,7 @@ def main():
 
 
     # INIT
-    paroptmodel = CompleteOptModel (    model_name = "Roe22.hoc",                                #"To21_nap_strong_trunk_together.hoc", 
+    paroptmodel = CompleteOptModel (    model_name = "Roe22.hoc",                                 #"To21/To21_nap_strong_trunk_together.hoc",
                                         target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
                                         template_name = None, 
                                         hippo_bAP = True,

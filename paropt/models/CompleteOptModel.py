@@ -86,7 +86,7 @@ class CompleteOptModel():
         if template_name:
             self.template_name = template_name
         else:
-            self.template_name = get_template_name(model_name)
+            self.get_template_name()
             print("Extracted template_name: " + str(self.template_name) + ", because no template_name was given.")
             lg.info("Extracted template_name: " + str(self.template_name) + ", because no template_name was given.")
 
@@ -229,6 +229,28 @@ class CompleteOptModel():
 
         self.init_cost_threshold = 2
         self.init_cost_optimizer_threshold = 5
+
+
+    def get_template_name(self):
+        """
+        Find the template name from hoc_string
+        Note: this will fail if there is a begintemplate in a `/* */` style
+        comment before the real begintemplate
+        # Source: BluePyOpt
+        """
+        with open(self.hocpath + '/' + self.model_name) as hoc_file:
+            hoc_string = hoc_file.read()
+        for i, line in enumerate(hoc_string.split('\n')):
+            print(line, i)
+            if 'begintemplate' in line:
+                line = line.strip().split()
+                assert line[0] == 'begintemplate', \
+                    'begintemplate must come first, line %d' % i
+                self.template_name = line[1]
+                break
+        else:   # no break
+            raise Exception('Could not find begintemplate and therefore template_name in hoc file')
+
 
     def blockIonChannel(self):
         #### Block Ion Channel for Pharmacodynamics Testing - bandaid gbar to 0
@@ -1686,7 +1708,7 @@ class CompleteOptModel():
             
 
 def main():
-    subprocess.call(['sh', str(PP / '..' / '..' / 'legacystart.sh')])      ## make sure to call it in bash from neuzy folder
+    subprocess.call(['bash', str(PP / '..' / '..' / 'legacystart.sh')])      ## make sure to call it in bash from neuzy folder
     
 ## TODO which feature_name causes which models maximum cost? In output - needed or just tedious? Integrated in runtime - done.
 
