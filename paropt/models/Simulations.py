@@ -104,15 +104,15 @@ class GenSim():
             self.model.updateHOCParameters(parameter_data, indices)     # update "self.current_cell" Cell with the initialized random values
 
             if self.model.AP_firstspike and self.model.bAP_firstspike:
-                traces_per_stepamp, time_vec = self.stim.stimulateIClamp()
-                self.model.extractModelFeatures(traces_per_stepamp, time_vec)
+                traces_per_stepamp, time_vec = self.stim.stimulateIClamp(self.model)
+                self.model.extractModelFeatures(traces_per_stepamp, time_vec, self.stim)
                 return True 
             else:   
-                if self.stim.stimulateIClamp_firstspike():                           # if firstspike features
+                if self.stim.stimulateIClamp_firstspike(model = self.model, par = self.par):                           # if firstspike features
                     self.model.AP_firstspike = True
                     self.model.bAP_firstspike = True
-                    traces_per_stepamp, time_vec = self.stim.stimulateIClamp()       # starting full-fledged stimulation
-                    self.model.extractModelFeatures(traces_per_stepamp, time_vec)     # extracting all features
+                    traces_per_stepamp, time_vec = self.stim.stimulateIClamp(self.model)       # starting full-fledged stimulation
+                    self.model.extractModelFeatures(traces_per_stepamp, time_vec, self.stim)     # extracting all features
                     return True
                 else:
                     return
@@ -168,12 +168,12 @@ class GenSim():
                 init_data, indices = self.model.getMechanismItems()  # Initial Conductances for new cell
                 # print(init_data)
 
-
-            init_rnd_data = fnc.randomizeAutoConductances(init_data)
+            init_rnd_data = init_data
+            # init_rnd_data = fnc.randomizeAutoConductances(init_data)
             rnd_data = fnc.insertNans(init_rnd_data, indices) 
 
 
-            init_cost = self.calc.calculateFitness(sim = self, model = self.model, stim = self.stim, init_rnd_data = init_rnd_data, indices = indices) 
+            init_cost = self.calc.calculateFitness(sim = self, model = self.model, stim = self.stim, init_rnd_data = init_rnd_data, indices = indices, par = self.par) 
             
             if init_cost == 10000:  # TODO add the other forms from Optimizer in this GenSim method.
                 output = 1

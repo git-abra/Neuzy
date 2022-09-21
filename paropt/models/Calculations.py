@@ -21,8 +21,7 @@ class GenCalc():
     -------
     - sampleRecAround
     """
-    def __init__(self, model):
-        self.model = model
+    def __init__(self):
         pass
 
     def sampleRecAround(    self, 
@@ -124,13 +123,12 @@ class FitnessCalcSD(GenCalc):         # calculate Fitness with SD in denominator
     - calculateFitness()
     - updateModel
     """
-    def __init__(self, model, stim):
-        super().__init__(model)
-        self.stim = stim
+    def __init__(self):
+        super().__init__()
         pass
 
 
-    def calculateFitness(self, sim, model, stim, init_rnd_data, indices):
+    def calculateFitness(self, sim, model, stim, init_rnd_data, indices, par):
         
         val = sim.updateModel(init_rnd_data, indices)  # implicitly calls sim.updateParAndModel
 
@@ -171,16 +169,16 @@ class FitnessCalcSD(GenCalc):         # calculate Fitness with SD in denominator
                 for stepamp, stepampvalues in locationvalues.items():
                     for feature_name, featurevalues in stepampvalues.items():
                         if stepamp in stim.stepamps.keys():
-                            if model.model_features[locationkey][stepamp][feature_name]['Mean'] is None or self.model_features[locationkey][stepamp][feature_name]['Mean'] is False:
+                            if model.model_features[locationkey][stepamp][feature_name]['Mean'] is None or model.model_features[locationkey][stepamp][feature_name]['Mean'] is False:
                                 fitness_values_names.append(feature_name + " fitness ")
                                 feature_fitness = 1000
                                 fitness_values.append(feature_fitness)
 
-                            elif featurevalues['Mean'] and self.model_features[locationkey][stepamp][feature_name]['Mean']:
+                            elif featurevalues['Mean'] and model.model_features[locationkey][stepamp][feature_name]['Mean']:
                                 # numpy.core._exceptions.UFuncTypeError: ufunc 'subtract' did not contain a loop with signature matching types (dtype('<U32'), dtype('<U32')) -> dtype('<U32')   
                                 #print("1", self.model_features[locationkey][stepamp][feature_name]['Mean'], bool(self.model_features[locationkey][stepamp][feature_name]['Mean']))
                                 #print("2", float(featurevalues['Mean']), bool(float(featurevalues['Mean'])))                                                    
-                                feature_fitness = (np.abs(float(self.model_features[locationkey][stepamp][feature_name]['Mean']) - float(featurevalues['Mean'])) \
+                                feature_fitness = (np.abs(float(model.model_features[locationkey][stepamp][feature_name]['Mean']) - float(featurevalues['Mean'])) \
                                                     /float(featurevalues['Std']))
                                 # TODO prove that this change for model_features instead of target_features works                
                                 #print(feature_name, " : ", self.model_features[locationkey][stepamp][feature_name]['Mean'] , " blabla", featurevalues['Mean'] ," \
@@ -204,9 +202,9 @@ class FitnessCalcSD(GenCalc):         # calculate Fitness with SD in denominator
             # csv
             # df.to_csv("./paropt/data/parameter_values//dataframe_costs/dataframe_output_model_" + str(self.line) + ".csv")
 
-            # print("Fitness values are: ", fitness_values_dict, "on rank " + str(self.rank))
-            print("Cost is: ", max(fitness_values), " on rank " + str(self.rank))
-            lg.info("Cost is " + str(max(fitness_values)) + "on rank " + str(self.rank))
+            # print("Fitness values are: ", fitness_values_dict, "on rank " + str(par.rank))
+            print("Cost is: ", max(fitness_values), " on rank " + str(par.rank))
+            lg.info("Cost is " + str(max(fitness_values)) + "on rank " + str(par.rank))
 
             # maximum fitness value # TODO print only in verbose mode... get them flags
             print(df.idxmax())      # max(fitness_values) feature_name
