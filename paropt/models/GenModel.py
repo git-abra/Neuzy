@@ -178,14 +178,14 @@ class GenModel():           # General Model
 
         self.bAP_hpol_features = []
         
-        # TODO read dict elements (stepX: {})in depending on the step protocol given with self.stepamps
+        # TODO read dict elements (stepX: {})in depending on the step protocol given with stim.stepamps
         # print("\n")
         # print("Target Features: ", self.target_features)
         self.target_features = {}
         self.target_features['Soma'] = self.somatic_features_dict 
 
 
-    def extractModelFeatures(self, traces_per_stepamp, time_vec):
+    def extractModelFeatures(self, traces_per_stepamp, time_vec, stim):
         """
         Function to extract Model Features.
         These have to be somatic and bAP features.
@@ -205,8 +205,8 @@ class GenModel():           # General Model
                 trace['V'] = locationtrace              # Set the 'V' (=voltage) key of the trace
                 trace['T'] = time_vec                   # Set the 'T' (=time) key of the trace
 
-                stim_end = self.tstop
-                trace['stim_start'] = [self.delay]      # Set the 'stim_start' (time at which a stimulus starts, in ms) key of the trace
+                stim_end = stim.tstop
+                trace['stim_start'] = [stim.delay]      # Set the 'stim_start' (time at which a stimulus starts, in ms) key of the trace
                                                         # Warning: this need to be a list (with one element)
                 trace['stim_end'] = [stim_end]          # Set the 'stim_end' (time at which a stimulus end) key of the trace
                                                         # Warning: this need to be a list (with one element)
@@ -239,7 +239,7 @@ class GenModel():           # General Model
         ## ADAPTIONS FOR HYPERPOLARIZING CURRENT - Removing hyperpolarizing current step as key and as first index of the list which enumerates over the keys - so it is consistent
         #for i in range(len())    
         #    temp_bAP_model_feature_list.pop(0)
-        stepampnamekeys = list(self.stepamps.keys())           # stepampnames by user input from object property
+        stepampnamekeys = list(stim.stepamps.keys())           # stepampnames by user input from object property
         bAP_stepampnames = [ x for x in stepampnamekeys if "-" not in x ]       # stepampnames without the hpols
 
         soma_model_feature_dict = {}
