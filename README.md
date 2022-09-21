@@ -49,11 +49,11 @@ Accessibility is on the TODO.
 Call any start file in the root of the repository.
 
 ```bash
-python3 start.py
+python3 quickstart.py
 ```
 otherwise via bash
 ```bash
-bash start.sh  
+bash quickstart.sh 
 ```
 
 After calling, select how many CPU cores should be used in the command line.
