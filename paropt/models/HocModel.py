@@ -15,6 +15,9 @@ sys.path.insert(1, str(PP/'..'))
 import auxiliaries.constants as cs
 import auxiliaries.functions as fnc
 
+def main():
+    testmodel = HocModel(model_name = "Roe22.hoc", target_feature_file="somatic_features_hippounit.json")
+
 ## Model with HOC as input
 class HocModel(GenModel):
     """
@@ -25,7 +28,7 @@ class HocModel(GenModel):
     def __init__(   self,
                     model_name,
                     modpath = None,             # in constants.py if not given
-                    target_feature_file = None, # in constants.py if not given
+                    target_feature_file = None,
                     bap_target_file = None, 
                     hippo_bAP:bool = True,  
                     channelblocknames = None,   # has to be in the fullname format: "gkabar_kad" or "gbar_nax"
@@ -36,7 +39,7 @@ class HocModel(GenModel):
                     parameterkeywords:list = None   # Parameter Keywords from psection() density mechs, which are to be used.              
                     ):
         super().__init__(   modpath,             # in constants.py if not given
-                            target_feature_file, # in constants.py if not given
+                            target_feature_file,
                             bap_target_file, 
                             hippo_bAP,  
                             channelblocknames,  # has to be in the fullname format: "gkabar_kad" or "gbar_nax" 
@@ -48,7 +51,7 @@ class HocModel(GenModel):
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
-            self.sectionlist_list = cs.SL_NAMES       # use constant
+            self.sectionlist_list = self.getSectionListNames() #cs.SL_NAMES       # use constant
 
         if hocpath:
             self.hocpath = hocpath
@@ -70,6 +73,48 @@ class HocModel(GenModel):
 
         self.readHocModel()
         self.initializeCell()     # calls createHocModel for cell
+
+
+    def getSectionListNames(self):
+        """
+        Returns
+        -------
+        sectionlists: List - List of sectionlist names.
+        """
+        sectionlists = []
+        with open(cs.HOCPATH + '/' + self.model_name) as hoc_file:
+            hoc_string = hoc_file.read()
+        for i, line in enumerate(hoc_string.split('\n')):
+            if 'new SectionList()' in line:
+                if not 'all' in line.split('=')[0].strip():
+                    sectionlists.append(line.split('=')[0].strip())
+
+        return sectionlists
+
+    def getSectionNames(self):
+        """
+        Returns
+        -------
+        df : Dataframe of sectionnames(row) to sectionlists (col)
+        secnamedict : Dict of sectionnames(nested elements) inside sectionlists(elements)
+        """
+        secnamedict = {}
+        print(self.sectionlist_list)
+        for sl in self.sectionlist_list:
+            inputsl = getattr(self.current_cell, sl)
+            mysecnamelist = []
+            for sec in inputsl:
+                mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])     # maxsplit = 1 , take second element after '.' first element = 0 would be the templatename
+            secnamedict.update({sl: mysecnamelist})
+        df = pd.DataFrame.from_dict(secnamedict, orient = 'index').transpose()
+           
+        # TODO add version for 'all' sectionlist
+        """
+        mysecnamelist = []
+        for sec in self.current_cell.all:    
+            mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])
+        """
+        return df, secnamedict
 
     def getTemplateName(self):
         """
@@ -122,41 +167,6 @@ class HocModel(GenModel):
         if self.channelblocknames:               # Block ion channels, if set.
             self.blockIonChannel()
 
-    def getSectionNames(self):
-        """
-        Returns
-        -------
-        df : Dataframe of sectionnames(row) to sectionlists (col)
-        mysecnamelist : List of sectionnames(nested elements) inside sectionlists(elements)
-        """
-        mysecnamedict = {}
-        try:
-            if self.sectionlist_list:
-                for sl in self.sectionlist_list:
-                    inputsl = getattr(self.current_cell, sl)
-                    mysecnamelist = []
-                    for sec in inputsl:
-                        mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])     # maxsplit = 1 , take second element after '.'
-                    mysecnamedict.update({sl: mysecnamelist})
-                df = pd.DataFrame.from_dict(mysecnamedict, orient = 'index').transpose()
-            else:
-                # Use best practice "all" Sectionlist Keyword
-                try:       
-                    mysecnamelist = []
-                    for sec in self.current_cell.all:
-                        mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])
-                except Exception as e:
-                    print("Seems like there is no best practice Sectionlist called: 'all', specified in your model.")
-                    print("If you want to fix this problem, provide a SectionList for the program or add your sections to 'all' in your Hoc.")
-                    print("E.g. all = new SectionList(); sectionname all.append()")
-                    print(e)
-        except Exception as e:
-            print("Couldn't read in sectionlists")
-            print("Please give your sectionlists as list or set the constant for self.sectionlist_list in ../auxiliaries/constants.py")
-            print("The template_name for a cell shall not contain a '.' .")
-            print(e)
-
-        return df, mysecnamelist
 
     def getMechanismItems(self):
         """ Prerequisites: Read-in HocObject / HocObject in Scope 
@@ -314,4 +324,4 @@ class HocModel(GenModel):
         print(df)
 
 if __name__ == "__main__":
-    pass
+    main()
