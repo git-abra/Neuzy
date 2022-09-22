@@ -16,7 +16,7 @@ import auxiliaries.constants as cs
 import auxiliaries.functions as fnc
 
 def main():
-    testmodel = HocModel(model_name = "Roe22.hoc", target_feature_file="somatic_features_hippounit.json")
+    pass
 
 ## Model with HOC as input
 class HocModel(GenModel):
@@ -169,13 +169,14 @@ class HocModel(GenModel):
 
 
     def getMechanismItems(self):
-        """ Prerequisites: Read-in HocObject / HocObject in Scope 
-            Retrieves what self.parameterkeywords is asking for.
+        """ 
+        Prerequisites: Read-in HocObject / HocObject in Scope 
+        Retrieves what self.parameterkeywords is asking for.
 
-            Returns
-            -------
-            x_nonan : 1D array of Parameters without NaNs. (Sectionlists where channels are missing have nan value for it)
-            indices : 1D array of nan indices - Needed for reimplementing the nan values with insertNans()
+        Returns
+        -------
+        x_nonan : 1D array of Parameters without NaNs. (Sectionlists where channels are missing have nan value for it)
+        indices : 1D array of nan indices - Needed for reimplementing the nan values with insertNans()
         """
 
         myionsdict = {}
@@ -186,38 +187,30 @@ class HocModel(GenModel):
             mt.select(i)
             mt.selected(mname)
             mechname_list.append(mname[0])
-            #print(mechname_list)
        
-       # TODO code style
-        if self.sectionlist_list:
-            for sl in self.sectionlist_list:        
-                inputsl = getattr(self.current_cell, sl)
-                myionsdict_temp = {}           
-                for sec in inputsl:     
-                    for mech in sec.psection()['density_mechs'].keys():                  
-                        if mech in mechname_list:  # compare with mech to avoid errors of placeholder key/values from neuron api for a model
-                            for ionchname, ionchvalue in sec.psection()['density_mechs'][mech].items():           
-                                for parameterkeyword in self.parameterkeywords:
-                                    if parameterkeyword in ionchname:          # check for "bar", "tau", "pas" or whatever you want !
-                                        for i in ionchvalue:
-                                            myionsdict_temp.update({str(ionchname + '_' + mech): ionchvalue[0]})
+        for sl in self.sectionlist_list:        
+            inputsl = getattr(self.current_cell, sl)
+            myionsdict_temp = {}           
+            for sec in inputsl:     
+                for mech in sec.psection()['density_mechs'].keys():                 
+                    for ionchname, ionchvalue in sec.psection()['density_mechs'][mech].items():           
+                        for parameterkeyword in self.parameterkeywords:
+                            if parameterkeyword in ionchname:          # check for "bar", "tau", "pas" or whatever you want !
+                                for i in ionchvalue:                   # takes values per compartment for the ionch in the section
+                                    
+                                    myionsdict_temp.update({str(ionchname + '_' + mech): ionchvalue[0]})
 
-                                            # commented section was before blockIonChannel integration
-                                            """if i != 0:                         # only check for gbars with a value                 
-                                                # Have to save with appended sec.psection()['density_mechs'].keys() name (mech)
-                                                myionsdict_temp.update({str(ionchname + '_' + mech): ionchvalue[0]})
-                                                # myionsdict_temp.update({str(ionchname + '_' + mech): i})
-                                            else:
-                                                # Maybe set values here to 0 instead of having NaN due to the jump in updating myionsdict
-                                                continue """
+                                    # commented section was before blockIonChannel integration
+                                    """if i != 0:                         # only check for gbars with a value                 
+                                        # Have to save with appended sec.psection()['density_mechs'].keys() name (mech)
+                                        myionsdict_temp.update({str(ionchname + '_' + mech): ionchvalue[0]})
+                                        # myionsdict_temp.update({str(ionchname + '_' + mech): i})
                                     else:
-                                        continue        # do nothing and jump
+                                        # Maybe set values here to 0 instead of having NaN due to the jump in updating myionsdict
+                                        continue """
+
                 myionsdict.update({sl: myionsdict_temp})
-        else:
-        # TODO use "all" sectionlist
-            print("ERROR: No Sectionlist")
-            pass  
-        
+  
         df = pd.DataFrame(myionsdict)     # 2D of Ionchannel Values per SectionList  # Not used, but better keep it
 
         #print("INITIAL DATA: ")
@@ -240,10 +233,6 @@ class HocModel(GenModel):
         ----------
         x : (Updated) parameters to be inserted into the currently active hocobject cell.
         indices : Indices to reinsert NaNs to keep the 2D sectionlist dimensions.
-
-        Returns
-        -------
-        void : Cell in scope gets updated but doesn't have to be returned.
         """
 
         # updateHOCParameters - Sectionlist Specific! Every section inside a section has the same values (maybe distributed function in hoc still works)
@@ -254,74 +243,85 @@ class HocModel(GenModel):
         x = fnc.insertNans(x, indices)      # Give Nans back
         X = fnc.convert1DTo2DnpArr(x)       # Convert back to 2D array
         df = pd.DataFrame(X, index = self.sectionlist_list, columns = self.ionchnames).transpose()      # updated df # Reassign model-specific ordered ion channel names 
-        # print(df)
-        if self.sectionlist_list:
-            for sl in self.sectionlist_list:   
-                inputsl = getattr(self.current_cell, sl)
-                for sec in inputsl:
-                    test1_dict = copy(sec.psection()['density_mechs'])
-                    for ionchname in self.ionchnames:       # just make sure that my ionchnames are fitting, could probably also do assertions here
-                        ionchnamekey = ionchname.split('_', 1)[1]
-                        ionchnamekeykey = ionchname.split('_', 1)[0]
-                        if ionchnamekey in sec.psection()['density_mechs'].keys():                      # check if keys exist (e.g. hd doesn't exist in axonal)   
-                            if ionchnamekeykey in sec.psection()['density_mechs'][ionchnamekey].keys(): # e.g. ghdbar doesn't exist in axonal)                       
-                                # update all new random values
-                                update = df.loc[ionchname, sl]
-                                setattr(sec, ionchname, update)
+ 
+        for sl in self.sectionlist_list:   
+            inputsl = getattr(self.current_cell, sl)
+            for sec in inputsl:
+                for ionchname in self.ionchnames:       # just make sure that my ionchnames are fitting, could probably also do assertions here
+                    ionchnamekey = ionchname.split('_', 1)[1]
+                    ionchnamekeykey = ionchname.split('_', 1)[0]
+                    if ionchnamekey in sec.psection()['density_mechs'].keys():                      # check if keys exist (e.g. hd doesn't exist in axonal)   
+                        if ionchnamekeykey in sec.psection()['density_mechs'][ionchnamekey].keys(): # e.g. ghdbar doesn't exist in axonal)                       
+                            # update all new random values
+                            update = df.loc[ionchname, sl]
+                            setattr(sec, ionchname, update)
 
-                                ### values change over distance in each segment in To21 model - To21_nap.hoc specific code, for framework usage, comment this out ###
-                                if ionchnamekey == "hd" and ionchnamekeykey == "ghdbar" or ionchname == "ghdbar_hd":     # just listed everything in or
-                                    value = copy(sec.ghdbar_hd)
-                                    #print("GHDBAR ", sec, sec.ghdbar_hd)
-                                    for seg in sec:
-                                        dist = h.distance(seg.x, sec=sec)      
-                                        if dist == 0:               ## TODO Unittest and maybe remove 
-                                            continue
-                                        else:                            
-                                            seg.hd.ghdbar = (1 + 3/100 * dist) * value #sec.ghdbar_hd  # 1.9042409723832741e-05 #sec.ghdbar_hd 
-                                    #print("GHDBAR: ", sec, sec.psection()["density_mechs"]["hd"]["ghdbar"])     
-                                # else they change over distance again and don't stay on their <random> value
-                                if ionchnamekey == "kad" and ionchnamekeykey == "gkabar" or ionchname == "gkabar_kad":
-                                    value = copy(sec.gkabar_kad)
-                                    #print("GKABAR ", sec, sec.gkabar_kad)
-                                    for seg in sec:
-                                        dist = h.distance(seg.x, sec=sec) 
-                                                        
-                                        seg.kad.gkabar = (15/(1 + np.exp((300-dist)/50))) * value #0.012921529390557651   # sec.gkabar_kad
-                                    # print("GKABAR: ", sec, sec.psection()["density_mechs"]["kad"]["gkabar"])
-                                """## implement exceptions for individually set channels here                     
-                                if sl == "trunk" or sl == "apical":      # trunk parameters aren't part of the distribute_distance function
-                                   if str(sec).split(".", 1)[1] == "radTprox" \
-                                        or str(sec).split(".", 1)[1] == "radTmed"  \
-                                        or str(sec).split(".", 1)[1] == "radTdist":
+                            ### values change over distance in each segment in To21 model - To21_nap.hoc specific code, for framework usage, comment this out ###
+                            if ionchnamekey == "hd" and ionchnamekeykey == "ghdbar" or ionchname == "ghdbar_hd":     # just listed everything in or
+                                value = copy(sec.ghdbar_hd)
+                                #print("GHDBAR ", sec, sec.ghdbar_hd)
+                                for seg in sec:
+                                    dist = h.distance(seg.x, sec=sec)      
+                                    if dist == 0:               ## TODO Unittest and maybe remove 
                                         continue
+                                    else:                            
+                                        seg.hd.ghdbar = (1 + 3/100 * dist) * value #sec.ghdbar_hd  # 1.9042409723832741e-05 #sec.ghdbar_hd 
+                            #print("GHDBAR: ", sec, sec.psection()["density_mechs"]["hd"]["ghdbar"])     
+                            # else they change over distance again and don't stay on their <random> value
+                            if ionchnamekey == "kad" and ionchnamekeykey == "gkabar" or ionchname == "gkabar_kad":
+                                value = copy(sec.gkabar_kad)
+                                #print("GKABAR ", sec, sec.gkabar_kad)
+                                for seg in sec:
+                                    dist = h.distance(seg.x, sec=sec) 
+                                                    
+                                    seg.kad.gkabar = (15/(1 + np.exp((300-dist)/50))) * value #0.012921529390557651   # sec.gkabar_kad
+                                # print("GKABAR: ", sec, sec.psection()["density_mechs"]["kad"]["gkabar"])
+                            """
+                            ## implement exceptions for individually set channels here                     
+                            if sl == "trunk" or sl == "apical":      # trunk parameters aren't part of the distribute_distance function
+                                if str(sec).split(".", 1)[1] == "radTprox" \
+                                    or str(sec).split(".", 1)[1] == "radTmed"  \
+                                    or str(sec).split(".", 1)[1] == "radTdist":
+                                    continue
 
-                                elif str(sec).split(".", 1)[1] == "rad_t2":
-                                    continue"""                   
-                                
-                            else:
+                            elif str(sec).split(".", 1)[1] == "rad_t2":
                                 continue
-                        
+                            """                   
+        # TODO build for 1-column "all" sectionlist with fixed indices
+        """
+        for sec in self.current_cell.all:
+            for ionchname in self.ionchnames:
+                    ionchnamekey = ionchname.split('_', 1)[1]
+                    ionchnamekeykey = ionchname.split('_', 1)[0]
+                    if ionchnamekey in sec.psection()['density_mechs'].keys():
+                        if ionchnamekeykey in sec.psection()['density_mechs'][ionchnamekey].keys():
                         else:
                             continue
+                    else:
+                        continue
+        """
 
-        else:       
-            print("No sectionlist names given in self.sectionlist_list")
-            pass
-            # TODO build for 1-column "all" sectionlist with fixed indices
-            """
-            for sec in self.current_cell.all:
-                for ionchname in self.ionchnames:
-                        ionchnamekey = ionchname.split('_', 1)[1]
-                        ionchnamekeykey = ionchname.split('_', 1)[0]
-                        if ionchnamekey in sec.psection()['density_mechs'].keys():
-                            if ionchnamekeykey in sec.psection()['density_mechs'][ionchnamekey].keys():
-                            else:
-                                continue
-                        else:
-                            continue
-            """
-        print(df)
+    def blockIonChannel(self):
+        """
+        Block Ion Channel for Pharmacodynamics Testing - bandaid gbar to 0
+        Some channels, depending on the nmodl file, can still influence the conductance,
+        if they are interdependent with another channel
+        see https://www.neuron.yale.edu/phpBB/viewtopic.php?t=4057
+        """
+        
+        # short version
+        if isinstance(self.channelblocknames, list):            # if multiple are given
+            for element in self.channelblocknames: 
+                for sl in self.sectionlist_list: 
+                    inputsl = getattr(self.current_cell, sl) 
+                    for sec in inputsl:
+                        setattr(sec, element, 0)                # set to 0
+        else:
+            for sl in self.sectionlist_list:            
+                inputsl = getattr(self.current_cell, sl)           
+                for sec in inputsl:
+                    setattr(sec, self.channelblocknames, 0)     # set to 0
+
 
 if __name__ == "__main__":
     main()

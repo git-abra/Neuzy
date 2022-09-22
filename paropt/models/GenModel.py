@@ -116,47 +116,6 @@ class GenModel():           # General Model
         # But works to garbage collect old cells in RAM, as tested experimentally on total RAM usage.
         self.current_cell = None
 
-    def blockIonChannel(self):
-        #### Block Ion Channel for Pharmacodynamics Testing - bandaid gbar to 0
-
-        # TODO maybe set the other values of the whole mech in 'density_mechs' also to 0. 
-        # Some channels, depending on the nmodl file, can still influence the conductance,
-        # if they are interdependent with another channel
-        # see https://www.neuron.yale.edu/phpBB/viewtopic.php?t=4057
-        
-        # short version
-        if isinstance(self.channelblocknames, list):            # if multiple are given
-            for element in self.channelblocknames: 
-                for sl in self.sectionlist_list: 
-                    inputsl = getattr(self.current_cell, sl) 
-                    for sec in inputsl:
-                        setattr(sec, element, 0)                # set to 0
-        else:
-            for sl in self.sectionlist_list:            
-                inputsl = getattr(self.current_cell, sl)           
-                for sec in inputsl:
-                    setattr(sec, self.channelblocknames, 0)     # set to 0
-
-        # long version with safety checks for data integrity
-        """mechname_list = []
-        mt = h.MechanismType(0)
-        mname = h.ref('')
-        for i in range(mt.count()):
-            mt.select(i)
-            mt.selected(mname)
-            mechname_list.append(mname[0]) 
-
-        for sl in self.sectionlist_list:            
-            inputsl = getattr(self.current_cell, sl)           
-            for sec in inputsl:
-                setattr(sec, self.channelblocknames, 0) 
-                for mech in sec.psection()['density_mechs'].keys():             
-                    if mech in mechname_list and mech == self.channelblocknames.split("_", 1)[1]:
-                        for ionchname, ionchvalue in sec.psection()['density_mechs'][mech].items():                             
-                            if ionchname == self.channelblocknames.split("_", 1)[0]:
-                                setattr(sec, self.channelblocknames, 0) # set channel value on 0 
-                            else:
-                                continue"""
 
     def createFeatureDict(self):
         ## Target Features from experimental data file
