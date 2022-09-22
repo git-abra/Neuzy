@@ -168,18 +168,18 @@ class GenSim():
                 init_data, indices = self.model.getMechanismItems()  # Initial Conductances for new cell
                 # print(init_data)
 
-            init_rnd_data = init_data
-            # init_rnd_data = fnc.randomizeAutoConductances(init_data)
+            # init_rnd_data = init_data # test
+            init_rnd_data = fnc.randomizeAutoConductances(init_data)
             rnd_data = fnc.insertNans(init_rnd_data, indices) 
 
 
-            init_cost = self.calc.calculateFitness(sim = self, model = self.model, stim = self.stim, init_rnd_data = init_rnd_data, indices = indices, par = self.par) 
+            init_cost = self.calc.calculateFitness(init_rnd_data = init_rnd_data, indices = indices, sim = self, model = self.model, stim = self.stim, par = self.par)  
             
             if init_cost == 10000:  # TODO add the other forms from Optimizer in this GenSim method.
                 output = 1
             else:
                 ## Get Ouput         
-                output = self.opt.runOptimizer(init_data, indices, self.calc, init_rnd_data, rnd_data, init_cost) #   # output of optimizers
+                output = self.opt.runOptimizer(init_data, init_rnd_data, rnd_data, init_cost, indices, calc = self.calc, sim = self, model = self.model, stim = self.stim, par = self.par) #   # output of optimizers
 
 
             if isinstance(output, int) and output == 1:

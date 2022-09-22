@@ -128,7 +128,7 @@ class FitnessCalcSD(GenCalc):         # calculate Fitness with SD in denominator
         pass
 
 
-    def calculateFitness(self, sim, model, stim, init_rnd_data, indices, par):
+    def calculateFitness(self, init_rnd_data, indices, sim, model, stim, par):
         
         val = sim.updateModel(init_rnd_data, indices)  # implicitly calls sim.updateParAndModel
 
