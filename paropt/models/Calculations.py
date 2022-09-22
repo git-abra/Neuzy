@@ -23,6 +23,10 @@ class GenCalc():
     """
     def __init__(self):
         pass
+    
+
+    def calcInitCost(init_rnd_date, indices):
+        pass
 
     def sampleRecAround(    self, 
                             output_array, 
@@ -121,12 +125,10 @@ class FitnessCalcSD(GenCalc):         # calculate Fitness with SD in denominator
     Methods
     -------
     - calculateFitness()
-    - updateModel
     """
     def __init__(self):
         super().__init__()
         pass
-
 
     def calculateFitness(self, init_rnd_data, indices, sim, model, stim, par):
         
