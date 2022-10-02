@@ -4,3 +4,6 @@ INITIAL_CONDUCTANCES_LIST.json
 *.pyc
 *.log
 .vscode
+dist
+build
+*.egg-info
