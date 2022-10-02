@@ -45,8 +45,7 @@ Accessibility is on the TODO.
 ---
 
 ## Quickstart:
-
-Call any start file in the root of the repository.
+After downloading call any start file in the root of the neuzy folder.
 
 ```bash
 python3 quickstart.py
@@ -57,6 +56,13 @@ bash quickstart.sh
 ```
 
 After calling, select how many CPU cores should be used in the command line.
+
+With pyproject.toml, there is also the option to install it as package with pip from the root of the repository.
+In later versions it will be available on pypi.org.
+
+```
+pip install .
+```
 
 ---
 ## Output
