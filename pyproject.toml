@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=63.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Neuzy"
+version = "0.1"
+
+authors = [
+  { name="Fanantenana-Dev", email="bioinfneuro@gmail.com" },
+]
+
+description = "Neuzy - Population-based Modelling"
+readme = "README.md"
+license = {file = "LICENSE.md"}
+requires-python = ">=3.8, <3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    'hippounit', 
+    'pathlib', 
+    'neuron', 
+    'efel', 
+    'pandas', 
+    'mpi4py', 
+    'numpy', 
+    'scipy'
+]
+
+
+[project.urls]
+"Homepage" = "https://neuzy.de"
+"Github" = "https://github.com/fanantenana-dev/Neuzy"
+"Bug Tracker" = "https://github.com/fanantenana-dev/Neuzy/issues"
+
+[tool.setuptools]
+include-package-data = true
+# This is already the default behaviour if your are using
+# pyproject.toml to configure your build.
+# You can deactivate that with `include-package-data = false`
+
+[tool.setuptools.packages]
+find = {} # Scan the project directory with the default parameters
+
+#[tool.setuptools.packages.find]
+#namespaces = false
+#where = ["neuzy"]
+#include = ["mypackage*"]  # ["*"] by default
+# exclude = ["mypackage.tests*"]  # empty by default
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.json", "*.sh", "*.hoc", "*.mod", "*.swc", "*.ipynb"]
