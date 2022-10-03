@@ -17,7 +17,8 @@ import sys, pathlib
 from neuron import h
 import efel
 import numpy as np
-PARENTPATH = pathlib.Path(__file__).parent   #PARENTPATH Parentpath from current file
+
+PARENTPATH = pathlib.Path(__file__).parent   # PARENTPATH from current file
 sys.path.insert(1, str(PARENTPATH / '..'))
 
 import neuzy.paropt.auxiliaries.constants as cs
