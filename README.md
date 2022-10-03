@@ -64,6 +64,14 @@ In later versions it will be available on pypi.org.
 pip install .
 ```
 
+If you do not install it this way, and instead use it without installing it, 
+make sure to set or add (to ~/.bashrc) your $PYTHONPATH manually to the repositories rootpath.
+This is necessary to avoid pathing errors within the repositorie call structure.
+
+```
+export PYTHONPATH=/home/username/repositories/Neuzy/
+```
+
 ---
 ## Output
 
