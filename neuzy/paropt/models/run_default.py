@@ -41,7 +41,7 @@ def main():
     """ 
     ## Building default objects with "1" as ID
     hoc_1 = HocModel(
-                        model_name = "Roe22.hoc",
+                        model_name = "Roe22_2.hoc",
                         modpath = None,
                         target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
                         template_name = "Roe22_reduced_CA1", 
