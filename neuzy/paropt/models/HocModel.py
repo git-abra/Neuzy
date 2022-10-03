@@ -23,6 +23,19 @@ import neuzy.paropt.auxiliaries.constants as cs
 import neuzy.paropt.auxiliaries.functions as fnc
 
 def main():
+    hoc_1 = HocModel(
+                        model_name = "Roe22_2.hoc",
+                        modpath = None,
+                        target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
+                        template_name = "Roe22_reduced_CA1", 
+                        hippo_bAP = True,
+                        channelblocknames = None,               # Run it with CompleteOptModel
+                        verbose = True
+                        )
+
+    hoc_1.getMechanismItems()
+    hoc_1.get_ionchnames()
+
     pass
 
 ## Model with HOC as input
@@ -43,7 +56,7 @@ class HocModel(GenModel):
                     hocpath = None,             # in constants.py if not given
                     sectionlist_list:list = None,   # adapt sectionlist to your model #TODO make a function to retrieve sectionlist names, and not only section names
                     template_name = None,           # from hoc begintemplate "template_name" 
-                    parameterkeywords:list = None   # Parameter Keywords from psection() density mechs, which are to be used.              
+                    parameterkeywords:list = ["bar"]  # Parameter Keywords from psection() density mechs, which are to be used.              
                     ):
         super().__init__(   modpath,             # in constants.py if not given
                             target_feature_file,
@@ -58,7 +71,7 @@ class HocModel(GenModel):
         if sectionlist_list:
             self.sectionlist_list = sectionlist_list
         else:
-            self.sectionlist_list = self.getSectionListNames() #cs.SL_NAMES       # use constant
+            self.sectionlist_list = self.get_sectionlist_names() #cs.SL_NAMES       # use constant
 
         if hocpath:
             self.hocpath = hocpath
@@ -68,21 +81,19 @@ class HocModel(GenModel):
         if template_name:
             self.template_name = template_name
         else:
-            self.getTemplateName()
+            self.get_template_name()
             print("Extracted template_name: " + str(self.template_name) + ", because no template_name was given.")
             lg.info("Extracted template_name: " + str(self.template_name) + ", because no template_name was given.")
 
-        if parameterkeywords:
-            self.parameterkeywords = parameterkeywords
-        else: 
-            self.parameterkeywords = ["bar"]    # List of parameter key words like "bar" for gbar active ion channels. You can basically choose anything from neuron's psection() density_mech dict.
-                                                # check for "bar", "tau", "pas" or whatever you want
+
+        self.parameterkeywords = parameterkeywords      # List of parameter key words like "bar" for gbar active ion channels. You can basically choose anything from neuron's psection() density_mech dict.
+                                                        # check for "bar", "tau", "pas" or whatever you want
 
         self.readHocModel()
         self.initializeCell()     # calls createHocModel for cell
 
 
-    def getSectionListNames(self):
+    def get_sectionlist_names(self):
         """
         Returns
         -------
@@ -96,11 +107,10 @@ class HocModel(GenModel):
                 if not 'all' in line.split('=')[0].strip():
                     sectionlists.append(line.split('=')[0].strip())
 
-        print(sectionlists)
         return sectionlists
 
 
-    def getSectionNames(self):
+    def get_section_names(self):
         """
         Returns
         -------
@@ -108,7 +118,6 @@ class HocModel(GenModel):
         secnamedict : Dict of sectionnames(nested elements) inside sectionlists(elements)
         """
         secnamedict = {}
-        print(self.sectionlist_list)
         for sl in self.sectionlist_list:
             inputsl = getattr(self.current_cell, sl)
             mysecnamelist = []
@@ -126,7 +135,7 @@ class HocModel(GenModel):
         return df, secnamedict
 
 
-    def getTemplateName(self):
+    def get_template_name(self):
         """
         Find the template name from hoc_string
         Note: this will fail if there is a begintemplate in a `/* */` style
@@ -179,6 +188,34 @@ class HocModel(GenModel):
         if self.channelblocknames:               # Block ion channels, if set.
             self.blockIonChannel()
 
+    def get_ionchnames(self):
+        """
+        Returns
+        -------
+
+        ionchnames: list - List of ion channel names, which are implemented in the HOC model.
+        ionchnames_dict: dict - Dict of section as key + the ionchnames list as values
+        """
+
+        ionchnames = []
+        ionchnames_dict = {}
+
+        for sl in self.sectionlist_list:        
+            inputsl = getattr(self.current_cell, sl)       
+            for sec in inputsl:
+                _ionchnames = []  
+                for ionchname in sec.psection()['density_mechs'].keys():
+                    for ionchnamename in sec.psection()['density_mechs'][ionchname].keys():
+                        for parameterkeyword in self.parameterkeywords:
+                            if parameterkeyword in ionchnamename:      # check for "bar", "tau", "pas" or whatever you want
+                                _ionchname = str(ionchnamename + '_' + ionchname)
+                                _ionchnames.append(_ionchname)
+                                ionchnames.append(_ionchname)
+                # ionchnames_dict[sec] = _ionchnames
+                ionchnames_dict.update({sec: _ionchnames})
+
+        return ionchnames, ionchnames_dict
+
 
     def getMechanismItems(self):
         """ 
@@ -192,25 +229,19 @@ class HocModel(GenModel):
         """
 
         myionsdict = {}
-        mechname_list = []
-        mt = h.MechanismType(0)
-        mname = h.ref('')
-        for i in range(mt.count()):
-            mt.select(i)
-            mt.selected(mname)
-            mechname_list.append(mname[0])
-       
+
         for sl in self.sectionlist_list:        
             inputsl = getattr(self.current_cell, sl)
-            myionsdict_temp = {}           
+            _myionsdict_temp = {}           
             for sec in inputsl:     
                 for mech in sec.psection()['density_mechs'].keys():               
                     for ionchname, ionchvalue in sec.psection()['density_mechs'][mech].items():           
                         for parameterkeyword in self.parameterkeywords:
                             if parameterkeyword in ionchname:          # check for "bar", "tau", "pas" or whatever you want !
                                 for i in ionchvalue:                   # takes values per compartment for the ionch in the section
-                                    
-                                    myionsdict_temp.update({str(ionchname + '_' + mech): ionchvalue[0]})
+                                   
+                                    # TODO  differentiate for segment in ionchvalue
+                                    _myionsdict_temp.update({str(ionchname + '_' + mech): ionchvalue[0]})
 
                                     # commented section was before blockIonChannel integration
                                     """if i != 0:                         # only check for gbars with a value                 
@@ -221,14 +252,14 @@ class HocModel(GenModel):
                                         # Maybe set values here to 0 instead of having NaN due to the jump in updating myionsdict
                                         continue """
 
-            myionsdict.update({sl: myionsdict_temp})
+            myionsdict.update({sl: _myionsdict_temp})
   
         df = pd.DataFrame(myionsdict)     # 2D of Ionchannel Values per SectionList
 
         #print("INITIAL DATA: ")
         #print("\n")
         #print(df)
-    
+
         self.ionchnames = list(df.index)
         x = fnc.convertDfTo1D(df)             # 1D array of Df , with Nans
         indices = fnc.getNans(x)
@@ -325,10 +356,10 @@ class HocModel(GenModel):
                     ionchnamekey = ionchname.split('_', 1)[1]
                     ionchnamekeykey = ionchname.split('_', 1)[0]
                     if ionchnamekey in sec.psection()['density_mechs'].keys() and ionchnamekeykey in sec.psection()['density_mechs'][ionchnamekey].keys():
-                        if method is "log":
+                        if method == "log":
                             x = ((1/1e-7)**getattr(sec, ionchname)*1e-7)   # apply logarithm with upper and lower bound
                 
-                        elif method is "uniform":
+                        elif method == "uniform":
                             x = rng.uniform(0, 1)         # norm lineal scale
 
                # print(sec.psection()['density_mechs'])
