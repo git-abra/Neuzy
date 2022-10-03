@@ -23,19 +23,6 @@ import neuzy.paropt.auxiliaries.constants as cs
 import neuzy.paropt.auxiliaries.functions as fnc
 
 def main():
-    hoc_1 = HocModel(
-                        model_name = "Roe22_2.hoc",
-                        modpath = None,
-                        target_feature_file = "somatic_features_hippounit.json", #"somatic_target_features.json", 
-                        template_name = "Roe22_reduced_CA1", 
-                        hippo_bAP = True,
-                        channelblocknames = None,               # Run it with CompleteOptModel
-                        verbose = True
-                        )
-
-    hoc_1.getMechanismItems()
-    hoc_1.get_ionchnames()
-
     pass
 
 ## Model with HOC as input
