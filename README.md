@@ -21,7 +21,7 @@ Original model, which was used is from Tomko et al. 2021 https://senselab.med.ya
 
 ---
 
-## Prerequisites:
+## Prerequisites
 
 HOC file for the morphology and biophysics.
 NMODL files for the ion channel expressions.
@@ -44,19 +44,22 @@ Accessibility is on the TODO.
 
 ---
 
-## Quickstart:
+## Quickstart
 After downloading call any start file in the root of the neuzy folder.
 
 ```bash
-python3 quickstart.py
+python3 ./neuzy/quickstart.py
 ```
 otherwise via bash
 ```bash
-bash quickstart.sh 
+bash ./neuzy/quickstart.sh 
 ```
+
+Calling it from the root sets your PYTHONPATH automatically to the root of the repository.
 
 After calling, select how many CPU cores should be used in the command line.
 
+## Install
 With pyproject.toml, there is also the option to install it as package with pip from the root of the repository.
 In later versions it will be available on pypi.org.
 
@@ -64,12 +67,12 @@ In later versions it will be available on pypi.org.
 pip install .
 ```
 
-If you do not install it this way, and instead use it without installing it, 
-make sure to set or add (to ~/.bashrc) your $PYTHONPATH manually to the repositories rootpath.
-This is necessary to avoid pathing errors within the repositorie call structure.
+If you do not install it this way, and instead use it neither by installing it, nor by using it from the root of the repository 
+(see above, sets PYTHONPATH automatically), then make sure to set or add (to ~/.bashrc) your $PYTHONPATH manually to the repository's rootpath.
+This is necessary to avoid pathing errors within the repository's call structure.
 
 ```
-export PYTHONPATH=/home/username/repositories/Neuzy/
+export PYTHONPATH=/home/username/directory/Neuzy/
 ```
 
 ---
