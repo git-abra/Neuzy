@@ -1,22 +1,25 @@
-#### Neuzy
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
 
-import sys, pathlib, csv, json
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
-PP = pathlib.Path(__file__).parent
-
-sys.path.insert(1, str(PP / '..' / '..' / 'auxiliaries/'))
-sys.path.insert(1, str(PP / '..'))
-
-from constants import *
-import create_data
-from CompleteOptModel import CompleteOptModel
-from paropt.models.TestingCompleteModel import *
-
+import json
 from neuron import h
-from neuron.units import ms, mV
-from scipy.integrate import quad
 import numpy as np
-import pandas as pd
+
+from neuzy.paropt.auxiliaries.constants import *
+
+from CompleteOptModel import CompleteOptModel
+from neuzy.paropt.models.TestingCompleteModel import *
+
+
 
 class ATPCalc():
     def __init__(self):

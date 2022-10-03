@@ -1,19 +1,21 @@
-#### Neuzy ####
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
 
-##################################################################
-# "create_data.py"
-# Fanantenana                                                    #
-##################################################################
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 ## File to create Lists or Dictionaries from JSON data files to read in extractFeatures() for eFEL
 
-import json, os, csv, sys, pathlib
-
-PP = pathlib.Path(__file__).parent  # parent path on directory
-sys.path.insert(1, str(PP))
-
+import json, os, csv
 import numpy as np
-from constants import *
+
+from neuzy.paropt.auxiliaries.constants import *
 
 
 def getNans(x):

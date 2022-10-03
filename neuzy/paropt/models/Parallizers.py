@@ -1,3 +1,15 @@
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
 ## Class for MPI Object Instantiation
 
 ## Create objects to distribute them over your cores. 
@@ -5,22 +17,11 @@
 # Therefore the user can choose which model object has to be prioritized in core usage.
 # On the other hand, the choice to use another parallelization is made by creating objects of another class, currently placeholder.
 
-import os, sys, pathlib
-
-PP = pathlib.Path(__file__).parent  # parent path on directory
-sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
-
+import os
 import logging as lg
-import pandas as pd
 from mpi4py import MPI
 
-import auxiliaries.constants as cs
-import auxiliaries.functions as fnc
-
-# TODO should replace this kind of path management soon
-PP = pathlib.Path(__file__).parent  # parent path on directory
-sys.path.insert(1, str(PP / '..' / 'auxiliaries'))
-
+import neuzy.paropt.auxiliaries.constants as cs
 
 class Parallizer():
     """

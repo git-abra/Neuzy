@@ -1,4 +1,14 @@
-#### Neuzy  ####
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 ## Classes for Models, especially GenModel, the parent of all models. 
 # Child HOCModel is outsourced in HocModels.py
@@ -7,13 +17,11 @@ import sys, pathlib
 from neuron import h
 import efel
 import numpy as np
-import pandas as pd
+PARENTPATH = pathlib.Path(__file__).parent   #PARENTPATH Parentpath from current file
+sys.path.insert(1, str(PARENTPATH / '..'))
 
-PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
-sys.path.insert(1, str(PP / '..'))
-
-import auxiliaries.constants as cs
-import auxiliaries.functions as fnc
+import neuzy.paropt.auxiliaries.constants as cs
+import neuzy.paropt.auxiliaries.functions as fnc
 
 class GenModel():           # General Model
     """ 
@@ -119,7 +127,7 @@ class GenModel():           # General Model
 
     def createFeatureDict(self):
         ## Target Features from experimental data file
-        self.somatic_features_dict = fnc.experimentalDataToDict(file_name = self.target_feature_file, file_path = str(PP / '..' / 'data' / 'features' / 'target_features'))
+        self.somatic_features_dict = fnc.experimentalDataToDict(file_name = self.target_feature_file, file_path = str(PARENTPATH / '..' / 'data' / 'features' / 'target_features'))
         temp_hpol_list = []
         temp_dpol_list = []
 
@@ -375,7 +383,7 @@ class GenModel():           # General Model
         
         if self.bap_target_file:         # If True, check if bAP Target Features are given with a file           # TODO
             # TODO add ez json load
-            self.bAP_features_dict = fnc.experimentalDataToDict(file_name = self.bap_target_file, file_path = str(PP / '..' / 'data' / 'features' /' target_features'))
+            self.bAP_features_dict = fnc.experimentalDataToDict(file_name = self.bap_target_file, file_path = str(PARENTPATH / '..' / 'data' / 'features' /' target_features'))
             # TODO
         else:  # hardcoded crap
             self.target_features['bAP_50um'] = {    'Step08' : { 'AP1_amp': {'Std': 3.84, 'Mean': 66.6474010216}, \
