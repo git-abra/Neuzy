@@ -420,11 +420,8 @@ class GenModel():           # General Model
         print("\n")
         print("TARGET FEATURES:")
         print(self.target_features)
-        print("\n")
 
         ## Print all bAP features which are selected for usage.
         print("\n")
-        print("bAP Features:")
         print("bAP Features: ", self.bAP_features)
         print("\n")
-
