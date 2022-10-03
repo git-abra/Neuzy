@@ -1,19 +1,24 @@
-import sys, pathlib, json
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
 
-PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
-sys.path.insert(1, str(PP / '..'))
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
-import auxiliaries.constants as cs
-import auxiliaries.functions as fnc
-
-from HocModel import HocModel
 import numpy as np
-import csv
+import csv, json
 from neuron import h
-from neuron.units import ms, mV
-from scipy.integrate import quad
 import numpy as np
-import pandas as pd
+
+import neuzy.paropt.auxiliaries.constants as cs
+import neuzy.paropt.auxiliaries.functions as fnc
+
+from neuzy.paropt.models.HocModel import HocModel
 
 class TestingCompleteModel():
     def __init__(self, filepath, line, model):

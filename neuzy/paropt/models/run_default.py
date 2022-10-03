@@ -1,24 +1,30 @@
-#### Neuzy ####
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 ## Quickstart/run_default
 # Can be written as jupyter notebook and configured by the user
 # Runs with default parameters (e.g. population size)
 
-import sys, pathlib, argparse
-
-# Pathing
-PP = pathlib.Path(__file__).parent  # parent path on directory
-sys.path.insert(1, str(PP / '..'))
+import argparse
 
 ## Classes
-from Parallizers import MPIpar          # Parallelization Class
-from HocModel import HocModel          # Model Class to read in HOC and have methods on the model
-from Stims import Firstspike_SortOutStim           # Stim protocol class
-from Calculations import FitnessCalcSD  # Calculations for Fitness
-from Optimizers import ScipyOpt         # Optimizer
-from Simulations import GenSim          # Run all objects in concatenation"""
+from neuzy.paropt.models.Parallizers import MPIpar          # Parallelization Class
+from neuzy.paropt.models.HocModel import HocModel          # Model Class to read in HOC and have methods on the model
+from neuzy.paropt.models.Stims import Firstspike_SortOutStim           # Stim protocol class
+from neuzy.paropt.models.Calculations import FitnessCalcSD  # Calculations for Fitness
+from neuzy.paropt.models.Optimizers import ScipyOpt         # Optimizer
+from neuzy.paropt.models.Simulations import GenSim          # Run all objects in concatenation"""
 
-# from CompleteOptModel import CompleteOptModel
+# from neuzy.paropt.models.CompleteOptModel import CompleteOptModel
 
 ## Command Line Arguments
 parser = argparse.ArgumentParser()

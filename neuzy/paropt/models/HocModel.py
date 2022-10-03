@@ -1,19 +1,26 @@
-#### Neuzy
+"""
+Neuzy - Population-based Neuron Modelling, Copyright (C) 2022 Adrian Röth
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+For details see the GNU General Public License and LICENSE.md in the root of the repository.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 from neuron import h
-import sys, pathlib
+import pathlib
 from copy import copy
 import pandas as pd
 import numpy as np
 import logging as lg
 
-from GenModel import GenModel
+from neuzy.paropt.models.GenModel import GenModel
 
-PP = pathlib.Path(__file__).parent   # PP Parentpath from current file
-sys.path.insert(1, str(PP/'..'))
-
-import auxiliaries.constants as cs
-import auxiliaries.functions as fnc
+import neuzy.paropt.auxiliaries.constants as cs
+import neuzy.paropt.auxiliaries.functions as fnc
 
 def main():
     pass
