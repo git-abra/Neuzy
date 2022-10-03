@@ -174,6 +174,8 @@ class GenSim():
                 # print(init_data)
 
             # init_rnd_data = init_data # test
+            # self.model.randomize_model_parameters()
+            
             init_rnd_data = fnc.randomizeAutoConductances(init_data)
             rnd_data = fnc.insertNans(init_rnd_data, indices) 
 
@@ -189,7 +191,7 @@ class GenSim():
 
             if isinstance(output, int) and output == 1:
                 print("Abort Error 1: Model didn't spike at enough frequency at start i.e. no Action Potentials at the start. No save.")
-                lg.error("Abort Error 1: Model didn't spike at enough frequency at start i.e. no Action Potentials at the start. No save.")             
+                #lg.error("Abort Error 1: Model didn't spike at enough frequency at start i.e. no Action Potentials at the start. No save.")             
                 #continue
 
             elif isinstance(output, int) and output == 2:

@@ -96,7 +96,9 @@ class HocModel(GenModel):
                 if not 'all' in line.split('=')[0].strip():
                     sectionlists.append(line.split('=')[0].strip())
 
+        print(sectionlists)
         return sectionlists
+
 
     def getSectionNames(self):
         """
@@ -123,6 +125,7 @@ class HocModel(GenModel):
         """
         return df, secnamedict
 
+
     def getTemplateName(self):
         """
         Find the template name from hoc_string
@@ -142,6 +145,7 @@ class HocModel(GenModel):
         else:   # no break
             raise Exception('Could not find begintemplate and therefore template_name in hoc file')
 
+
     def readHocModel(self):
         """
         Read in Hoc Model with h.xopen()
@@ -152,6 +156,7 @@ class HocModel(GenModel):
             print("Hoc Morphology is loaded in!")
         except Exception as e:
             print("Hoc Morphology file wasn't able to load, check your pwd and if the morphology is in your 'morphos' folder.", e)
+
 
     def createHocModel(self):   # TODO automatically load READ-IN template in
         """
@@ -199,7 +204,7 @@ class HocModel(GenModel):
             inputsl = getattr(self.current_cell, sl)
             myionsdict_temp = {}           
             for sec in inputsl:     
-                for mech in sec.psection()['density_mechs'].keys():                 
+                for mech in sec.psection()['density_mechs'].keys():               
                     for ionchname, ionchvalue in sec.psection()['density_mechs'][mech].items():           
                         for parameterkeyword in self.parameterkeywords:
                             if parameterkeyword in ionchname:          # check for "bar", "tau", "pas" or whatever you want !
@@ -216,14 +221,14 @@ class HocModel(GenModel):
                                         # Maybe set values here to 0 instead of having NaN due to the jump in updating myionsdict
                                         continue """
 
-                myionsdict.update({sl: myionsdict_temp})
+            myionsdict.update({sl: myionsdict_temp})
   
-        df = pd.DataFrame(myionsdict)     # 2D of Ionchannel Values per SectionList  # Not used, but better keep it
+        df = pd.DataFrame(myionsdict)     # 2D of Ionchannel Values per SectionList
 
         #print("INITIAL DATA: ")
         #print("\n")
         #print(df)
-        
+    
         self.ionchnames = list(df.index)
         x = fnc.convertDfTo1D(df)             # 1D array of Df , with Nans
         indices = fnc.getNans(x)
@@ -246,7 +251,6 @@ class HocModel(GenModel):
 
         # could split into multiple functions to reassign the dataframe from 1D array to 2D with self.ionchnames which comes from SciPy - 
         # so I don't have to give self.ionchnames as additional argument for this function
-         
         x = fnc.insertNans(x, indices)      # Give Nans back
         X = fnc.convert1DTo2DnpArr(x)       # Convert back to 2D array
         df = pd.DataFrame(X, index = self.sectionlist_list, columns = self.ionchnames).transpose()      # updated df # Reassign model-specific ordered ion channel names 
@@ -307,6 +311,32 @@ class HocModel(GenModel):
                     else:
                         continue
         """
+    
+    def randomize_model_parameters(self, method = "log", bounds = None, seed = None):
+        """
+        Uses initialized model and randomizes every parameter
+        """
+        rng = np.random.default_rng(seed)
+
+        for sl in self.sectionlist_list:   
+            inputsl = getattr(self.current_cell, sl)
+            for sec in inputsl:
+                for ionchname in self.ionchnames:       # just make sure that my ionchnames are fitting, could probably also do assertions here
+                    ionchnamekey = ionchname.split('_', 1)[1]
+                    ionchnamekeykey = ionchname.split('_', 1)[0]
+                    if ionchnamekey in sec.psection()['density_mechs'].keys() and ionchnamekeykey in sec.psection()['density_mechs'][ionchnamekey].keys():
+                        if method is "log":
+                            x = ((1/1e-7)**getattr(sec, ionchname)*1e-7)   # apply logarithm with upper and lower bound
+                
+                        elif method is "uniform":
+                            x = rng.uniform(0, 1)         # norm lineal scale
+
+               # print(sec.psection()['density_mechs'])
+
+        # x[i] = rng.uniform(x[i]/1000, x[i]*1000)   # relative bounds to 10
+        # x[i] = abs(rng.normal(0.001, 0.01))   # relative bounds, normal distribution
+        # x[i] = x[i]  # test init data
+
 
     def blockIonChannel(self):
         """
