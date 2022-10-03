@@ -3,6 +3,9 @@
 echo -e "Neuzy - Population-based Neuron Modelling, Copyright (C) 2022  Adrian Röth \nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it under certain conditions.\n"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+export PYTHONPATH=$PWD
+
 NCORE=$(grep -c ^processor /proc/cpuinfo)
 echo "Your system supports up to $NCORE CPU cores"
 read -p "How many CPU cores do you want to use in parallelization? " cores
