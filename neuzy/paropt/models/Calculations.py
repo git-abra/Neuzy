@@ -25,21 +25,24 @@ class GenCalc():
 
     Methods
     -------
-    - sampleRecAround
+    - sample_rec_around
     """
     def __init__(self):
+        # TODO maybe give sim and model in constructor instead of in every method
+        # TODO check memory behaviour of im/mutable objects from sim/model when assigned to self.sim/model, if identical, then do this
         pass
     
 
     def calcInitCost(init_rnd_date, indices):
         pass
 
-    def sampleRecAround(    self, 
+    def sample_rec_around(    self, 
                             output_array, 
                             out_fun, 
                             indices, 
                             calc,
                             model,
+                            sim,
                             multiplier = 1.05, 
                             counter = 0,
                             maxcounter = 0, 
@@ -81,43 +84,43 @@ class GenCalc():
                     print("Sample is better than original output combination, saving sample")
                     lg.info("Sample is better than original output combination, saving sample")
                     
-                    with open(self.sample_output_csv_fun_data, "a") as f:
+                    with open(sim.sample_output_csv_fun_data, "a") as f:
                         print(sample_fun, end='\n', file=f)                 # *sample_fun
 
                     #sample_array = insertNans(sample_array, indices)
                     sample_output_list = sample_array.tolist()
-                    with open(self.sample_output_csv_par_data, "a") as f:
+                    with open(sim.sample_output_csv_par_data, "a") as f:
                         print(*sample_output_list, sep=',', end='\n', file=f)
                     
                     ## Try even more but set limit to 100 times of recursion
                     print("Trying to find more samples based on the successful sample on iteration " + str(maxcounter) + " with " + str(counter) + " results already")
                     lg.info("Trying to find more samples based on the successful sample on iteration " + str(maxcounter) + " with " + str(counter) + " results already")
-                    self.sampleRecAround(sample_array, sample_fun, indices, counter = counter, maxcounter = maxcounter)
+                    self.sample_rec_around(sample_array, sample_fun, indices, counter = counter, maxcounter = maxcounter)
 
                 ## Recursion - try till it gets better than out_fun
                 else:
                     maxcounter = maxcounter + 1
                     print("Sample is not better, sampling again with input values on iteration " + str(maxcounter) + " with " + str(counter) + " results already")
                     lg.info("Sample is not better, sampling again with input values on iteration " + str(maxcounter) + " with " + str(counter) + " results already")
-                    self.sampleRecAround(output_array, out_fun, indices, counter = counter, maxcounter = maxcounter)  
+                    self.sample_rec_around(output_array, out_fun, indices, counter = counter, maxcounter = maxcounter)  
             except Exception as e:
                 # Hoc Errors... scopmath .... I DON'T KNOW WHY
                 print("Exception caught: ", e ," reinitializing with inital values")
                 lg.info("Exception caught, reinitializing with initial values")
-                self.deleteCell()
-                self.initializeCell()
+                model.deleteCell()
+                model.initializeCell()
                 maxcounter = maxcounter + 1
-                self.sampleRecAround(output_array, out_fun, indices, counter = counter, maxcounter = maxcounter)
+                self.sample_rec_around(output_array, out_fun, indices, counter = counter, maxcounter = maxcounter)
         else:
             print("Sampling process completed.")
             lg.info("Sampling process completed.")
 
             # Saving the best results separately
-            with open(self.sample_best_output_csv_fun_data, "a") as f:
+            with open(sim.sample_best_output_csv_fun_data, "a") as f:
                     print(out_fun, end='\n', file=f)                 # *sample_fun
 
             sample_best_output_par_list = output_array.tolist()
-            with open(self.sample_best_output_csv_par_data, "a") as f:
+            with open(sim.sample_best_output_csv_par_data, "a") as f:
                     print(*sample_best_output_par_list, sep=',', end='\n', file=f)
 
             return

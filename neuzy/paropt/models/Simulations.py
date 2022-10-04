@@ -242,8 +242,8 @@ class GenSim():
                     print(*output_list, sep=',', end='\n', file=f)
 
                 # Sample recursively around, terminate recursion if maxiter or maxresults is exceeded
-                # check sampleRecAround documentation
-                self.calc.sampleRecAround(output_array, out_fun, indices, self.model, self.calc)    # see recaround.py for another solution
+                # check sample_rec_around documentation
+                self.calc.sample_rec_around(output_array, out_fun, indices, model = self.model, calc = self.calc, sim = self)    # see recaround.py for another solution
 
             if os.path.exists(self.output_csv_data):
                 i = sum(1 for line in open(self.output_csv_data))
