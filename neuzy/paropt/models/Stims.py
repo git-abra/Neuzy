@@ -69,14 +69,6 @@ class GenStim():
                 plt.ylabel('mV')
                 # plt.savefig('./abc' + str(i) + str(val) + '.svg', format='svg')
 
-        """
-        pyplot.figure(figsize=(8,4)) # Default figsize is (8,6)
-        pyplot.title("bap plot")
-        pyplot.plot(time_vec, bAP1_vec)
-        pyplot.xlabel('time (ms)')
-        pyplot.ylabel('mV')
-        pyplot.show()
-        """
         #myplots.plotStandardTrace(soma_vec, time_vec, h.tstop)
         #myplots.plotStandardTrace(bAP1_vec, time_vec, h.tstop)
         pass
@@ -111,7 +103,6 @@ class GenStim():
 
         return traces_per_stepamp_dict, time_vec
         """
-
 
     # not sure if staticmethod worth, procrastinate this thought
     def _stim(self):
