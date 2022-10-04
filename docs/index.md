@@ -4,7 +4,7 @@
 
 # Neuzy
 
-Neuzy is a neuroscientific software framework to create a population of optimized single cell, multi compartment models.
+Neuzy (https://neuzy.de) is a neuroscientific software framework to create a population of optimized single cell, multi compartment models.
 
 It uses HOC and NMODL files as input for the model and extracts automatically their respective ion channel parameters, which are to be updated.
 Optimization options are currently Nelder-Mead, L-BFGS-B or Conjugate Gradient. 
@@ -21,7 +21,7 @@ Original model, which was used is from Tomko et al. 2021 https://senselab.med.ya
 
 ---
 
-## Prerequisites:
+## Prerequisites
 
 HOC file for the morphology and biophysics.
 NMODL files for the ion channel expressions.
@@ -44,19 +44,36 @@ Accessibility is on the TODO.
 
 ---
 
-## Quickstart:
-
-Call any start file in the root of the repository.
+## Quickstart
+After downloading call any start file in the root of the neuzy folder.
 
 ```bash
-python3 start.py
+python3 ./neuzy/quickstart.py
 ```
 otherwise via bash
 ```bash
-bash start.sh  
+bash ./neuzy/quickstart.sh 
 ```
 
+Calling it from the root sets your PYTHONPATH automatically to the root of the repository.
+
 After calling, select how many CPU cores should be used in the command line.
+
+## Install
+With pyproject.toml, there is also the option to install it as package with pip from the root of the repository.
+In later versions it will be available on pypi.org.
+
+```
+pip install .
+```
+
+If you do not install it this way, and instead use it neither by installing it, nor by using it from the root of the repository 
+(see above, sets PYTHONPATH automatically), then make sure to set or add (to ~/.bashrc) your $PYTHONPATH manually to the repository's rootpath.
+This is necessary to avoid pathing errors within the repository's call structure.
+
+```
+export PYTHONPATH=/home/username/directory/Neuzy/
+```
 
 ---
 ## Output
@@ -66,28 +83,10 @@ Two folders will be created in /neuzy/paropt/data
 2. parameter_values - The optimized output parameters for your run. They have to be matched onto the pandas dataframe for regions and their respective ion channel.
 
 ---
-## TODO's are partly the following:
+## Pipeline
+![Pipeline](./docs/figures/Pipeline.pdf)
 
-- Documentation
-- General improvements
-- Accessibility for the general neuroscientist, i.e. less explicit source code configuration input for hyperparameters
-- Offer the option to test for multiple kinds of cell optimization, i.e. more features
-- Extend for:
-  - Efficiency
-    - e.g. dynamic programming
-    - improvements to mpi usage
-    - techniques
-  - Synaptic features and testing
-    - dendritic integration
-  - More than CA1
-    - region is limited by experimental data, not by the software
-  - Network modelling
-    - various cell numbers in conjunction
-    - machine learning for neural networks
-  - Glia influence
-    - simulate neurotransmitter density in extracellular space
-  - ...
-- ...
+![Implementation](./docs/figures/Implementation.pdf)
 
 ---
 ## License
@@ -104,5 +103,3 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ---
 ## Help
 The fastest way to receive support in case of problems is to open an issue on GitHub.
-
----

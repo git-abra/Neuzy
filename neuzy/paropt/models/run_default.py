@@ -49,13 +49,14 @@ def main():
                         channelblocknames = None,               # Run it with CompleteOptModel
                         verbose = True
                         )
+
     mpi_1 = MPIpar(populationsize = 100)    # MPIpar object, 100 cells to generate
 
     stim_1 = Firstspike_SortOutStim()       # default parameters
 
-    calc_1 = FitnessCalcSD()            # obj(__init__(): self.model = model)
+    calc_1 = FitnessCalcSD()                # obj(__init__(): self.model = model)
 
-    opt_1 = ScipyOpt("Nelder-Mead")  
+    opt_1 = ScipyOpt("Nelder-Mead")         # Optimization with Nelder-Mead algorithm
 
 
     ## Running default config
