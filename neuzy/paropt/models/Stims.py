@@ -15,19 +15,27 @@ import logging as lg
 import numpy as np
 from neuron import h
 import efel
+import matplotlib.pyplot as plt
 
+# TODO add kwargs functionality for v_init, temperature, dt, and other parameters to configure
 class GenStim():
+    """
+    General Stim Class GenStim() to set parameters for the NEURON simulation.
+    """
+
     def __init__(   self,
                     delay: int = 150, 
                     duration: int = 400, 
                     tstop: int = 750, 
                     cvode_active: bool = None,
-                    stepamps:dict = {'Step-04': -0.4, 'Step08' : 0.8}
+                    stepamps:dict = {'Step-04': -0.4, 'Step08' : 0.8},
+                    clamp = 'IClamp'
                 ):
         """
-        General Stim Class GenStim() to set parameters for the NEURON simulation.
-        Constructor Parameters
-        ----------------------
+        Constructor of GenStim()
+
+        Parameters
+        ----------
         - delay: int
         - duration: int
         - tstop: int
@@ -38,14 +46,208 @@ class GenStim():
         self.delay = delay
         self.duration = duration
         self.tstop = tstop
-
+        self.clamp = clamp
         self.stepamps = stepamps
 
         if cvode_active:
             self.cvode_active = cvode_active
-        else:
-            self.cvode_active = False  # Doesn't work because of EFEL X and Y axes "Assertion fired(efel/cppcore/Utils.cpp:33): X & Y have to have the same point count"
-    
+
+
+    def _stim_plot(self, rec_dict, time_vec):
+        """
+        Plots a disgustingly ugly plot for the traces :)
+        """
+        for k, v in rec_dict.items():
+            for i, val in enumerate(v):
+                np_val = np.array(val)
+                np_time = np.array(time_vec)
+                plt.figure(figsize=(8,4))
+                plt.title(str(k) + "plot")
+                # plt.plot([1,2,3], [2,3,4])
+                plt.plot(np_time, np_val)
+                plt.xlabel('time (ms)')
+                plt.ylabel('mV')
+                # plt.savefig('./abc' + str(i) + str(val) + '.svg', format='svg')
+
+        """
+        pyplot.figure(figsize=(8,4)) # Default figsize is (8,6)
+        pyplot.title("bap plot")
+        pyplot.plot(time_vec, bAP1_vec)
+        pyplot.xlabel('time (ms)')
+        pyplot.ylabel('mV')
+        pyplot.show()
+        """
+        #myplots.plotStandardTrace(soma_vec, time_vec, h.tstop)
+        #myplots.plotStandardTrace(bAP1_vec, time_vec, h.tstop)
+        pass
+
+
+    def generate_spike_traces(self, model, plot:bool = False):
+        """
+        Returns
+        -------
+        - traces_per_stepamp_dict: dict
+        - time_vec
+        """
+
+        stim_dict = self._define_stims(model)
+        rec_dict = self._define_recordings(model, soma = [0.42, 0.69], radTdist = [0.42, 0.69])
+
+        time_vec = h.Vector().record(h._ref_t)
+
+        self._stim()
+
+        if plot is True:
+            self._stim_plot(rec_dict, time_vec)
+
+        """
+        for stepampname, stim in stim_dict.items():
+            eval(stim)
+            for location, recordings in rec_dict.items():
+                for recording in recordings:
+                    eval(recording)   
+            self._stim()
+            time_vec = h.Vector().record(h._ref_t)
+
+        return traces_per_stepamp_dict, time_vec
+        """
+
+
+    # not sure if staticmethod worth, procrastinate this thought
+    def _stim(self):
+        """
+        Stimulates depending on the initialized property values of the GenStim() object.
+
+        """
+        # TODO research
+        h.dt =  0.075            # 0.025
+        h.tstop = self.tstop     # 1600 for hippounit trace comparison
+        h.v_init = -65
+        h.celsius = 35
+        h.init()
+        h.run()
+
+        # h.finitialize(-65 * mV) # alt: h.run() ; finitialize https://www.neuron.yale.edu/neuron/static/py_doc/simctrl/programmatic.html
+        # h.continuerun(600 * ms) # alt: h.tstop = 200
+
+
+    # not sure if staticmethod worth, procrastinate this thought
+    def _define_stims(self, model):
+        """
+        Creates the stimulation electrodes with their settings.
+        Currently only somatic stimulation.
+
+        Returns
+        -------
+        stim_dict: dict - Dict of stimulation objects which are used, differ currently only by stepamp.
+
+
+        Void, sets parameters in Neuron's Scope.    
+        # TODO overhaul these scope restrictions for more than one active instance of HocObject.
+        """
+
+        stim_dict = {}
+
+        for stepampname, stepamp in self.stepamps.items():
+            # TODO research
+            clampstim = getattr(h, self.clamp)
+            stim = clampstim(model.current_cell.soma[0](0.5))
+            # stim = h.IClamp(model.current_cell.soma[0](0.5)) # stim at soma
+            stim.delay = self.delay
+            stim.dur = self.duration
+            stim.amp = stepamp
+
+            stim_dict.update({stepampname: stim})
+
+        return stim_dict
+
+
+    def _define_recordings(self, model, **kwargs):
+        """
+        Creates the stimulation recordings for the electrodes
+
+        Parameters
+        ----------
+        - model
+        - **kwargs: dict - Dict with section names as keys, their continuous segment values in a list as value. E.g. soma = [0.42, 0.69]
+        # TODO method for creating kwargs dict automatically by retrieving section names
+
+        Returns
+        -------
+        - rec_dict : dict - Dict of recording vectors for the specified locations from **kwargs
+        
+        """
+        # soma = kwargs.get('soma')
+
+        rec_dict = {}
+
+        for k, v in kwargs.items():
+            rec_vecs = []
+            for loc in v:
+                if k == 'soma':
+                    # _ = model.current_cell, k + '[0](' + v + ')'
+                    # getattr(h.Vector(), record.
+                    access = getattr(model.current_cell, str(k))[0](loc)._ref_v   
+                else:
+                    access = getattr(model.current_cell, str(k))(loc)._ref_v 
+
+                rec_vec = h.Vector().record(access)
+                rec_vecs.append(rec_vec)
+
+            rec_dict.update({k : rec_vecs})
+
+        return rec_dict
+
+
+    def get_stim_traces_soma(self, model, plot:bool = False):
+        """
+        Stimulate the soma and retrieve somatic traces.
+        Sets the Clamp and recording variables
+
+        Parameters
+        ----------
+        - model: The current initialized HocObject cell
+        - method: 'IClamp'(default), 'VClamp' - Configures the stimulation protocol
+        - plot: bool = False - determines if the traces should be shown in a plot
+
+        Returns
+        -------
+
+
+        """
+            
+        traces_per_stepamp_dict = {}
+        for stepampname, stepamp in self.stepamps.items():
+            #start = time.time()
+
+            stim = h.IClamp(model.current_cell.soma[0](0.5)) # stim at soma
+            stim.delay = self.delay
+            stim.dur = self.duration
+            stim.amp = stepamp
+            soma_vec = h.Vector().record(model.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
+
+        pass
+
+
+    def get_stim_traces_dendrites(self, model, locations, plot:bool = False):
+        """
+        Stimulate over dendritic branches and retrieve dendritic traces.
+        Sets the Clamp and recording variables
+
+        Parameters
+        ----------
+        - model: The current initialized HocObject cell
+        - method: 'IClamp'(default), 'VClamp' - Configures the stimulation protocol
+        - plot: bool = False - determines if the traces should be shown in a plot
+
+        Returns
+        -------
+
+
+        """
+        pass
+
+
     def stimulateIClamp(self, model):   # Default values are from Schneider et al. 2021
         """
         IClamp Optimization Protocols
@@ -104,22 +306,7 @@ class GenStim():
             h.init()
             h.run()
 
-            """pyplot.figure(figsize=(8,4)) # Default figsize is (8,6)
-            pyplot.title("soma plot")
-            pyplot.plot(time_vec, soma_vec)
-            pyplot.xlabel('time (ms)')
-            pyplot.ylabel('mV')
-            pyplot.show()"""
-
             
-            """pyplot.figure(figsize=(8,4)) # Default figsize is (8,6)
-            pyplot.title("bap plot")
-            pyplot.plot(time_vec, bAP1_vec)
-            pyplot.xlabel('time (ms)')
-            pyplot.ylabel('mV')
-            pyplot.show()"""
-            #myplots.plotStandardTrace(soma_vec, time_vec, h.tstop)
-            #myplots.plotStandardTrace(bAP1_vec, time_vec, h.tstop)
             # h.finitialize(-65 * mV) # alt: h.run() ; finitialize https://www.neuron.yale.edu/neuron/static/py_doc/simctrl/programmatic.html
             # h.continuerun(600 * ms) # alt: h.tstop = 200
             #end = time.time()
@@ -178,6 +365,35 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
         self.duration_firstspike = duration_firstspike
         self.tstop_firstspike = tstop_firstspike
 
+    def _stim_firstspike_plot(self):
+        """
+        pyplot.figure(figsize=(8,4)) # Default figsize is (8,6)
+        pyplot.plot(time_vec, bAP1_vec)
+        pyplot.xlabel('time (ms)')
+        pyplot.ylabel('mV')
+        pyplot.show()
+        """
+
+        #myplots.plotStandardTrace(soma_vec, time_vec, h.tstop)
+        #myplots.plotStandardTrace(bAP1_vec, time_vec, h.tstop)
+        pass
+
+    def _stim_firstspike(self):
+        """
+        Stimulates depending on the initialized values
+        """
+        # TODO maybe make _stim() take different arguments depending on a decisional argument and remove this one
+
+        h.dt = 0.1
+        h.tstop = self.tstop_firstspike
+        h.v_init = -65
+        h.celsius = 35
+        h.init()
+        h.run()
+
+        # h.finitialize(-65 * mV) # alt: h.run() ; finitialize https://www.neuron.yale.edu/neuron/static/py_doc/simctrl/programmatic.html
+        # h.continuerun(600 * ms) # alt: h.tstop = 200
+
     def stimulateIClamp_firstspike(self, model, par):   # Default values are from Schneider et al. 2021
         '''
         IClamp Optimization Protocols
@@ -226,14 +442,7 @@ class Firstspike_SortOutStim(GenStim): # Stim with function to sort out early - 
             h.init()
             h.run()
 
-            """pyplot.figure(figsize=(8,4)) # Default figsize is (8,6)
-            pyplot.plot(time_vec, bAP1_vec)
-            pyplot.xlabel('time (ms)')
-            pyplot.ylabel('mV')
-            pyplot.show()"""
-
-            #myplots.plotStandardTrace(soma_vec, time_vec, h.tstop)
-            #myplots.plotStandardTrace(bAP1_vec, time_vec, h.tstop)
+            
             # h.finitialize(-65 * mV) # alt: h.run() ; finitialize https://www.neuron.yale.edu/neuron/static/py_doc/simctrl/programmatic.html
             # h.continuerun(600 * ms) # alt: h.tstop = 200
             soma_arr = np.array(soma_vec)
