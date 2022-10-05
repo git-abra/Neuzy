@@ -10,7 +10,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import time
+import time, os
+from copy import copy
 import logging as lg
 import numpy as np
 from neuron import h
@@ -28,8 +29,9 @@ class GenStim():
                     duration: int = 400, 
                     tstop: int = 750, 
                     cvode_active: bool = None,
-                    stepamps:dict = {'Step-04': -0.4, 'Step08' : 0.8},
-                    clamp = 'IClamp'
+                    stepamps:dict = {'Step-04': -0.4, 'Step08' : 0.8, 'Step12' : 1.2},
+                    clamp = 'IClamp',
+                    section_locations_dict: dict = None
                 ):
         """
         Constructor of GenStim()
@@ -52,57 +54,74 @@ class GenStim():
         if cvode_active:
             self.cvode_active = cvode_active
 
+        if not section_locations_dict:
+            # add automatic retrieval function
+            self.section_locations_dict = {'soma': [0.42], 'radTmed':[0.33, 0.5, 0.69], 'radTdist': [0.42, 0.69]}
 
-    def _stim_plot(self, rec_dict, time_vec):
+
+    def _stim_plot(self, traces_dict, time_vec):
         """
         Plots a disgustingly ugly plot for the traces :)
         """
-        for k, v in rec_dict.items():
-            for i, val in enumerate(v):
-                np_val = np.array(val)
-                np_time = np.array(time_vec)
-                plt.figure(figsize=(8,4))
-                plt.title(str(k) + "plot")
-                # plt.plot([1,2,3], [2,3,4])
-                plt.plot(np_time, np_val)
-                plt.xlabel('time (ms)')
-                plt.ylabel('mV')
-                # plt.savefig('./abc' + str(i) + str(val) + '.svg', format='svg')
+
+        np_time = np.array(time_vec)
+
+        for stepamp, rec_dict in traces_dict.items():
+            for sectionname, rec_vecs in rec_dict.items():
+                for i, rec_vec in enumerate(rec_vecs):
+                    # convert to np for usage
+                    np_rec = np.array(rec_vec)
+                        
+                    # plot
+                    plt.figure(figsize=(8,4))
+                    plt.title(str(sectionname).capitalize() + " Plot")
+
+                    plt.plot(np_time, np_rec)
+                    plt.xlabel('time (ms)')
+                    plt.ylabel('mV, with stepamp: ' + str(stepamp) + 'nA')
+                    if os.path.exists('./neuzy/output/recordings'):
+                        plt.savefig('./neuzy/output/recordings/Plot' + '_' + str(sectionname) + '_' + str(stepamp) + '_' + str(i) + '.svg', format='svg')
 
         #myplots.plotStandardTrace(soma_vec, time_vec, h.tstop)
         #myplots.plotStandardTrace(bAP1_vec, time_vec, h.tstop)
-        pass
 
 
     def generate_spike_traces(self, model, plot:bool = False):
         """
+        Generates spike traces and returns them as dict.
+
+        Parameters
+        ----------
+        - model
+        - plot: bool
+
         Returns
-        -------
-        - traces_per_stepamp_dict: dict
+        ------- 
+        - traces_dict
         - time_vec
         """
+  
+        traces_dict = {}
 
-        stim_dict = self._define_stims(model)
-        rec_dict = self._define_recordings(model, soma = [0.42, 0.69], radTdist = [0.42, 0.69])
+        time_vec = h.Vector().record(h._ref_t)  
 
-        time_vec = h.Vector().record(h._ref_t)
+        for _ , stepamp in self.stepamps.items():
 
-        self._stim()
+            rec_dict = self._define_recordings(model)
+            stim = self._define_stim(model, stepamp)
+            self._stim()        # call the stimulation, fills empty recording vectors (rec_vecs) in rec_dict 
+
+            # rec_dict gets Vectors replaced with numpy arrays for usage
+            for regionname, rec_vecs in rec_dict.items():
+                rec_dict[regionname] = [np.array(rec_vec) for rec_vec in rec_vecs]
+            
+            traces_dict.update({stepamp: rec_dict})
+            print(traces_dict)
 
         if plot is True:
-            self._stim_plot(rec_dict, time_vec)
+            self._stim_plot(traces_dict, time_vec)
 
-        """
-        for stepampname, stim in stim_dict.items():
-            eval(stim)
-            for location, recordings in rec_dict.items():
-                for recording in recordings:
-                    eval(recording)   
-            self._stim()
-            time_vec = h.Vector().record(h._ref_t)
-
-        return traces_per_stepamp_dict, time_vec
-        """
+        return traces_dict, time_vec
 
     # not sure if staticmethod worth, procrastinate this thought
     def _stim(self):
@@ -123,121 +142,58 @@ class GenStim():
 
 
     # not sure if staticmethod worth, procrastinate this thought
-    def _define_stims(self, model):
+    def _define_stim(self, model, stepamp):
         """
         Creates the stimulation electrodes with their settings.
         Currently only somatic stimulation.
+        Sets implicitly parameters in Neuron's Scope for 'h'.
 
-        Returns
-        -------
-        stim_dict: dict - Dict of stimulation objects which are used, differ currently only by stepamp.
-
-
-        Void, sets parameters in Neuron's Scope.    
         # TODO overhaul these scope restrictions for more than one active instance of HocObject.
         """
 
-        stim_dict = {}
+        clampstim = getattr(h, self.clamp)
+        stim = clampstim(model.current_cell.soma[0](0.5))   # stim HocObject, somatic stimulation
+        stim.delay = self.delay
+        stim.dur = self.duration
+        stim.amp = stepamp
 
-        for stepampname, stepamp in self.stepamps.items():
-            # TODO research
-            clampstim = getattr(h, self.clamp)
-            stim = clampstim(model.current_cell.soma[0](0.5))
-            # stim = h.IClamp(model.current_cell.soma[0](0.5)) # stim at soma
-            stim.delay = self.delay
-            stim.dur = self.duration
-            stim.amp = stepamp
+        return stim
 
-            stim_dict.update({stepampname: stim})
-
-        return stim_dict
-
-
-    def _define_recordings(self, model, **kwargs):
+    def _define_recordings(self, model):
         """
-        Creates the stimulation recordings for the electrodes
+        Creates the stimulation recordings for the electrodes.
+        Sets implicitly parameters in Neuron's Scope for 'h'.
 
         Parameters
         ----------
         - model
-        - **kwargs: dict - Dict with section names as keys, their continuous segment values in a list as value. E.g. soma = [0.42, 0.69]
+        - traces_dict
+
         # TODO method for creating kwargs dict automatically by retrieving section names
 
         Returns
         -------
-        - rec_dict : dict - Dict of recording vectors for the specified locations from **kwargs
+        - traces_dict : dict - Dict of recording vectors for the specified locations from **kwargs and for the according stepamplitude
         
         """
-        # soma = kwargs.get('soma')
+        # soma = self.section_locations_dict.get('soma')
 
         rec_dict = {}
 
-        for k, v in kwargs.items():
+        for sectionname, locationvalues in self.section_locations_dict.items():
             rec_vecs = []
-            for loc in v:
-                if k == 'soma':
-                    # _ = model.current_cell, k + '[0](' + v + ')'
-                    # getattr(h.Vector(), record.
-                    access = getattr(model.current_cell, str(k))[0](loc)._ref_v   
+            for loc in locationvalues:
+                if sectionname == 'soma':
+                    access = getattr(model.current_cell, str(sectionname))[0](loc)._ref_v   
                 else:
-                    access = getattr(model.current_cell, str(k))(loc)._ref_v 
+                    access = getattr(model.current_cell, str(sectionname))(loc)._ref_v 
 
-                rec_vec = h.Vector().record(access)
+                rec_vec = h.Vector().record(access)     # create recording Vector for the accessed attribute of HocObject()
                 rec_vecs.append(rec_vec)
 
-            rec_dict.update({k : rec_vecs})
+            rec_dict.update({sectionname : rec_vecs})
 
         return rec_dict
-
-
-    def get_stim_traces_soma(self, model, plot:bool = False):
-        """
-        Stimulate the soma and retrieve somatic traces.
-        Sets the Clamp and recording variables
-
-        Parameters
-        ----------
-        - model: The current initialized HocObject cell
-        - method: 'IClamp'(default), 'VClamp' - Configures the stimulation protocol
-        - plot: bool = False - determines if the traces should be shown in a plot
-
-        Returns
-        -------
-
-
-        """
-            
-        traces_per_stepamp_dict = {}
-        for stepampname, stepamp in self.stepamps.items():
-            #start = time.time()
-
-            stim = h.IClamp(model.current_cell.soma[0](0.5)) # stim at soma
-            stim.delay = self.delay
-            stim.dur = self.duration
-            stim.amp = stepamp
-            soma_vec = h.Vector().record(model.current_cell.soma[0](0.5)._ref_v) # record at middle (0,5) of soma
-
-        pass
-
-
-    def get_stim_traces_dendrites(self, model, locations, plot:bool = False):
-        """
-        Stimulate over dendritic branches and retrieve dendritic traces.
-        Sets the Clamp and recording variables
-
-        Parameters
-        ----------
-        - model: The current initialized HocObject cell
-        - method: 'IClamp'(default), 'VClamp' - Configures the stimulation protocol
-        - plot: bool = False - determines if the traces should be shown in a plot
-
-        Returns
-        -------
-
-
-        """
-        pass
-
 
     def stimulateIClamp(self, model):   # Default values are from Schneider et al. 2021
         """
