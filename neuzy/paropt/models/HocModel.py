@@ -78,6 +78,7 @@ class HocModel(GenModel):
 
         self.readHocModel()
         self.initializeCell()     # calls createHocModel for cell
+        self.sections_locations_dict = self.generate_sections_locations_dict()
 
 
     def get_sectionlist_names(self):
@@ -103,14 +104,19 @@ class HocModel(GenModel):
         -------
         df : Dataframe of sectionnames(row) to sectionlists (col)
         secnamedict : Dict of sectionnames(nested elements) inside sectionlists(elements)
+        secnames: list - List of sectionnames without sectionlists
         """
+        secnames = []
         secnamedict = {}
         for sl in self.sectionlist_list:
             inputsl = getattr(self.current_cell, sl)
-            mysecnamelist = []
+            secnamelist = []
             for sec in inputsl:
-                mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])     # maxsplit = 1 , take second element after '.' first element = 0 would be the templatename
-            secnamedict.update({sl: mysecnamelist})
+                # print(type(h.secname(sec=sec)))         # str
+                # print(type(sec))                        # nrn.Section
+                secnames.append(h.secname(sec = sec).split('.', 1)[1])
+                secnamelist.append(h.secname(sec = sec).split('.', 1)[1])     # maxsplit = 1 , take second element after '.' first element = 0 would be the templatename
+            secnamedict.update({sl: secnamelist})
         df = pd.DataFrame.from_dict(secnamedict, orient = 'index').transpose()
            
         # TODO add version for 'all' sectionlist
@@ -119,7 +125,7 @@ class HocModel(GenModel):
         for sec in self.current_cell.all:    
             mysecnamelist.append(h.secname(sec = sec).split('.', 1)[1])
         """
-        return df, secnamedict
+        return df, secnamedict, secnames
 
 
     def get_template_name(self):
@@ -140,6 +146,19 @@ class HocModel(GenModel):
                 break
         else:   # no break
             raise Exception('Could not find begintemplate and therefore template_name in hoc file')
+
+
+    def generate_sections_locations_dict(self, locations:list = None):
+        
+        sections_locations_dict = {}
+        
+        _ , _ , secnames = self.get_section_names()
+        locations = [0.25, 0.5, 0.75]
+        
+        for secname in secnames:
+            sections_locations_dict.update({secname : locations})
+
+        return sections_locations_dict
 
 
     def readHocModel(self):
@@ -204,7 +223,7 @@ class HocModel(GenModel):
         return ionchnames, ionchnames_dict
 
 
-    def getMechanismItems(self):
+    def get_mechanism_items(self):
         """ 
         Prerequisites: Read-in HocObject / HocObject in Scope 
         Retrieves what self.parameterkeywords is asking for.
