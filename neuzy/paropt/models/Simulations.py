@@ -150,7 +150,7 @@ class GenSim():
                 print("First created Cell is used.")
                 lg.info("First created Cell is used.")
 
-                init_data, indices = self.model.getMechanismItems()  # Initial Conductances # tested
+                init_data, indices = self.model.get_mechanism_items()  # Initial Conductances # tested
                 init_output_data = fnc.insertNans(init_data, indices).tolist()
 
                 outfile = pathlib.Path(cs.SAVEPATH_PAR + '/INITIAL_CONDUCTANCES_LIST.json')
@@ -170,7 +170,7 @@ class GenSim():
                 lg.info("Recreating Cell " + str(counter) + ", reinitializing.")
 
                 self.model.initializeCell()
-                init_data, indices = self.model.getMechanismItems()  # Initial Conductances for new cell
+                init_data, indices = self.model.get_mechanism_items()  # Initial Conductances for new cell
                 # print(init_data)
 
             # init_rnd_data = init_data # test
