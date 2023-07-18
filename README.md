@@ -104,3 +104,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Help
 The fastest way to receive support in case of problems is to open an issue on GitHub.
 
+Update: No more support or updates due to Long Covid
+
